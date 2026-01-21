@@ -1,0 +1,9 @@
+.vscode/**
+.codebuddy/**
+node_modules/**
+dist/**
+*.vsix
+.DS_Store
+
+# README 备份文件（保留 README.md.bak，忽略带时间戳的）
+README.md.bak.*

@@ -1,0 +1,202 @@
+{
+    "name": "shell-formatter",
+    "displayName": "Shell Formatter",
+    "description": "Intelligent Shell script formatting and error checking fixing with shfmt and shellcheck",
+    "version": "1.0.0",
+    "publisher": "bdq460",
+    "icon": "icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bdq460/shell-formatter.git"
+    },
+    "engines": {
+        "vscode": "^1.74.0"
+    },
+    "categories": [
+        "Formatters",
+        "Linters"
+    ],
+    "activationEvents": [
+        "onLanguage:shellscript",
+        "onCommand:shell-formatter.fixAllProblems"
+    ],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "shellscript",
+                "aliases": [
+                    "Shell",
+                    "Shell Script"
+                ],
+                "extensions": [
+                    ".sh",
+                    ".bash",
+                    ".zsh"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Shell Format",
+            "properties": {
+                "shell-formatter.tabSize": {
+                    "type": [
+                        "number",
+                        "string"
+                    ],
+                    "enum": [
+                        "vscode",
+                        "ignore"
+                    ],
+                    "default": "vscode",
+                    "description": "Indentation size: number for spaces or 'tab' for tabs (used with shfmt -i/-tabs), value can be one of [vscode, ignore] or number. vscode:use vscode tab size, ignore: ignore tab check and format.default is vscode"
+                },
+                "shell-formatter.log": {
+                    "type": "object",
+                    "default": {
+                        "enabled": false,
+                        "level": "info",
+                        "format": "timestamp"
+                    },
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Enable or disable logging"
+                        },
+                        "level": {
+                            "type": "string",
+                            "enum": [
+                                "debug",
+                                "info",
+                                "warn",
+                                "error"
+                            ],
+                            "default": "info",
+                            "description": "Log level: debug, info, warn, error"
+                        },
+                        "format": {
+                            "type": "string",
+                            "default": "[%timestamp] [%level] [%name] [%method:%line] %message",
+                            "description": "Log format pattern. Available placeholders: %timestamp, %level, %name, %method, %line, %message. Example: '[%timestamp] [%level] [%name] [%method:%line] %message'"
+                        }
+                    },
+                    "description": "Log configuration: control whether logging is enabled, log level, and log format"
+                },
+                "shell-formatter.onError": {
+                    "type": "string",
+                    "enum": [
+                        "showProblem",
+                        "ignore"
+                    ],
+                    "default": "showProblem",
+                    "description": "How to handle shfmt errors"
+                },
+                "shell-formatter.plugins.shfmt": {
+                    "type": "object",
+                    "default": {
+                        "enabled": true,
+                        "path": "shfmt"
+                    },
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Enable or disable shfmt plugin"
+                        },
+                        "path": {
+                            "type": "string",
+                            "default": "shfmt",
+                            "description": "Path to shfmt executable"
+                        }
+                    },
+                    "description": "Shfmt plugin configuration"
+                },
+                "shell-formatter.plugins.shellcheck": {
+                    "type": "object",
+                    "default": {
+                        "enabled": true,
+                        "path": "shellcheck"
+                    },
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Enable or disable shellcheck plugin"
+                        },
+                        "path": {
+                            "type": "string",
+                            "default": "shellcheck",
+                            "description": "Path to shellcheck executable"
+                        }
+                    },
+                    "description": "Shellcheck plugin configuration"
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "shell-formatter.formatDocument",
+                "title": "shell-formatter: Format document"
+            },
+            {
+                "command": "shell-formatter.fixAllProblems",
+                "title": "shell-formatter: Fix all problems"
+            },
+            {
+                "command": "shell-formatter.showPerformanceReport",
+                "title": "shell-formatter: Show performance report"
+            },
+            {
+                "command": "shell-formatter.resetPerformanceMetrics",
+                "title": "shell-formatter: Reset shell-formatter performance metrics"
+            },
+            {
+                "command": "shell-formatter.showPluginStatus",
+                "title": "shell-formatter: Show plugin status"
+            }
+        ],
+        "codeActions": [
+            {
+                "kind": "quickfix.shell-formatter",
+                "title": "Fix this issue with shell-formatter",
+                "languages": [
+                    "shellscript"
+                ]
+            },
+            {
+                "kind": "source.fixAll.shell-formatter",
+                "title": "Fix all problems with shell-formatter",
+                "languages": [
+                    "shellscript"
+                ]
+            }
+        ]
+    },
+    "scripts": {
+        "package:extension": "bash scripts/safe-package.sh",
+        "install:extension": "npm run package:extension && code --install-extension $(ls shell-formatter-*.vsix) --extensions-dir ~/.vscode/extensions",
+        "vscode:prepublish": "npm run compile",
+        "clean": "rm -rf dist/*",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile",
+        "lint": "eslint src --ext ts",
+        "test": "node test/run.js",
+        "readme:backup": "bash scripts/manage-readme.sh backup",
+        "readme:replace": "bash scripts/manage-readme.sh replace",
+        "readme:restore": "bash scripts/manage-readme.sh restore",
+        "readme:check": "bash scripts/manage-readme.sh check",
+        "test:readme:backup": "bash scripts/test-readme-backup.sh"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@types/vscode": "^1.74.0",
+        "@typescript-eslint/eslint-plugin": "^8.53.0",
+        "@typescript-eslint/parser": "^8.53.0",
+        "eslint": "^9.39.2",
+        "typescript": "^5.0.0"
+    }
+}

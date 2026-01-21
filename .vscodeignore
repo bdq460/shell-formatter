@@ -1,0 +1,37 @@
+# 开发相关
+src/**
+node_modules/**
+**/tsconfig.json
+**/.eslintrc.js
+**/.eslintrc.json
+**/*.map
+**/*.ts
+
+# 测试相关
+test/**
+.pytest_cache/**
+tsconfig.test.json
+
+# 开发文档
+README_EN.md
+README.md.bak
+doc/**
+
+# 扩展文件
+*.vsix
+
+# 脚本
+script/**
+
+# git版本控制文件
+.gitignore
+
+# 开发环境
+.vscode/**
+
+# mac系统文件
+.DS_Store
+
+# 其他隐藏文件
+.*
+*.bak

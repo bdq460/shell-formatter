@@ -1,0 +1,11 @@
+{
+    "timeout": 5000,
+    "ui": "bdd",
+    "require": [
+        "ts-node/register",
+        "tsconfig-paths/register"
+    ],
+    "spec": "test/**/*.test.{js,ts}",
+    "recursive": true,
+    "tsconfig": "./tsconfig.test.json"
+}
