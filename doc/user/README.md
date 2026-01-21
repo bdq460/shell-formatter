@@ -1,4 +1,4 @@
-# Shell Format
+# Shell Formatter
 
 > Intelligent Shell script formatting and checking tool based on shfmt and shellcheck
 > 基于 shfmt 和 shellcheck 的智能 Shell 脚本格式化和检查工具
@@ -7,7 +7,7 @@
 
 ### Feature Overview 功能概述
 
-Shell Format automatically formats your Shell scripts and detects errors using industry-standard tools:
+Shell Formatter automatically formats your Shell scripts and detects errors using industry-standard tools:
 
 - **Smart Formatting 智能格式化** - Automatically format Shell scripts with shfmt
 - **Error Detection 错误检测** - Detect syntax and semantic errors with shellcheck
@@ -150,7 +150,7 @@ Error handling method / 错误处理方式
 
 - Click yellow light bulb icon in code editor / 点击代码编辑器中的黄色灯泡图标
 - Select "Fix all problems with shell-format" / 选择"使用 shell-format 修复所有问题"
-- Or execute "Shell Format: Fix All Problems By Shellformat" in Command Palette / 或在命令面板中执行
+- Or execute "Shell Formatter: Fix All Problems By Shellformat" in Command Palette / 或在命令面板中执行
 
 ### View Errors and Warnings 查看错误和警告
 
@@ -178,13 +178,13 @@ Error handling method / 错误处理方式
 ### View Plugin Status 查看插件状态
 
 - Open Command Palette / 打开命令面板 (`Ctrl+Shift+P` / `Cmd+Shift+P`)
-- Enter "Shell Format: Show Plugin Status" / 输入"Shell Format: Show Plugin Status"
+- Enter "Shell Formatter: Show Plugin Status" / 输入"Shell Formatter: Show Plugin Status"
 - View all registered plugins, their versions, and activation status / 查看所有已注册的插件、版本和激活状态
 
 ### View Performance Metrics 查看性能指标
 
 - Open Command Palette / 打开命令面板 (`Ctrl+Shift+P` / `Cmd+Shift+P`)
-- Enter "Shell Format: Show Performance Report" / 输入"Shell Format: Show Performance Report"
+- Enter "Shell Formatter: Show Performance Report" / 输入"Shell Formatter: Show Performance Report"
 - View detailed performance metrics including plugin activation time, execution time, etc. / 查看详细的性能指标，包括插件激活时间、执行时间等
 
 ## Formatting Example 格式化示例
@@ -279,9 +279,9 @@ A: Diagnosis is performed on disk files, so changes in editor need to be saved b
 
 ### 如何检查哪些插件处于活动状态？
 
-A: Use the "Shell Format: Show Plugin Status" command to view all registered plugins, their versions, and activation status.
+A: Use the "Shell Formatter: Show Plugin Status" command to view all registered plugins, their versions, and activation status.
 
-使用"Shell Format: Show Plugin Status"命令查看所有已注册的插件、版本和激活状态。
+使用"Shell Formatter: Show Plugin Status"命令查看所有已注册的插件、版本和激活状态。
 
 ---
 

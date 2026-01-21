@@ -39,7 +39,7 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "Shell Format",
+            "title": "Shell Formatter",
             "properties": {
                 "shell-formatter.tabSize": {
                     "type": [

@@ -36,7 +36,7 @@ function showPluginStatus(): void {
     // 构建状态报告
     const report: string[] = [];
     report.push("=".repeat(60));
-    report.push("Shell Format - Plugin Status");
+    report.push("Shell Formatter - Plugin Status");
     report.push("=".repeat(60));
     report.push("");
 
@@ -71,7 +71,7 @@ function showPluginStatus(): void {
 
     // 创建输出通道显示状态报告
     const outputChannel = vscode.window.createOutputChannel(
-        "Shell Format Plugin Status",
+        "Shell Formatter Plugin Status",
     );
     outputChannel.appendLine(report.join("\n"));
     outputChannel.show();

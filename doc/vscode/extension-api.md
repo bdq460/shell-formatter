@@ -1,6 +1,6 @@
 # VSCode 扩展开发指南
 
-本文档整理了开发 VSCode 扩展时需要注意的 VSCode 框架 API 和机制，基于 Shell Format 扩展的实际开发经验。
+本文档整理了开发 VSCode 扩展时需要注意的 VSCode 框架 API 和机制，基于 Shell Formatter 扩展的实际开发经验。
 
 ## 目录
 
@@ -24,11 +24,11 @@ VSCode 扩展有两个核心生命周期函数：
 
 ```typescript
 export function activate(context: vscode.ExtensionContext) {
-    // 扩展激活时调用
+  // 扩展激活时调用
 }
 
 export function deactivate() {
-    // 扩展停用时调用
+  // 扩展停用时调用
 }
 ```
 
@@ -55,27 +55,27 @@ export function deactivate() {
 
 `ExtensionContext` 是扩展激活时传入的上下文对象，提供了重要属性：
 
-| 属性 | 类型 | 用途 |
-|-----|------|------|
-| `subscriptions` | `Disposable[]` | 存储需要自动清理的资源 |
-| `workspaceState` | `Memento` | 工作区级别的持久化存储 |
-| `globalState` | `Memento` | 全局级别的持久化存储 |
-| `extensionPath` | `string` | 扩展的安装路径 |
-| `extensionUri` | `Uri` | 扩展的 Uri 对象 |
+| 属性             | 类型           | 用途                   |
+| ---------------- | -------------- | ---------------------- |
+| `subscriptions`  | `Disposable[]` | 存储需要自动清理的资源 |
+| `workspaceState` | `Memento`      | 工作区级别的持久化存储 |
+| `globalState`    | `Memento`      | 全局级别的持久化存储   |
+| `extensionPath`  | `string`       | 扩展的安装路径         |
+| `extensionUri`   | `Uri`          | 扩展的 Uri 对象        |
 
 ```typescript
 export function activate(context: vscode.ExtensionContext) {
-    // 注册需要自动清理的资源
-    const command = vscode.commands.registerCommand('my.command', () => {
-        // 命令实现
-    });
+  // 注册需要自动清理的资源
+  const command = vscode.commands.registerCommand("my.command", () => {
+    // 命令实现
+  });
 
-    const listener = vscode.workspace.onDidChangeTextDocument((e) => {
-        // 监听器实现
-    });
+  const listener = vscode.workspace.onDidChangeTextDocument((e) => {
+    // 监听器实现
+  });
 
-    // 添加到 subscriptions，停用时自动清理
-    context.subscriptions.push(command, listener);
+  // 添加到 subscriptions，停用时自动清理
+  context.subscriptions.push(command, listener);
 }
 ```
 
@@ -91,14 +91,14 @@ VSCode 使用 `Disposable` 接口来管理需要手动释放的资源。
 
 **Disposable 的类型**：
 
-| 类型 | 接口 | 清理方式 |
-|-----|------|---------|
-| 事件监听器 | `Disposable` | `dispose()` |
-| 命令注册 | `Disposable` | `dispose()` |
-| Provider 注册 | `Disposable` | `dispose()` |
-| 诊断集合 | `DiagnosticCollection` | `dispose()` |
-| 输出通道 | `OutputChannel` | `dispose()` |
-| 状态栏项 | `StatusBarItem` | `dispose()` |
+| 类型          | 接口                   | 清理方式    |
+| ------------- | ---------------------- | ----------- |
+| 事件监听器    | `Disposable`           | `dispose()` |
+| 命令注册      | `Disposable`           | `dispose()` |
+| Provider 注册 | `Disposable`           | `dispose()` |
+| 诊断集合      | `DiagnosticCollection` | `dispose()` |
+| 输出通道      | `OutputChannel`        | `dispose()` |
+| 状态栏项      | `StatusBarItem`        | `dispose()` |
 
 **自动清理机制**：
 
@@ -131,15 +131,15 @@ export function deactivate() {
 
 ```typescript
 export function deactivate() {
-    // 防抖定时器不是 Disposable，需要手动清理
-    if (debounceTimer) {
-        clearTimeout(debounceTimer);
-    }
+  // 防抖定时器不是 Disposable，需要手动清理
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+  }
 
-    // 输出通道需要手动清理（如果不在 subscriptions 中）
-    if (outputChannel) {
-        outputChannel.dispose();
-    }
+  // 输出通道需要手动清理（如果不在 subscriptions 中）
+  if (outputChannel) {
+    outputChannel.dispose();
+  }
 }
 ```
 
@@ -149,33 +149,33 @@ export function deactivate() {
 
 ### 常用工作区事件
 
-| 事件 | 触发时机 | 用途 | 防抖 |
-|-----|---------|------|------|
-| `onDidOpenTextDocument` | 文档打开时 | 初始诊断 | ❌ |
-| `onDidSaveTextDocument` | 文档保存时 | 保存时诊断 | ❌ |
-| `onDidChangeTextDocument` | 文档内容变化时 | 实时诊断 | ✅ 推荐 |
-| `onDidChangeConfiguration` | 配置变化时 | 重新初始化 | ❌ |
-| `onDidCloseTextDocument` | 文档关闭时 | 清理缓存 | ❌ |
+| 事件                       | 触发时机       | 用途       | 防抖    |
+| -------------------------- | -------------- | ---------- | ------- |
+| `onDidOpenTextDocument`    | 文档打开时     | 初始诊断   | ❌      |
+| `onDidSaveTextDocument`    | 文档保存时     | 保存时诊断 | ❌      |
+| `onDidChangeTextDocument`  | 文档内容变化时 | 实时诊断   | ✅ 推荐 |
+| `onDidChangeConfiguration` | 配置变化时     | 重新初始化 | ❌      |
+| `onDidCloseTextDocument`   | 文档关闭时     | 清理缓存   | ❌      |
 
 ### 文档事件监听示例
 
 ```typescript
 // 文档保存时诊断
 const saveListener = vscode.workspace.onDidSaveTextDocument(
-    async (document) => {
-        if (document.languageId === 'shellscript') {
-            await diagnoseDocument(document);
-        }
+  async (document) => {
+    if (document.languageId === "shellscript") {
+      await diagnoseDocument(document);
     }
+  },
 );
 
 // 文档打开时诊断
 const openListener = vscode.workspace.onDidOpenTextDocument(
-    async (document) => {
-        if (document.languageId === 'shellscript') {
-            await diagnoseDocument(document);
-        }
+  async (document) => {
+    if (document.languageId === "shellscript") {
+      await diagnoseDocument(document);
     }
+  },
 );
 ```
 
@@ -187,18 +187,18 @@ const openListener = vscode.workspace.onDidOpenTextDocument(
 
 ```typescript
 const configChangeListener = vscode.workspace.onDidChangeConfiguration(
-    async (event) => {
-        // 检查是否影响当前扩展的配置
-        if (event.affectsConfiguration('my-extension')) {
-            // 重新初始化
-            reinitialize();
-        }
-
-        // 检查特定配置项
-        if (event.affectsConfiguration('my-extension.someSetting')) {
-            // 处理特定配置变化
-        }
+  async (event) => {
+    // 检查是否影响当前扩展的配置
+    if (event.affectsConfiguration("my-extension")) {
+      // 重新初始化
+      reinitialize();
     }
+
+    // 检查特定配置项
+    if (event.affectsConfiguration("my-extension.someSetting")) {
+      // 处理特定配置变化
+    }
+  },
 );
 ```
 
@@ -241,30 +241,30 @@ static isConfigurationChanged(event: vscode.ConfigurationChangeEvent): boolean {
 
 `provideDocumentFormattingEdits()` 方法返回一个 `TextEdit[]`，表示格式化后的文本。VSCode 会自动应用这些编辑更新原始文档。
 
-| 特性 | 说明 |
-|-----|------|
+| 特性     | 说明                               |
+| -------- | ---------------------------------- |
 | 接口方法 | `provideDocumentFormattingEdits()` |
-| 返回类型 | `TextEdit[]` |
-| 触发方式 | 快捷键、命令面板、保存时等 |
-| 覆盖范围 | 整个文档 |
+| 返回类型 | `TextEdit[]`                       |
+| 触发方式 | 快捷键、命令面板、保存时等         |
+| 覆盖范围 | 整个文档                           |
 
 ```typescript
 const formatProvider = vscode.languages.registerDocumentFormattingEditProvider(
-    'shellscript',
-    {
-        provideDocumentFormattingEdits(
-            document: vscode.TextDocument,
-            options: vscode.FormattingOptions,
-            token: vscode.CancellationToken
-        ): vscode.ProviderResult<vscode.TextEdit[]> {
-            // 返回格式化后的 TextEdit
-            const fullRange = new vscode.Range(
-                document.positionAt(0),
-                document.positionAt(document.getText().length)
-            );
-            return [vscode.TextEdit.replace(fullRange, formattedContent)];
-        }
-    }
+  "shellscript",
+  {
+    provideDocumentFormattingEdits(
+      document: vscode.TextDocument,
+      options: vscode.FormattingOptions,
+      token: vscode.CancellationToken,
+    ): vscode.ProviderResult<vscode.TextEdit[]> {
+      // 返回格式化后的 TextEdit
+      const fullRange = new vscode.Range(
+        document.positionAt(0),
+        document.positionAt(document.getText().length),
+      );
+      return [vscode.TextEdit.replace(fullRange, formattedContent)];
+    },
+  },
 );
 ```
 
@@ -284,12 +284,12 @@ const formatProvider = vscode.languages.registerDocumentFormattingEditProvider(
 
 注意：文档范围提供者也同时是文档格式化提供者，因此当注册范围提供者时不需要单独注册格式化提供者。
 
-| 特性 | 说明 |
-|-----|------|
+| 特性     | 说明                                    |
+| -------- | --------------------------------------- |
 | 接口方法 | `provideDocumentRangeFormattingEdits()` |
-| 返回类型 | `TextEdit[]` |
-| 触发方式 | 右键菜单"格式化选中文本" |
-| 特性 | 同时支持整个文档格式化 |
+| 返回类型 | `TextEdit[]`                            |
+| 触发方式 | 右键菜单"格式化选中文本"                |
+| 特性     | 同时支持整个文档格式化                  |
 
 **推荐做法**：
 
@@ -300,26 +300,24 @@ const formatProvider = vscode.languages.registerDocumentFormattingEditProvider(
 
 ```typescript
 // 只注册范围格式化提供者
-const rangeFormatProvider = vscode.languages.registerDocumentRangeFormattingEditProvider(
-    'shellscript',
-    {
-        provideDocumentRangeFormattingEdits(
-            document: vscode.TextDocument,
-            range: vscode.Range,
-            options: vscode.FormattingOptions,
-            token: vscode.CancellationToken
-        ): vscode.ProviderResult<vscode.TextEdit[]> {
-            // 跳过特殊文件
-            if (shouldSkipFile(document.fileName)) {
-                return [];
-            }
+const rangeFormatProvider =
+  vscode.languages.registerDocumentRangeFormattingEditProvider("shellscript", {
+    provideDocumentRangeFormattingEdits(
+      document: vscode.TextDocument,
+      range: vscode.Range,
+      options: vscode.FormattingOptions,
+      token: vscode.CancellationToken,
+    ): vscode.ProviderResult<vscode.TextEdit[]> {
+      // 跳过特殊文件
+      if (shouldSkipFile(document.fileName)) {
+        return [];
+      }
 
-            // 即使是范围格式化，也返回整个文档的格式化结果
-            // VSCode 会自动裁剪选区内的变更
-            return formatFullDocument(document);
-        }
-    }
-);
+      // 即使是范围格式化，也返回整个文档的格式化结果
+      // VSCode 会自动裁剪选区内的变更
+      return formatFullDocument(document);
+    },
+  });
 ```
 
 **Shell 脚本格式化的特殊处理**：
@@ -336,25 +334,25 @@ VSCode 会自动裁剪 TextEdit，只应用选区内的变更。
  * VSCode 会自动裁剪 TextEdit，只应用选区内的变更。
  */
 export async function formatDocumentRange(
-    document: vscode.TextDocument,
-    range: vscode.Range,
-    options?: vscode.FormattingOptions,
-    token?: vscode.CancellationToken
+  document: vscode.TextDocument,
+  range: vscode.Range,
+  options?: vscode.FormattingOptions,
+  token?: vscode.CancellationToken,
 ): Promise<vscode.TextEdit[]> {
-    // 直接调用 formatDocument，由 VSCode 自动裁剪选区内的变更
-    return formatDocument(document, options, token);
+  // 直接调用 formatDocument，由 VSCode 自动裁剪选区内的变更
+  return formatDocument(document, options, token);
 }
 ```
 
 #### 格式化触发条件
 
-| 触发方式 | Provider |
-|---------|----------|
-| 快捷键 `Cmd + Shift + F` | RangeFormattingEditProvider |
-| 命令面板"格式化文档" | RangeFormattingEditProvider |
-| 右键菜单"格式化文档" | RangeFormattingEditProvider |
-| 保存时（配置了 `editor.formatOnSave`）| RangeFormattingEditProvider |
-| 右键菜单"格式化选中文本" | RangeFormattingEditProvider |
+| 触发方式                               | Provider                    |
+| -------------------------------------- | --------------------------- |
+| 快捷键 `Cmd + Shift + F`               | RangeFormattingEditProvider |
+| 命令面板"格式化文档"                   | RangeFormattingEditProvider |
+| 右键菜单"格式化文档"                   | RangeFormattingEditProvider |
+| 保存时（配置了 `editor.formatOnSave`） | RangeFormattingEditProvider |
+| 右键菜单"格式化选中文本"               | RangeFormattingEditProvider |
 
 ### registerCodeActionsProvider
 
@@ -362,10 +360,10 @@ export async function formatDocumentRange(
 
 **参数说明**：
 
-| 参数 | 说明 |
-|-----|------|
-| `languageId` | 绑定特定语言，如 `'shellscript'` |
-| `CodeActionProvider` | 实现 `provideCodeActions()` 方法的类实例 |
+| 参数                        | 说明                                     |
+| --------------------------- | ---------------------------------------- |
+| `languageId`                | 绑定特定语言，如 `'shellscript'`         |
+| `CodeActionProvider`        | 实现 `provideCodeActions()` 方法的类实例 |
 | `CodeActionProviderOptions` | 配置选项，包含 `providedCodeActionKinds` |
 
 #### 参数CodeActionProvider
@@ -378,9 +376,9 @@ export async function formatDocumentRange(
 
 **支持的 Code Actions 类型**：
 
-| 类型 | 用途 | 说明 |
-|-----|------|------|
-| `QuickFix` | 修复单个问题 | 修复特定的、局部的问题 |
+| 类型           | 用途         | 说明                   |
+| -------------- | ------------ | ---------------------- |
+| `QuickFix`     | 修复单个问题 | 修复特定的、局部的问题 |
 | `SourceFixAll` | 修复所有问题 | 修复整个文档的所有问题 |
 
 ##### 1. 性能优化 - 避免不必要的调用
@@ -419,11 +417,11 @@ VSCode 会：
 - Extension A: `providedCodeActionKinds: [QuickFix]`
 - Extension B (你的): `providedCodeActionKinds: [QuickFix, SourceFixAll.append('shell-format')]`
 
-| 用户操作 | 调用 A | 调用你的扩展 |
-|---------|--------|-------------|
-| 保存文件（请求 SourceFixAll）| ✗ | ✓ |
-| 保存文件（请求 SourceFixAll.shell-format）| ✗ | ✓ |
-| 右键点击（请求 QuickFix）| ✓ | ✓ |
+| 用户操作                                   | 调用 A | 调用你的扩展 |
+| ------------------------------------------ | ------ | ------------ |
+| 保存文件（请求 SourceFixAll）              | ✗      | ✓            |
+| 保存文件（请求 SourceFixAll.shell-format） | ✗      | ✓            |
+| 右键点击（请求 QuickFix）                  | ✓      | ✓            |
 
 #### CodeActionProvider 的触发时机
 
@@ -439,18 +437,18 @@ VSCode 会在以下情况调用 `provideCodeActions()`：
 
 ##### vscode.CodeActionKind.QuickFix
 
-| 特性 | 说明 |
-|-----|------|
-| 用途 | 修复特定的、局部的问题 |
-| 触发方式 | 在代码中右键或按 `Cmd + .` 时显示的灯泡菜单 |
+| 特性                 | 说明                                             |
+| -------------------- | ------------------------------------------------ |
+| 用途                 | 修复特定的、局部的问题                           |
+| 触发方式             | 在代码中右键或按 `Cmd + .` 时显示的灯泡菜单      |
 | 是否需要自定义子类型 | ❌ 不需要，因为它不通过 `codeActionsOnSave` 触发 |
 
 ##### vscode.CodeActionKind.SourceFixAll.${PackageInfo.extensionName}
 
-| 特性 | 说明 |
-|-----|------|
-| 用途 | 修复整个文档的所有问题 |
-| 触发方式 | 通过 `editor.codeActionsOnSave` 配置在保存时自动执行 |
+| 特性                 | 说明                                                                               |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| 用途                 | 修复整个文档的所有问题                                                             |
+| 触发方式             | 通过 `editor.codeActionsOnSave` 配置在保存时自动执行                               |
 | 是否需要自定义子类型 | ✅ 需要（如 `.append('shell-format')`），这样才能在 `codeActionsOnSave` 中精确控制 |
 
 **为什么不需要给 QuickFix append？**
@@ -468,14 +466,14 @@ VSCode 会在以下情况调用 `provideCodeActions()`：
 
 ```typescript
 const codeActionProvider = vscode.languages.registerCodeActionsProvider(
-    PackageInfo.languageId,  // 绑定特定语言
-    new ShellFormatCodeActionProvider(),
-    {
-        providedCodeActionKinds: [
-            vscode.CodeActionKind.QuickFix,  // 灯泡图标显示
-            vscode.CodeActionKind.SourceFixAll.append(PackageInfo.extensionName)  // 保存时自动执行
-        ]
-    }
+  PackageInfo.languageId, // 绑定特定语言
+  new ShellFormatCodeActionProvider(),
+  {
+    providedCodeActionKinds: [
+      vscode.CodeActionKind.QuickFix, // 灯泡图标显示
+      vscode.CodeActionKind.SourceFixAll.append(PackageInfo.extensionName), // 保存时自动执行
+    ],
+  },
 );
 ```
 
@@ -494,12 +492,12 @@ public provideCodeActions(
 
 **参数说明**：
 
-| 参数 | 说明 |
-|-----|------|
-| `document` | 当前文档对象 |
-| `range` | 选中的范围或光标位置 |
-| `context` | 代码操作上下文，包含诊断信息、触发类型等 |
-| `token` | 取消令牌 |
+| 参数       | 说明                                     |
+| ---------- | ---------------------------------------- |
+| `document` | 当前文档对象                             |
+| `range`    | 选中的范围或光标位置                     |
+| `context`  | 代码操作上下文，包含诊断信息、触发类型等 |
+| `token`    | 取消令牌                                 |
 
 **context 参数详解**：
 
@@ -605,23 +603,23 @@ provideCodeActions()
 
 ```typescript
 const command = vscode.commands.registerCommand(
-    'my-extension.myCommand',
-    async (uri?: vscode.Uri) => {
-        // 命令实现
+  "my-extension.myCommand",
+  async (uri?: vscode.Uri) => {
+    // 命令实现
 
-        // 获取当前编辑器
-        const editor = vscode.window.activeTextEditor;
+    // 获取当前编辑器
+    const editor = vscode.window.activeTextEditor;
 
-        // 获取文档
-        const document = editor?.document;
+    // 获取文档
+    const document = editor?.document;
 
-        // 从问题面板的修复命令调用（会传入 uri）
-        if (uri) {
-            document = vscode.workspace.textDocuments.find(
-                doc => doc.uri.toString() === uri.toString()
-            );
-        }
+    // 从问题面板的修复命令调用（会传入 uri）
+    if (uri) {
+      document = vscode.workspace.textDocuments.find(
+        (doc) => doc.uri.toString() === uri.toString(),
+      );
     }
+  },
 );
 
 context.subscriptions.push(command);
@@ -629,13 +627,13 @@ context.subscriptions.push(command);
 
 ### 命令与 CodeAction 的区别
 
-| 特性 | 命令 (Commands) | CodeAction |
-|-----|----------------|------------|
-| 注册位置 | `package.json` → `commands` | `package.json` → `codeActions` |
-| 触发方式 | 命令面板、快捷键、右键菜单 | 点击灯泡图标、`Cmd + .` |
-| 是否关联问题 | ❌ 不关联 | ✅ 需要有问题才显示 |
-| 实现方式 | `registerCommand()` | `registerCodeActionsProvider()` |
-| 作用域 | 全局，可随时调用 | 局部，仅在有问题时显示 |
+| 特性         | 命令 (Commands)             | CodeAction                      |
+| ------------ | --------------------------- | ------------------------------- |
+| 注册位置     | `package.json` → `commands` | `package.json` → `codeActions`  |
+| 触发方式     | 命令面板、快捷键、右键菜单  | 点击灯泡图标、`Cmd + .`         |
+| 是否关联问题 | ❌ 不关联                   | ✅ 需要有问题才显示             |
+| 实现方式     | `registerCommand()`         | `registerCodeActionsProvider()` |
+| 作用域       | 全局，可随时调用            | 局部，仅在有问题时显示          |
 
 ---
 
@@ -658,7 +656,8 @@ context.subscriptions.push(command);
 
 ```typescript
 // 创建诊断集合
-const diagnosticCollection = vscode.languages.createDiagnosticCollection('my-extension');
+const diagnosticCollection =
+  vscode.languages.createDiagnosticCollection("my-extension");
 
 // 设置诊断
 diagnosticCollection.set(document.uri, diagnostics);
@@ -677,18 +676,19 @@ const diagnostics = diagnosticCollection.get(document.uri);
 
 ```typescript
 const diagnostic = new vscode.Diagnostic(
-    new vscode.Range(startLine, startChar, endLine, endChar),
-    '诊断消息',
-    vscode.DiagnosticSeverity.Error  // Error, Warning, Info, Hint
+  new vscode.Range(startLine, startChar, endLine, endChar),
+  "诊断消息",
+  vscode.DiagnosticSeverity.Error, // Error, Warning, Info, Hint
 );
 
-diagnostic.source = 'my-extension';  // 诊断来源
-diagnostic.code = 'SC1001';         // 错误代码
-diagnostic.relatedInformation = [    // 相关信息
-    new vscode.DiagnosticRelatedInformation(
-        new vscode.Location(uri, range),
-        '详细信息'
-    )
+diagnostic.source = "my-extension"; // 诊断来源
+diagnostic.code = "SC1001"; // 错误代码
+diagnostic.relatedInformation = [
+  // 相关信息
+  new vscode.DiagnosticRelatedInformation(
+    new vscode.Location(uri, range),
+    "详细信息",
+  ),
 ];
 ```
 
@@ -712,16 +712,24 @@ context.subscriptions.push(diagnosticCollection);
 
 ```typescript
 // 获取配置对象
-const config = vscode.workspace.getConfiguration('my-extension');
+const config = vscode.workspace.getConfiguration("my-extension");
 
 // 读取配置
-const value = config.get<string>('mySetting', 'defaultValue');
-const tabSize = config.get<number>('tabSize', 4);
+const value = config.get<string>("mySetting", "defaultValue");
+const tabSize = config.get<number>("tabSize", 4);
 
 // 写入配置（需要用户手动保存）
-await config.update('mySetting', 'newValue', vscode.ConfigurationTarget.Global);
-await config.update('mySetting', 'newValue', vscode.ConfigurationTarget.Workspace);
-await config.update('mySetting', 'newValue', vscode.ConfigurationTarget.WorkspaceFolder);
+await config.update("mySetting", "newValue", vscode.ConfigurationTarget.Global);
+await config.update(
+  "mySetting",
+  "newValue",
+  vscode.ConfigurationTarget.Workspace,
+);
+await config.update(
+  "mySetting",
+  "newValue",
+  vscode.ConfigurationTarget.WorkspaceFolder,
+);
 ```
 
 ### package.json 配置定义
@@ -750,17 +758,17 @@ await config.update('mySetting', 'newValue', vscode.ConfigurationTarget.Workspac
 
 ```typescript
 const configChangeListener = vscode.workspace.onDidChangeConfiguration(
-    async (event) => {
-        // 检查配置是否影响当前扩展
-        if (event.affectsConfiguration('my-extension')) {
-            // 处理扩展配置变化
-        }
-
-        // 检查特定配置项
-        if (event.affectsConfiguration('my-extension.specificSetting')) {
-            // 处理特定配置变化
-        }
+  async (event) => {
+    // 检查配置是否影响当前扩展
+    if (event.affectsConfiguration("my-extension")) {
+      // 处理扩展配置变化
     }
+
+    // 检查特定配置项
+    if (event.affectsConfiguration("my-extension.specificSetting")) {
+      // 处理特定配置变化
+    }
+  },
 );
 ```
 
@@ -775,19 +783,19 @@ const configChangeListener = vscode.workspace.onDidChangeConfiguration(
 ```typescript
 // 替换文本
 const edit = vscode.TextEdit.replace(
-    new vscode.Range(startLine, startChar, endLine, endChar),
-    'new text'
+  new vscode.Range(startLine, startChar, endLine, endChar),
+  "new text",
 );
 
 // 插入文本
 const insertEdit = vscode.TextEdit.insert(
-    new vscode.Position(line, character),
-    'inserted text'
+  new vscode.Position(line, character),
+  "inserted text",
 );
 
 // 删除文本
 const deleteEdit = vscode.TextEdit.delete(
-    new vscode.Range(startLine, startChar, endLine, endChar)
+  new vscode.Range(startLine, startChar, endLine, endChar),
 );
 ```
 
@@ -799,7 +807,7 @@ const deleteEdit = vscode.TextEdit.delete(
 const edit = new vscode.WorkspaceEdit();
 
 // 替换文档中的文本
-edit.replace(document.uri, range, 'new text');
+edit.replace(document.uri, range, "new text");
 
 // 创建新文件
 edit.createFile(newUri, { overwrite: true });
@@ -836,8 +844,8 @@ const offset = document.offsetAt(position);
 
 // 获取整个文档的范围
 const fullRange = new vscode.Range(
-    document.positionAt(0),
-    document.positionAt(document.getText().length)
+  document.positionAt(0),
+  document.positionAt(document.getText().length),
 );
 ```
 
@@ -850,22 +858,22 @@ const fullRange = new vscode.Range(
 const editor = vscode.window.activeTextEditor;
 
 if (editor) {
-    // 获取选区
-    const selection = editor.selection;
+  // 获取选区
+  const selection = editor.selection;
 
-    // 获取文档
-    const document = editor.document;
+  // 获取文档
+  const document = editor.document;
 
-    // 替换选区文本
-    await editor.edit(editBuilder => {
-        editBuilder.replace(selection, 'new text');
-    });
+  // 替换选区文本
+  await editor.edit((editBuilder) => {
+    editBuilder.replace(selection, "new text");
+  });
 
-    // 设置光标位置
-    editor.selection = new vscode.Selection(
-        new vscode.Position(line, character),
-        new vscode.Position(line, character)
-    );
+  // 设置光标位置
+  editor.selection = new vscode.Selection(
+    new vscode.Position(line, character),
+    new vscode.Position(line, character),
+  );
 }
 ```
 
@@ -879,11 +887,11 @@ if (editor) {
 
 ```typescript
 // 创建输出通道
-const outputChannel = vscode.window.createOutputChannel('My Extension');
+const outputChannel = vscode.window.createOutputChannel("My Extension");
 
 // 输出文本
-outputChannel.appendLine('Log message');
-outputChannel.append('No newline');
+outputChannel.appendLine("Log message");
+outputChannel.append("No newline");
 
 // 显示输出面板
 outputChannel.show();
@@ -901,20 +909,20 @@ outputChannel.dispose();
 
 ```typescript
 export async function myAsyncOperation(
-    token?: vscode.CancellationToken
+  token?: vscode.CancellationToken,
 ): Promise<void> {
-    // 检查是否已取消
-    if (token?.isCancellationRequested) {
-        throw new vscode.CancellationError();
-    }
+  // 检查是否已取消
+  if (token?.isCancellationRequested) {
+    throw new vscode.CancellationError();
+  }
 
-    // 监听取消请求
-    token?.onCancellationRequested(() => {
-        // 取消操作
-        cleanup();
-    });
+  // 监听取消请求
+  token?.onCancellationRequested(() => {
+    // 取消操作
+    cleanup();
+  });
 
-    // 执行操作
+  // 执行操作
 }
 ```
 
@@ -923,10 +931,10 @@ export async function myAsyncOperation(
 ```typescript
 // 使用 Disposable.from 合并多个 Disposable
 const disposable = vscode.Disposable.from(
-    command1,
-    command2,
-    listener1,
-    listener2
+  command1,
+  command2,
+  listener1,
+  listener2,
 );
 
 context.subscriptions.push(disposable);
@@ -958,28 +966,31 @@ context.subscriptions.push(command1, command2, listener1, listener2);
 ```typescript
 let debounceTimer: NodeJS.Timeout | undefined;
 
-function debounceDiagnose(document: vscode.TextDocument, delay: number = 500): void {
-    // 清除之前的定时器，避免重复触发
-    // 确保只有最后一次触发产生的定时器可以保留下来
-    if (debounceTimer) {
-        clearTimeout(debounceTimer);
-    }
-    debounceTimer = setTimeout(() => {
-        diagnoseDocument(document);
-    }, delay);
+function debounceDiagnose(
+  document: vscode.TextDocument,
+  delay: number = 500,
+): void {
+  // 清除之前的定时器，避免重复触发
+  // 确保只有最后一次触发产生的定时器可以保留下来
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+  }
+  debounceTimer = setTimeout(() => {
+    diagnoseDocument(document);
+  }, delay);
 }
 
 // 监听文档变化时防抖触发诊断
 const changeListener = vscode.workspace.onDidChangeTextDocument(
-    async (event) => {
-        if (event.document.languageId === 'shellscript') {
-            // 跳过特殊文件
-            if (shouldSkipFile(event.document.fileName)) {
-                return;
-            }
-            debounceDiagnose(event.document);
-        }
+  async (event) => {
+    if (event.document.languageId === "shellscript") {
+      // 跳过特殊文件
+      if (shouldSkipFile(event.document.fileName)) {
+        return;
+      }
+      debounceDiagnose(event.document);
     }
+  },
 );
 ```
 

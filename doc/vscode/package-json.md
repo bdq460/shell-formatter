@@ -76,7 +76,7 @@
 ```json
 "configuration": {
   "type": "object",
-  "title": "Shell Format",
+  "title": "Shell Formatter",
   "properties": {
     "shell-fShell FormatterheckPath": {
       "type": "string",

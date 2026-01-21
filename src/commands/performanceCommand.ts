@@ -35,7 +35,7 @@ function showPerformanceReport(): void {
 
     // 创建输出通道显示性能报告
     const outputChannel = vscode.window.createOutputChannel(
-        "Shell Format Performance Report",
+        "Shell Formatter Performance Report",
     );
     outputChannel.appendLine(report);
     outputChannel.show();

@@ -1,8 +1,8 @@
-# Shell Format 架构设计文档
+# Shell Formatter 架构设计文档
 
 ## 概述
 
-Shell Format 是一个基于 VSCode 扩展 API 的 Shell 脚本格式化和诊断工具。本文档详细说明项目的架构设计、技术选型和实现细节。
+Shell Formatter 是一个基于 VSCode 扩展 API 的 Shell 脚本格式化和诊断工具。本文档详细说明项目的架构设计、技术选型和实现细节。
 
 > **注意**：本文档专注于项目整体架构设计。
 >
@@ -13,7 +13,7 @@ Shell Format 是一个基于 VSCode 扩展 API 的 Shell 脚本格式化和诊�
 
 ### 插件系统 (Plugin System)
 
-Shell Format 采用插件架构，所有格式化和诊断功能都通过插件实现。插件系统支持：
+Shell Formatter 采用插件架构，所有格式化和诊断功能都通过插件实现。插件系统支持：
 
 - **动态注册和注销** - 运行时注册/移除插件
 - **插件激活管理** - 基于配置激活/停用插件
@@ -1265,7 +1265,7 @@ initializePlugins();
 
 ## 总结
 
-Shell Format 采用插件化、可扩展的架构设计，通过清晰的模块划分和单向依赖关系，实现了高内聚、低耦合的代码结构。项目充分利用了 VSCode Extension API 的 Provider 模式和事件驱动机制，提供了良好的用户体验和开发者体验。
+Shell Formatter 采用插件化、可扩展的架构设计，通过清晰的模块划分和单向依赖关系，实现了高内聚、低耦合的代码结构。项目充分利用了 VSCode Extension API 的 Provider 模式和事件驱动机制，提供了良好的用户体验和开发者体验。
 
 **架构优势**：
 

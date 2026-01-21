@@ -1,4 +1,4 @@
-# Shell Format
+# Shell Formatter
 
 > 基于 shfmt 和 shellcheck 的智能 Shell 脚本格式化和检查工具
 
@@ -8,7 +8,7 @@
 
 ### 项目概述
 
-Shell Format 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊断功能。采用插件化架构，支持动态插件加载、依赖注入和性能优化。
+Shell Formatter 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊断功能。采用插件化架构，支持动态插件加载、依赖注入和性能优化。
 
 ### 核心功能
 

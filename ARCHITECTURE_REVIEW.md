@@ -1,7 +1,7 @@
-# Shell Format 架构评审报告
+# Shell Formatter 架构评审报告
 
 **评审日期**: 2026年1月19日
-**项目**: Shell Format VSCode Extension
+**项目**: Shell Formatter VSCode Extension
 **版本**: 1.0.0
 **评审范围**: 架构设计、代码组织、可维护性、可扩展性
 
@@ -9,7 +9,7 @@
 
 ## 执行摘要
 
-Shell Format 是一个基于 VSCode 扩展 API 的 Shell 脚本格式化和诊断工具，采用**插件化架构**和**依赖注入**设计模式。项目整体架构合理清晰，具有良好的扩展性和可维护性。该评审识别了若干改进机会，主要涉及错误处理、类型安全和性能优化。
+Shell Formatter 是一个基于 VSCode 扩展 API 的 Shell 脚本格式化和诊断工具，采用**插件化架构**和**依赖注入**设计模式。项目整体架构合理清晰，具有良好的扩展性和可维护性。该评审识别了若干改进机会，主要涉及错误处理、类型安全和性能优化。
 
 **总体评分**: 9.0/10 ⭐⭐⭐⭐⭐ (生产级别，编译验证通过)
 
@@ -876,7 +876,7 @@ function checkVSCodeVersion(): void {
 
   if (!semver.gte(currentVersion, minVersion)) {
     vscode.window.showErrorMessage(
-      `Shell Format requires VSCode ${minVersion} or higher`,
+      `Shell Formatter requires VSCode ${minVersion} or higher`,
     );
   }
 }
@@ -1579,7 +1579,7 @@ async function formatLargeDocument(
 
 ### 10.1 架构方向
 
-Shell Format 当前架构良好，建议保持以下方向：
+Shell Formatter 当前架构良好，建议保持以下方向：
 
 1. **继续强化插件化**: 为更多工具类型添加支持（如 Shellmate、checkedshell）
 2. **提升 DI 系统**: 考虑添加拦截器、装饰器等高级特性
@@ -1610,7 +1610,7 @@ Shell Format 当前架构良好，建议保持以下方向：
 
 ## 11. 结论
 
-Shell Format 项目架构设计合理、代码组织清晰，具有以下核心优势：
+Shell Formatter 项目架构设计合理、代码组织清晰，具有以下核心优势：
 
 ✅ **插件化架构** - 易于扩展和维护
 ✅ **依赖注入** - 降低模块耦合
@@ -1624,7 +1624,7 @@ Shell Format 项目架构设计合理、代码组织清晰，具有以下核心�
 ⚠️ **测试覆盖** - 需要扩大测试范围
 ⚠️ **安全性** - 需要加强命令注入防护
 
-通过按照上述改进优先级逐步完善，Shell Format 将成为一个**生产级别的高质量 VSCode 扩展**。
+通过按照上述改进优先级逐步完善，Shell Formatter 将成为一个**生产级别的高质量 VSCode 扩展**。
 
 ---
 
@@ -1741,7 +1741,7 @@ Shell Format 项目架构设计合理、代码组织清晰，具有以下核心�
 
 ## 11. 结论与进展总结
 
-Shell Format 项目架构设计合理、代码组织清晰，已在关键方面完成了重要改进：
+Shell Formatter 项目架构设计合理、代码组织清晰，已在关键方面完成了重要改进：
 
 ### 核心优势
 
@@ -1792,7 +1792,7 @@ Shell Format 项目架构设计合理、代码组织清晰，已在关键方面�
 ⚠️ **安全性** - 加强命令注入防护和路径验证
 ⚠️ **性能优化** - 添加诊断结果缓存、大文件优化
 
-通过按改进优先级逐步推进，Shell Format 已接近**生产级别的高质量 VSCode 扩展**标准。
+通过按改进优先级逐步推进，Shell Formatter 已接近**生产级别的高质量 VSCode 扩展**标准。
 
 ---
 

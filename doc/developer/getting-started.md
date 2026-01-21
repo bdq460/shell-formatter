@@ -1,6 +1,6 @@
 # 快速开始指南
 
-本指南帮助新开发者快速上手 Shell Format 插件的开发。
+本指南帮助新开发者快速上手 Shell Formatter 插件的开发。
 
 ## 前置要求
 
@@ -55,7 +55,7 @@ tsc -v
 
 ### 核心功能
 
-Shell Format 插件提供两个核心功能:
+Shell Formatter 插件提供两个核心功能:
 
 1. **格式化**: 使用 shfmt 格式化 Shell 脚本
 2. **诊断**: 使用 shellcheck 和 shfmt 检测错误
