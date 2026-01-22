@@ -5,7 +5,7 @@
 
 ## 插件市场页面 Marketplace Page
 
-<https://marketplace.visualstudio.com/items?itemName=bdq460.shell-formatter>
+[Marketplace Page](https://marketplace.visualstudio.com/items?itemName=bdq460.shell-formatter)
 
 ## Quick Start 快速开始
 
