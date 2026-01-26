@@ -26,6 +26,7 @@ script/**
 
 # git版本控制文件
 .gitignore
+.github/
 
 # 开发环境
 .vscode/**
