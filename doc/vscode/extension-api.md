@@ -577,7 +577,7 @@ public provideCodeActions(...): vscode.ProviderResult<vscode.CodeAction[]> {
 
 **工作流程**：
 
-```flow
+```text
 VSCode 检测到问题
     ↓
 提供 CodeActionProvider
@@ -949,7 +949,7 @@ context.subscriptions.push(command1, command2, listener1, listener2);
 
 ### Debounce 诊断
 
-**用于延迟执行文档诊断，避免在用户快速输入时频繁触发诊断操作**
+用于延迟执行文档诊断，避免在用户快速输入时频繁触发诊断操作。
 
 在事件被连续触发时，只在最后一次触发后的指定时间间隔结束后才执行回调函数。
 

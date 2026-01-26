@@ -3,9 +3,8 @@
 > Intelligent Shell script formatting and checking tool based on shfmt and shellcheck
 > 基于 shfmt 和 shellcheck 的智能 Shell 脚本格式化和检查工具
 
-## 插件市场页面 Marketplace Page
-
-<https://marketplace.visualstudio.com/items?itemName=bdq460.shell-formatter>
+- **[Marketplace Page](https://marketplace.visualstudio.com/items?itemName=bdq460.shell-formatter)**
+- **[GitHub Repository](https://github.com/bdq460/shell-format)**
 
 ## Quick Start 快速开始
 

@@ -1,0 +1,217 @@
+name: .codebuddy CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '.codebuddy/**'
+      - '.github/workflows/codebuddy-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - '.codebuddy/**'
+      - '.github/workflows/codebuddy-ci.yml'
+
+env:
+  NODE_VERSION: '18.x'
+
+jobs:
+  markdown-lint:
+    name: Markdown Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install markdownlint-cli
+        run: |
+          npm install -g markdownlint-cli
+
+      - name: Run markdownlint
+        run: |
+          markdownlint ".codebuddy/**/*.md" --config .codebuddy/.markdownlintrc.json
+
+  skill-docs-check:
+    name: Skill Documentation Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        working-directory: ./codebuddy/test
+        run: npm ci
+
+      - name: Check skill documentation completeness
+        run: |
+          echo "检查所有技能的SKILL.md文档完整性..."
+          # 检查每个技能是否有SKILL.md
+          for skill_dir in .codebuddy/skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            if [ ! -f "$skill_dir/SKILL.md" ]; then
+              echo "❌ 错误: $skill_name 缺少SKILL.md文档"
+              exit 1
+            else
+              echo "✅ $skill_name 有SKILL.md文档"
+            fi
+          done
+
+      - name: Check skill scripts documentation
+        run: |
+          echo "检查所有技能的scripts文档完整性..."
+          for skill_dir in .codebuddy/skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            scripts_dir="$skill_dir/scripts"
+            if [ -d "$scripts_dir" ] && [ ! -f "$scripts_dir/README.md" ]; then
+              echo "⚠️  警告: $skill_name/scripts 缺少README.md"
+            fi
+          done
+
+  raci-consistency-check:
+    name: RACI Matrix Consistency Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check RACI document exists
+        run: |
+          if [ ! -f ".codebuddy/COLLABORATION_RACI.md" ]; then
+            echo "❌ 错误: RACI协作关系文档不存在"
+            exit 1
+          fi
+          echo "✅ RACI协作关系文档存在"
+
+      - name: Validate RACI matrix structure
+        run: |
+          echo "验证RACI矩阵结构..."
+          # 检查是否包含所有12个核心阶段
+          if ! grep -q "阶段1: 需求提出" .codebuddy/COLLABORATION_RACI.md; then
+            echo "❌ 错误: RACI矩阵缺少阶段1"
+            exit 1
+          fi
+          echo "✅ RACI矩阵结构验证通过"
+
+  conflict-path-check:
+    name: Conflict Escalation Path Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check conflict escalation document exists
+        run: |
+          if [ ! -f ".codebuddy/CONFLICT_ESCALATION_PATH.md" ]; then
+            echo "❌ 错误: 冲突升级路径文档不存在"
+            exit 1
+          fi
+          echo "✅ 冲突升级路径文档存在"
+
+      - name: Validate escalation levels
+        run: |
+          echo "验证冲突升级路径..."
+          # 检查是否包含4个级别
+          if ! grep -q "Level 1" .codebuddy/CONFLICT_ESCALATION_PATH.md; then
+            echo "❌ 错误: 冲突升级路径缺少Level 1"
+            exit 1
+          fi
+          if ! grep -q "Level 2" .codebuddy/CONFLICT_ESCALATION_PATH.md; then
+            echo "❌ 错误: 冲突升级路径缺少Level 2"
+            exit 1
+          fi
+          if ! grep -q "Level 3" .codebuddy/CONFLICT_ESCALATION_PATH.md; then
+            echo "❌ 错误: 冲突升级路径缺少Level 3"
+            exit 1
+          fi
+          if ! grep -q "Level 4" .codebuddy/CONFLICT_ESCALATION_PATH.md; then
+            echo "❌ 错误: 冲突升级路径缺少Level 4"
+            exit 1
+          fi
+          echo "✅ 冲突升级路径验证通过"
+
+  scripts-readme-check:
+    name: Scripts README Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check scripts/README.md
+        run: |
+          if [ ! -f ".codebuddy/scripts/README.md" ]; then
+            echo "❌ 错误: scripts/README.md 不存在"
+            exit 1
+          fi
+          echo "✅ scripts/README.md 存在"
+
+      - name: Check utils/README.md
+        run: |
+          if [ ! -f ".codebuddy/scripts/utils/README.md" ]; then
+            echo "❌ 错误: scripts/utils/README.md 不存在"
+            exit 1
+          fi
+          echo "✅ scripts/utils/README.md 存在"
+
+      - name: Check validators/README.md
+        run: |
+          if [ ! -f ".codebuddy/scripts/validators/README.md" ]; then
+            echo "❌ 错误: scripts/validators/README.md 不存在"
+            exit 1
+          fi
+          echo "✅ scripts/validators/README.md 存在"
+
+      - name: Check generators/README.md
+        run: |
+          if [ ! -f ".codebuddy/scripts/generators/README.md" ]; then
+            echo "❌ 错误: scripts/generators/README.md 不存在"
+            exit 1
+          fi
+          echo "✅ scripts/generators/README.md 存在"
+
+  skill-references-check:
+    name: Skill References Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check references structure
+        run: |
+          echo "检查技能参考资料结构..."
+          for skill_dir in .codebuddy/skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            refs_dir="$skill_dir/references"
+            
+            # 检查SKILL.md中是否引用了references
+            if grep -q "参考资料" "$skill_dir/SKILL.md"; then
+              if [ ! -d "$refs_dir" ]; then
+                echo "⚠️  警告: $skill_name 引用了references但目录不存在"
+              fi
+            fi
+          done
+          echo "✅ 技能参考资料结构检查完成"
+
+  generate-summary:
+    name: Generate CI Summary
+    runs-on: ubuntu-latest
+    needs: [markdown-lint, skill-docs-check, raci-consistency-check, conflict-path-check, scripts-readme-check, skill-references-check]
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## .codebuddy CI检查结果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 检查项 | 状态 |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Markdown Lint | ${{ needs.markdown-lint.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Skill Documentation | ${{ needs.skill-docs-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| RACI Consistency | ${{ needs.raci-consistency-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Conflict Escalation Path | ${{ needs.conflict-path-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Scripts README | ${{ needs.scripts-readme-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Skill References | ${{ needs.skill-references-check.result }} |" >> $GITHUB_STEP_SUMMARY

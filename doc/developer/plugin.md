@@ -314,7 +314,7 @@ export interface PluginDependency {
 }
 ```
 
-### 实现示例
+### 依赖声明示例
 
 ```typescript
 class ShfmtPlugin extends BasePlugin {

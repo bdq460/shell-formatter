@@ -2,7 +2,7 @@
     "name": "shell-formatter",
     "displayName": "Shell Formatter",
     "description": "Intelligent Shell script formatting and error checking fixing with shfmt and shellcheck",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "bdq460",
     "icon": "icon.png",
     "repository": {
@@ -182,9 +182,17 @@
         "clean": "rm -rf dist/*",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "pretest": "npm run compile",
+        "pretest": "npm run compile && npm run lint:md",
         "lint": "eslint src --ext ts",
+        "lint:ts": "eslint src --ext ts",
+        "lint:md": "markdownlint \"**/*.md\"",
+        "lint:md:fix": "markdownlint --fix \"**/*.md\"",
+        "lint:all": "npm run lint:ts && npm run lint:md",
         "test": "node test/run.js",
+        "test:unit": "jest --config .codebuddy/test/jest.config.js",
+        "test:unit:watch": "jest --config .codebuddy/test/jest.config.js --watch",
+        "test:unit:coverage": "jest --config .codebuddy/test/jest.config.js --coverage",
+        "test:all": "npm run test && npm run test:unit",
         "readme:backup": "bash scripts/manage-readme.sh backup",
         "readme:replace": "bash scripts/manage-readme.sh replace",
         "readme:restore": "bash scripts/manage-readme.sh restore",
@@ -192,11 +200,15 @@
         "test:readme:backup": "bash scripts/test-readme-backup.sh"
     },
     "devDependencies": {
+        "@types/jest": "^29.5.14",
         "@types/node": "^20.0.0",
         "@types/vscode": "^1.74.0",
         "@typescript-eslint/eslint-plugin": "^8.53.0",
         "@typescript-eslint/parser": "^8.53.0",
         "eslint": "^9.39.2",
+        "jest": "^29.7.0",
+        "markdownlint-cli": "^0.41.0",
+        "ts-jest": "^29.1.0",
         "typescript": "^5.0.0"
     }
 }

@@ -536,7 +536,7 @@ export function initializePlugins(): void {
 
 **工作流程**：
 
-```flow
+```text
 文档事件触发
     ↓
 diagnoseDocument()
@@ -590,7 +590,7 @@ export async function diagnoseDocument(
 
 **工作流程**：
 
-```flow
+```text
 用户触发格式化
     ↓
 provideDocumentRangeFormattingEdits()
@@ -637,7 +637,7 @@ export async function formatDocument(
 
 **工作流程**：
 
-```flow
+```text
 VSCode 检测到问题
     ↓
 提供 CodeActionProvider

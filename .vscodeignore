@@ -14,8 +14,9 @@ tsconfig.test.json
 
 # 开发文档
 README_EN.md
-README.md.bak
+README.md.bak.*
 doc/**
+ARCHITECTURE_REVIEW.md
 
 # 扩展文件
 *.vsix

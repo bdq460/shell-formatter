@@ -148,8 +148,13 @@ export async function activate(context: vscode.ExtensionContext) {
             debounceManager.cancel(uri);
 
             try {
+                // 重新诊断以获取最新状态
                 const diagnostics = await diagnoseDocument(document);
+                // 强制更新诊断集合，清除任何旧的诊断信息
                 diagnosticCollection.set(document.uri, diagnostics);
+                logger.debug(
+                    `Updated diagnostics for saved file: ${diagnostics.length} diagnostics`,
+                );
             } catch (error) {
                 logger.error(
                     `Error diagnosing saved document ${document.fileName}: ${String(error)}`,
@@ -174,8 +179,12 @@ export async function activate(context: vscode.ExtensionContext) {
                 return;
             }
             try {
+                // 诊断文档并设置诊断信息
                 const diagnostics = await diagnoseDocument(document);
                 diagnosticCollection.set(document.uri, diagnostics);
+                logger.debug(
+                    `Initial diagnostics for opened file: ${diagnostics.length} diagnostics`,
+                );
             } catch (error) {
                 logger.error(
                     `Error diagnosing opened document ${document.fileName}: ${String(error)}`,
@@ -206,8 +215,13 @@ export async function activate(context: vscode.ExtensionContext) {
             uri,
             async () => {
                 try {
+                    // 重新诊断以获取最新状态
                     const diagnostics = await diagnoseDocument(event.document, undefined);
+                    // 强制更新诊断集合
                     diagnosticCollection.set(event.document.uri, diagnostics);
+                    logger.debug(
+                        `Updated diagnostics for changed file: ${diagnostics.length} diagnostics`,
+                    );
                 } catch (error) {
                     logger.error(
                         `Error diagnosing changed document ${event.document.fileName}: ${String(error)}`,
@@ -216,6 +230,16 @@ export async function activate(context: vscode.ExtensionContext) {
             },
             300,
         );
+    });
+
+    // 监听文件删除事件，清除对应的诊断信息
+    logger.info("Registering file delete listener");
+    const deleteListener = vscode.workspace.onDidDeleteFiles((event) => {
+        for (const uri of event.files) {
+            // 删除文件时清除对应的诊断信息
+            diagnosticCollection.delete(uri);
+            logger.debug(`Diagnostics cleared for deleted file: ${uri.toString()}`);
+        }
     });
 
     // 监听配置变化
@@ -288,13 +312,17 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     })();
 
-    // 监听文档关闭事件，清除相关的防抖定时器
+    // 监听文档关闭事件，清除相关的防抖定时器和诊断信息
     logger.info("Registering document close listener");
     const closeListener = vscode.workspace.onDidCloseTextDocument((document) => {
         const uri = document.uri.toString();
         debounceManager.cancel(uri);
+
+        // 清除该文件的诊断信息，避免问题面板显示已关闭文件的问题
+        diagnosticCollection.delete(document.uri);
+
         logger.debug(
-            `Debounce timer cleared for closed document: ${document.fileName}`,
+            `Debounce timer and diagnostics cleared for closed document: ${document.fileName}`,
         );
     });
 
@@ -318,6 +346,7 @@ export async function activate(context: vscode.ExtensionContext) {
         openListener,
         changeListener,
         closeListener,
+        deleteListener,
         configChangeListener,
         diagnosticCollection,
     );
