@@ -13,7 +13,7 @@ name="Klein"
 echo "Hello, $name!"
 if [ "$name" = "Klein" ]; then
     echo "你好，Klein"
-fi。。。
+fi
 
 # 调用函数
 hello "World".
