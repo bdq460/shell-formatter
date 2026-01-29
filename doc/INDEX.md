@@ -25,6 +25,7 @@
 - [shfmt 使用指南](tools/shfmt.md) - shfmt 工具说明
 - [spawn 使用指南](tools/spawn.md) - Node.js spawn API 使用
 - [npm 使用指南](tools/npm.md) - npm 使用说明
+- [npm test 使用指南](tools/npm_test.md) - npm test 使用说明
 
 ## 文档说明
 
