@@ -233,7 +233,7 @@ $ git push
 
 ### 示例 1: 文档更新
 
-```
+```text
 docs: 重构开发者文档结构
 
 按 00-08 编号重新组织文档
@@ -249,7 +249,7 @@ Delete obsolete getting-started.md
 
 ### 示例 2: 新功能
 
-```
+```text
 feat(user): 添加用户认证功能
 
 实现基于 JWT 令牌的用户认证
