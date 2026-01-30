@@ -1,6 +1,12 @@
 # vscode 配置文件
 .vscode
 
+# 临时文件
+.idea
+
+# .codebuddy 配置文件
+.codebuddy
+
 # node临时文件
 node_modules
 
