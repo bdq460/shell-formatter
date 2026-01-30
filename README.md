@@ -110,15 +110,15 @@ npm run install:extension
 
 ## 系统要求
 
-- **Node.js** >= 16.x
-- **npm** >= 8.x
+- **Node.js** >= 20.x
+- **npm** >= 9.x
 - **TypeScript** >= 5.0
 - **VSCode** >= 1.74.0
 
 ## 链接
 
-- [GitHub](https://github.com/bdq460/shell-format)
-- [Issues](https://github.com/bdq460/shell-format/issues)
+- [GitHub](https://github.com/bdq460/shell-formatter)
+- [Issues](https://github.com/bdq460/shell-formatter/issues)
 - [License](LICENSE)
 
 ## 致谢

@@ -107,8 +107,8 @@ For end-user documentation, see [doc/user/README.md](doc/user/README.md):
 
 ## System Requirements
 
-- **Node.js** >= 16.x
-- **npm** >= 8.x
+- **Node.js** >= 20.x
+- **npm** >= 9.x
 - **TypeScript** >= 5.0
 - **VSCode** >= 1.74.0
 
