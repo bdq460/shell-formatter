@@ -37,24 +37,55 @@ For detailed technical documentation, see [doc/developer/](doc/developer/):
 ```text
 ├── src/
 │   ├── extension.ts          # Extension entry point
-│   ├── plugins/             # Plugin system
-│   │   ├── pluginManager.ts     # Plugin manager
-│   │   ├── pluginInterface.ts    # Plugin interface
-│   │   ├── pluginInitializer.ts # Plugin initializer
-│   │   └── *.ts                 # Plugin implementations
+│   ├── adapters/             # Adapter layer
+│   │   ├── diagnosticAdapter.ts    # Diagnostic adapter
+│   │   ├── diagnosticFactory.ts    # Diagnostic factory
+│   │   ├── formatterAdapter.ts     # Formatter adapter
+│   │   ├── loggerAdapter.ts        # Logger adapter
+│   │   └── tokenAdapter.ts         # Token adapter
+│   ├── commands/             # Command module
+│   │   ├── fixCommand.ts           # Fix command
+│   │   ├── performanceCommand.ts  # Performance command
+│   │   └── pluginStatusCommand.ts # Plugin status command
+│   ├── config/               # Configuration management
+│   │   ├── packageInfo.ts          # Package information
+│   │   └── settingInfo.ts          # Setting information
 │   ├── di/                  # Dependency injection
-│   │   ├── container.ts          # DI container
-│   │   └── initializer.ts       # DI initializer
+│   │   ├── container.ts            # DI container
+│   │   └── initializer.ts          # DI initializer
 │   ├── diagnostics/          # Diagnosis module
 │   ├── formatters/           # Formatting module
+│   ├── metrics/             # Performance metrics
+│   │   └── performance.ts           # Performance monitoring
+│   ├── plugins/             # Plugin system
+│   │   ├── baseFormatPlugin.ts     # Base format plugin
+│   │   ├── pluginInitializer.ts   # Plugin initializer
+│   │   ├── pluginInterface.ts      # Plugin interface
+│   │   ├── pluginManager.ts        # Plugin manager
+│   │   ├── shellcheckPlugin.ts     # Shellcheck plugin
+│   │   └── shfmtPlugin.ts          # Shfmt plugin
 │   ├── providers/            # Provider module
-│   ├── commands/             # Command module
-│   ├── config/               # Configuration management
 │   ├── tools/               # Tool layer
+│   │   ├── executor/
+│   │   │   ├── executor.ts           # Executor
+│   │   │   └── types.ts             # Executor types
+│   │   └── shell/
+│   │       ├── shellcheck/
+│   │       │   ├── parser.ts          # Shellcheck parser
+│   │       │   └── shellcheckTool.ts # Shellcheck tool
+│   │       └── shfmt/
+│   │           ├── parser.ts          # Shfmt parser
+│   │           └── shfmtTool.ts       # Shfmt tool
 │   └── utils/               # Utility functions
+│       ├── debounce.ts              # Debounce function
+│       ├── log.ts                   # Log function
+│       ├── performance/             # Performance monitoring utilities
+│       └── plugin/                  # Plugin utilities
 └── doc/
     ├── developer/            # Developer documentation
-    └── user/                 # User documentation
+    ├── tools/                # Tools documentation
+    ├── versions/             # Version documentation
+    └── vscode/               # VSCode documentation
 ```
 
 ### Technical Architecture

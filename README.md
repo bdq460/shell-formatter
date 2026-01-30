@@ -37,24 +37,55 @@ Shell Formatter 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊�
 ```text
 ├── src/
 │   ├── extension.ts          # 扩展入口
-│   ├── plugins/             # 插件系统
-│   │   ├── pluginManager.ts     # 插件管理器
-│   │   ├── pluginInterface.ts    # 插件接口
-│   │   ├── pluginInitializer.ts # 插件初始化
-│   │   └── *.ts                 # 具体插件实现
+│   ├── adapters/             # 适配器层
+│   │   ├── diagnosticAdapter.ts    # 诊断适配器
+│   │   ├── diagnosticFactory.ts    # 诊断工厂
+│   │   ├── formatterAdapter.ts     # 格式化适配器
+│   │   ├── loggerAdapter.ts        # 日志适配器
+│   │   └── tokenAdapter.ts         # Token适配器
+│   ├── commands/             # 命令模块
+│   │   ├── fixCommand.ts           # 修复命令
+│   │   ├── performanceCommand.ts  # 性能命令
+│   │   └── pluginStatusCommand.ts # 插件状态命令
+│   ├── config/               # 配置管理
+│   │   ├── packageInfo.ts          # 包信息
+│   │   └── settingInfo.ts          # 设置信息
 │   ├── di/                  # 依赖注入
-│   │   ├── container.ts          # DI 容器
-│   │   └── initializer.ts       # DI 初始化
+│   │   ├── container.ts            # DI 容器
+│   │   └── initializer.ts          # DI 初始化
 │   ├── diagnostics/          # 诊断模块
 │   ├── formatters/           # 格式化模块
+│   ├── metrics/             # 性能指标
+│   │   └── performance.ts           # 性能监控
+│   ├── plugins/             # 插件系统
+│   │   ├── baseFormatPlugin.ts     # 基础格式化插件
+│   │   ├── pluginInitializer.ts   # 插件初始化
+│   │   ├── pluginInterface.ts      # 插件接口
+│   │   ├── pluginManager.ts        # 插件管理器
+│   │   ├── shellcheckPlugin.ts     # Shellcheck 插件
+│   │   └── shfmtPlugin.ts          # Shfmt 插件
 │   ├── providers/            # 提供者模块
-│   ├── commands/             # 命令模块
-│   ├── config/               # 配置管理
 │   ├── tools/               # 工具层
+│   │   ├── executor/
+│   │   │   ├── executor.ts           # 执行器
+│   │   │   └── types.ts             # 执行器类型
+│   │   └── shell/
+│   │       ├── shellcheck/
+│   │       │   ├── parser.ts          # Shellcheck 解析器
+│   │       │   └── shellcheckTool.ts # Shellcheck 工具
+│   │       └── shfmt/
+│   │           ├── parser.ts          # Shfmt 解析器
+│   │           └── shfmtTool.ts       # Shfmt 工具
 │   └── utils/               # 工具函数
+│       ├── debounce.ts              # 防抖函数
+│       ├── log.ts                   # 日志函数
+│       ├── performance/             # 性能监控工具
+│       └── plugin/                  # 插件工具
 └── doc/
     ├── developer/            # 开发者文档
-    └── user/                 # 用户文档
+    ├── tools/                # 工具文档
+    ├── versions/             # 版本文档
+    └── vscode/               # VSCode 文档
 ```
 
 ### 技术架构
