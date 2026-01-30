@@ -38,54 +38,37 @@ Shell Formatter 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊�
 ├── src/
 │   ├── extension.ts          # 扩展入口
 │   ├── adapters/             # 适配器层
-│   │   ├── diagnosticAdapter.ts    # 诊断适配器
-│   │   ├── diagnosticFactory.ts    # 诊断工厂
-│   │   ├── formatterAdapter.ts     # 格式化适配器
-│   │   ├── loggerAdapter.ts        # 日志适配器
-│   │   └── tokenAdapter.ts         # Token适配器
 │   ├── commands/             # 命令模块
-│   │   ├── fixCommand.ts           # 修复命令
-│   │   ├── performanceCommand.ts  # 性能命令
-│   │   └── pluginStatusCommand.ts # 插件状态命令
 │   ├── config/               # 配置管理
-│   │   ├── packageInfo.ts          # 包信息
-│   │   └── settingInfo.ts          # 设置信息
 │   ├── di/                  # 依赖注入
-│   │   ├── container.ts            # DI 容器
-│   │   └── initializer.ts          # DI 初始化
 │   ├── diagnostics/          # 诊断模块
 │   ├── formatters/           # 格式化模块
 │   ├── metrics/             # 性能指标
-│   │   └── performance.ts           # 性能监控
 │   ├── plugins/             # 插件系统
-│   │   ├── baseFormatPlugin.ts     # 基础格式化插件
-│   │   ├── pluginInitializer.ts   # 插件初始化
-│   │   ├── pluginInterface.ts      # 插件接口
-│   │   ├── pluginManager.ts        # 插件管理器
-│   │   ├── shellcheckPlugin.ts     # Shellcheck 插件
-│   │   └── shfmtPlugin.ts          # Shfmt 插件
 │   ├── providers/            # 提供者模块
 │   ├── tools/               # 工具层
-│   │   ├── executor/
-│   │   │   ├── executor.ts           # 执行器
-│   │   │   └── types.ts             # 执行器类型
-│   │   └── shell/
-│   │       ├── shellcheck/
-│   │       │   ├── parser.ts          # Shellcheck 解析器
-│   │       │   └── shellcheckTool.ts # Shellcheck 工具
-│   │       └── shfmt/
-│   │           ├── parser.ts          # Shfmt 解析器
-│   │           └── shfmtTool.ts       # Shfmt 工具
+│   │   ├── executor/             # 执行器
+│   │   └── shell/                # Shell 工具
 │   └── utils/               # 工具函数
-│       ├── debounce.ts              # 防抖函数
-│       ├── log.ts                   # 日志函数
-│       ├── performance/             # 性能监控工具
-│       └── plugin/                  # 插件工具
-└── doc/
-    ├── developer/            # 开发者文档
-    ├── tools/                # 工具文档
-    ├── versions/             # 版本文档
-    └── vscode/               # VSCode 文档
+│       ├── performance/         # 性能监控工具
+│       └── plugin/              # 插件工具
+├── doc/
+│   ├── developer/            # 开发者文档
+│   ├── tools/                # 工具文档
+│   ├── versions/             # 版本文档
+│   └── vscode/               # VSCode 文档
+├── test/                    # 测试文件
+├── scripts/                 # 构建脚本
+├── resources/               # 资源文件
+├── dist/                    # 编译输出
+├── coverage/                # 测试覆盖率
+├── .eslintrc.js            # ESLint 配置
+├── jest.config.js          # Jest 配置
+├── tsconfig.json           # TypeScript 配置
+├── package.json            # 项目配置
+├── .vscodeignore           # VSCode 忽略配置
+├── .gitignore              # Git 忽略配置
+└── .markdownlintrc.json    # Markdown Lint 配置
 ```
 
 ### 技术架构
