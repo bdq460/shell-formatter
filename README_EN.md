@@ -22,9 +22,15 @@ Shell Formatter is a VSCode extension that provides Shell script formatting and 
 
 For detailed technical documentation, see [doc/developer/](doc/developer/):
 
-- **[Getting Started Guide](doc/developer/getting-started.md)** - Development environment setup, compilation, debugging
-- **[Architecture Design Document](doc/developer/architecture.md)** - Plugin architecture, dependency injection, extensibility guide
-- **[Architecture Review Report](ARCHITECTURE_REVIEW.md)** - Architecture quality assessment and improvement recommendations
+- **[Developer Handbook](doc/developer/00-handbook.md)** - Developer documentation overview
+- **[Setup](doc/developer/01-setup.md)** - Development environment setup
+- **[Development Workflow](doc/developer/02-development-workflow.md)** - Development workflow guide
+- **[Project Layout](doc/developer/03-project-layout.md)** - Project structure description
+- **[Configuration Reference](doc/developer/04-configuration-reference.md)** - Configuration options details
+- **[Architecture Design](doc/developer/05-architecture.md)** - Plugin architecture, dependency injection
+- **[Plugin System](doc/developer/06-plugin-system.md)** - Plugin development guide
+- **[Observability](doc/developer/07-observability.md)** - Performance monitoring and logging
+- **[Testing](doc/developer/08-testing.md)** - Unit tests and integration tests
 
 ### Project Structure
 

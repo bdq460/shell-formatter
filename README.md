@@ -22,9 +22,15 @@ Shell Formatter 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊�
 
 详细的技术文档请查看 [doc/developer/](doc/developer/)：
 
-- **[快速开始指南](doc/developer/getting-started.md)** - 开发环境搭建、编译、调试
-- **[架构设计文档](doc/developer/architecture.md)** - 插件架构、依赖注入、扩展性指南
-- **[架构评审报告](ARCHITECTURE_REVIEW.md)** - 架构质量评估和改进建议
+- **[开发者手册](doc/developer/00-handbook.md)** - 开发者文档总览
+- **[环境搭建](doc/developer/01-setup.md)** - 开发环境搭建
+- **[开发工作流](doc/developer/02-development-workflow.md)** - 开发流程指南
+- **[项目布局](doc/developer/03-project-layout.md)** - 项目结构说明
+- **[配置参考](doc/developer/04-configuration-reference.md)** - 配置选项详解
+- **[架构设计](doc/developer/05-architecture.md)** - 插件架构、依赖注入
+- **[插件系统](doc/developer/06-plugin-system.md)** - 插件开发指南
+- **[可观测性](doc/developer/07-observability.md)** - 性能监控和日志
+- **[测试](doc/developer/08-testing.md)** - 单元测试和集成测试
 
 ### 项目结构
 
