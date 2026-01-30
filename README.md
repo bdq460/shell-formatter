@@ -1,8 +1,20 @@
 # Shell Formatter
 
+[![Version](https://img.shields.io/visual-studio-marketplace/v/bdq460.shell-formatter?label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=bdq460.shell-formatter)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![VS Code](https://img.shields.io/badge/VS%20Code-1.74.0%2B-blue.svg)](https://code.visualstudio.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+
 > 基于 shfmt 和 shellcheck 的智能 Shell 脚本格式化和检查工具
 
 **English Version**: [README_EN.md](README_EN.md)
+
+## 📚 文档导航
+
+- **[文档索引](doc/INDEX.md)** - 完整的文档导航和快速链接
+- **[用户使用文档](resources/USER_README.md)** - 插件功能、配置和使用说明
+- **[开发者文档](#开发者快速开始)** - 项目概述、架构设计和开发指南
 
 ## 开发者快速开始
 
@@ -86,21 +98,24 @@ Shell Formatter 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊�
 # 安装依赖
 npm install
 
+# 监听模式编译（开发时使用）
+npm run watch
+
 # 打包插件（注意：不要使用 vsce package，会导致未使用正确的 README.md）
 npm run package:extension
 
-# 安装插件（方法 1）
+# 安装插件（方法 1 - 推荐）
 npm run install:extension
 
 # 安装插件（方法 2）
-# 右键点击根目录下的 shell-format-1.0.0.vsix 文件，点击"安装扩展 VSIX"
+# 右键点击根目录下的 shell-formatter-1.0.1.vsix 文件，点击"安装扩展 VSIX"
 ```
 
-详细说明请参考 [快速开始指南](doc/developer/getting-started.md)。
+详细说明请参考 [文档索引](doc/INDEX.md) 或 [环境搭建指南](doc/developer/01-setup.md)。
 
 ### 用户文档
 
-面向最终用户的使用文档请查看 [doc/user/README.md](doc/user/README.md)：
+面向最终用户的使用文档请查看 [resources/USER_README.md](resources/USER_README.md)：
 
 - **配置选项** - 完整的配置说明（中英文）
 - **使用方法** - 格式化、快速修复等操作指南

@@ -1,8 +1,20 @@
 # Shell Formatter
 
+[![Version](https://img.shields.io/visual-studio-marketplace/v/bdq460.shell-formatter?label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=bdq460.shell-formatter)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![VS Code](https://img.shields.io/badge/VS%20Code-1.74.0%2B-blue.svg)](https://code.visualstudio.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+
 > Intelligent Shell script formatting and checking tool based on shfmt and shellcheck
 
-**中文版**: [README_CN.md](README.md)
+**Chinese Version**: [README.md](README.md)
+
+## 📚 Documentation Navigation
+
+- **[Documentation Index](doc/INDEX.md)** - Complete documentation navigation and quick links
+- **[User Documentation](resources/USER_README.md)** - Plugin features, configuration and usage
+- **[Developer Documentation](#quick-start-for-developers)** - Project overview, architecture and development guide
 
 ## Quick Start for Developers
 
@@ -86,18 +98,27 @@ For detailed technical documentation, see [doc/developer/](doc/developer/):
 # Install dependencies
 npm install
 
-# Watch mode compilation
+# Watch mode compilation (for development)
 npm run watch
+
+# Package extension (Note: Do not use `vsce package`, it will not use the correct README.md)
+npm run package:extension
+
+# Install extension (Method 1 - Recommended)
+npm run install:extension
+
+# Install extension (Method 2)
+# Right-click the shell-formatter-1.0.1.vsix file and click "Install Extension VSIX"
 
 # Debug
 # Press F5 to start VSCode Extension Development Host
 ```
 
-For more details, refer to the [Getting Started Guide](doc/developer/getting-started.md).
+For more details, refer to the [Documentation Index](doc/INDEX.md) or [Setup Guide](doc/developer/01-setup.md).
 
 ### User Documentation
 
-For end-user documentation, see [doc/user/README.md](doc/user/README.md):
+For end-user documentation, see [resources/USER_README.md](resources/USER_README.md):
 
 - **Configuration Options** - Complete configuration description (Chinese and English)
 - **Usage Methods** - Formatting, quick fixes, and other operation guides
