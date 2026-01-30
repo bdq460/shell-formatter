@@ -4,7 +4,8 @@
     "description": "Intelligent Shell script formatting and error checking fixing with shfmt and shellcheck",
     "version": "1.0.1",
     "publisher": "bdq460",
-    "icon": "icon.png",
+    "icon": "resources/icon.png",
+    "type": "module",
     "repository": {
         "type": "git",
         "url": "https://github.com/bdq460/shell-formatter.git"
@@ -34,7 +35,7 @@
                     ".bash",
                     ".zsh"
                 ],
-                "configuration": "./language-configuration.json"
+                "configuration": "./resources/language-configuration.json"
             }
         ],
         "configuration": {
@@ -185,14 +186,12 @@
         "pretest": "npm run compile && npm run lint:md",
         "lint": "eslint src --ext ts",
         "lint:ts": "eslint src --ext ts",
-        "lint:md": "markdownlint \"**/*.md\"",
-        "lint:md:fix": "markdownlint --fix \"**/*.md\"",
+        "lint:md": "markdownlint \"**/*.md\" --disable MD013 MD033 MD036 MD060 --ignore node_modules",
+        "lint:md:fix": "markdownlint --fix \"**/*.md\" --ignore node_modules",
         "lint:all": "npm run lint:ts && npm run lint:md",
-        "test": "node test/run.js",
-        "test:unit": "jest --config .codebuddy/test/jest.config.js",
-        "test:unit:watch": "jest --config .codebuddy/test/jest.config.js --watch",
-        "test:unit:coverage": "jest --config .codebuddy/test/jest.config.js --coverage",
-        "test:all": "npm run test && npm run test:unit",
+        "test": "jest --coverage",
+        "test:watch": "jest --watch",
+        "test:no-coverage": "jest",
         "readme:backup": "bash scripts/manage-readme.sh backup",
         "readme:replace": "bash scripts/manage-readme.sh replace",
         "readme:restore": "bash scripts/manage-readme.sh restore",

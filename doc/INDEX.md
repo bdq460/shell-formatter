@@ -4,20 +4,29 @@
 
 ### 👤 我是用户（已安装插件）
 
-- [用户使用文档](user/README.md) - 插件功能、配置和使用说明
+- [用户使用文档](../resources/USER_README.md) - 插件功能、配置和使用说明
 
 ### 👨‍💻 我是开发者
+
+**入门必读**:
 
 - [根目录 README.md](../README.md) - 项目概述、架构设计、开发指南
 - [根目录 README_EN.md](../README_EN.md) - 项目概述、架构设计、开发指南(英文版)
 - [快速开始指南](developer/getting-started.md) - 开发环境配置和上手
+- [项目结构与核心配置](developer/project-structure.md) - 目录结构和配置文件详解 ⭐
+
+**进阶文档**:
+
 - [架构设计文档](developer/architecture.md) - 详细的架构设计说明
 - [插件机制完整指南](developer/plugin.md) - 插件系统详细介绍和开发指南
+- [测试体系指南](developer/test.md) - 测试配置、编写和最佳实践
+- [性能监控指南](developer/monitor.md) - 性能监控和优化
+
+**VSCode 扩展开发**:
+
 - [VSCode 扩展 API 参考](vscode/extension-api.md) - VSCode 扩展开发 API 详细说明
 - [package.json 配置说明](vscode/package-json.md) - 扩展配置详解
 - [language-configuration.json 详解](vscode/language-configuration.md) - 语言配置说明
-- [plugin.md](developer/plugin.md) - 插件机制完整指南
-- [monitor.md](developer/monitor.md) - 性能监控指南
 
 ### 🔧 工具参考
 

@@ -1,5 +1,4 @@
 # 开发相关
-src/**
 node_modules/**
 **/tsconfig.json
 **/.eslintrc.js
@@ -11,6 +10,8 @@ node_modules/**
 test/**
 .pytest_cache/**
 tsconfig.test.json
+jest.config.js
+coverage/**
 
 # 开发文档
 README_EN.md

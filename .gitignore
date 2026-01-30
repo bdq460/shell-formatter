@@ -1,5 +1,4 @@
 .vscode/**
-.codebuddy/**
 node_modules/**
 dist/**
 *.vsix

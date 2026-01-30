@@ -16,7 +16,7 @@ BACKUP_FILE="${PROJECT_ROOT}/README.md.bak.${TIMESTAMP}"
 CURRENT_BACKUP="${PROJECT_ROOT}/README.md.bak"
 
 README="${PROJECT_ROOT}/README.md"
-USER_README="${PROJECT_ROOT}/doc/user/README.md"
+USER_README="${PROJECT_ROOT}/resources/USER_README.md"
 
 # 函数：清理旧的备份文件
 cleanup_old_backups() {

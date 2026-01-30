@@ -51,7 +51,12 @@ tsc -v
 
 ---
 
-## 项目理解
+## 项目结构
+
+在深入开发前，建议先了解项目结构：
+
+- 📁 [项目结构与核心配置](./project-structure.md) - 详细的目录说明和配置文件解析
+- 🏗️ [架构设计文档](architecture.md) - 系统架构和设计原则
 
 ### 核心功能
 
@@ -289,12 +294,14 @@ logger.info(`Active plugins: ${activePlugins.join(", ")}`);
 
 ## 下一步
 
-完成快速开始后，建议:
+完成快速开始后，建议按以下顺序学习:
 
-1. 阅读 [插件机制完整指南](./plugin.md) 了解插件系统
-2. 阅读 [架构设计文档](architecture.md) 了解项目架构
-3. 查看 [源代码](../../src/) 了解具体实现
-4. 查看 [VSCode Extension API](../vscode/extension-api.md) 了解 API 使用
+1. 📁 [项目结构与核心配置](./project-structure.md) - 理解项目组织和配置文件
+2. 🏗️ [架构设计文档](architecture.md) - 了解系统架构和设计原则
+3. 🔌 [插件机制完整指南](./plugin.md) - 掌握插件系统开发
+4. 🧪 [测试体系指南](./test.md) - 学习测试编写和最佳实践
+5. 💻 查看 [源代码](../../src/) - 深入具体实现
+6. 📚 参考 [VSCode Extension API](../vscode/extension-api.md) - 了解 API 使用
 
 ---
 
@@ -361,6 +368,13 @@ export class MyFirstPlugin extends BasePlugin {
 
 ## 相关资源
 
+**项目文档**:
+
+- [项目结构与核心配置](./project-structure.md) - 目录结构和配置文件详解
 - [插件机制完整指南](./plugin.md) - 插件开发完整参考
+- [测试体系指南](./test.md) - 测试配置和编写指南
 - [架构设计文档](architecture.md) - 项目架构详细说明
+
+**外部资源**:
+
 - [VSCode 扩展开发文档](https://code.visualstudio.com/api) - 官方 API 文档

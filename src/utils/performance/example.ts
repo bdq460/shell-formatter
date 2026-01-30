@@ -6,14 +6,14 @@
 
 import * as vscode from "vscode";
 import {
+    clearAlertHistory,
+    getAlertStats,
+    getPerformanceAlerts,
+    onPerformanceAlert,
+} from "./integration";
+import {
     startTimer,
 } from "./monitor";
-import {
-    onPerformanceAlert,
-    getPerformanceAlerts,
-    getAlertStats,
-    clearAlertHistory,
-} from "./integration";
 
 /**
  * 启用性能告警
