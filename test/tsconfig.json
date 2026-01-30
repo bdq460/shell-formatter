@@ -1,22 +1,41 @@
 {
-    "extends": "../tsconfig.json",
     "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "lib": [
+            "ES2020"
+        ],
+        "types": [
+            "jest",
+            "node"
+        ],
         "rootDir": "../",
-        "outDir": "../dist-test",
+        "outDir": "dist-test",
+        "moduleResolution": "bundler",
+        "resolvePackageJsonImports": true,
+        "noEmit": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
         "paths": {
             "#/*": [
-                "./src/*"
+                "../src/*"
             ]
+        }
+    },
+    "ts-node": {
+        "esm": true,
+        "experimentalSpecifierResolution": "node",
+        "compilerOptions": {
+            "module": "ESNext"
         }
     },
     "include": [
         "../src/**/*",
-        "./**/*"
+        "../test/**/*"
     ],
     "exclude": [
         "node_modules",
-        "../dist",
-        "../dist-test",
-        "../coverage"
+        "dist",
+        "dist-test"
     ]
 }

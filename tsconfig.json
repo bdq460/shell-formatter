@@ -14,11 +14,7 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
-        "paths": {
-            "#/*": [
-                "./src/*"
-            ]
-        }
+        "resolvePackageJsonImports": true
     },
     "include": [
         "src/**/*.ts"

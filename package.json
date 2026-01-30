@@ -6,6 +6,9 @@
     "publisher": "bdq460",
     "icon": "resources/icon.png",
     "type": "module",
+    "imports": {
+        "#/*": "./src/*"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/bdq460/shell-formatter.git"

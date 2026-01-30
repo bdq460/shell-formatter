@@ -19,12 +19,10 @@ export default {
         '**/__tests__/**/*.test.ts',
     ],
 
-    // 模块名映射（支持 TypeScript 路径别名）
-    // 将 #/ 映射到 <rootDir>
-    // Jest的moduleNameMapper只在运行时有效，但TypeScript编译器和IDE的类型检查需要在tsconfig.json中配置路径映射。
-    // 需要在tsconfig.json中添加paths配置, 参考: https://github.com/facebook/jest/issues/10175
+    // 模块名映射（支持 package.json imports 的内部别名）
+    // Jest 的 moduleNameMapper 只在运行时有效，TS 类型检查由 package.json imports 解析。
     moduleNameMapper: {
-        '^#/(.*)$': '<rootDir>/src/$1',
+        '^#utils/(.*)$': '<rootDir>/src/utils/$1',
     },
 
     // 覆盖率收集
