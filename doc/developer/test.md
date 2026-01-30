@@ -102,7 +102,7 @@ TypeScript 配置 (`tsconfig.json`):
 ```json
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "moduleResolution": "bundler",
     "paths": {
       "#/*": ["./src/*"]
     }
@@ -179,7 +179,6 @@ module.exports = {
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]
     }
@@ -197,8 +196,7 @@ module.exports = {
 | `module` | ESNext | 使用 ES 模块系统 (import/export) |
 | `rootDir` | ./src | 源代码根目录 |
 | `outDir` | ./dist | 编译输出目录 |
-| `baseUrl` | . | 路径别名的基础目录 |
-| `paths` | {"#/*": ["./src/*"]} | 路径别名映射 |
+| `paths` | {"#/*": ["./src/*"]} | 路径别名映射（TS 7+ 推荐，相对于配置文件） |
 | `include` | src/**/*.ts | 只包含 src 目录的 TypeScript 文件 |
 | `strict` | true | 启用所有严格类型检查 |
 
@@ -230,9 +228,8 @@ dist/
   "compilerOptions": {
     "rootDir": "../",
     "outDir": "../dist-test",
-    "baseUrl": "../",
     "paths": {
-      "#/*": ["./src/*"]
+      "#/*": ["../src/*"]
     }
   },
   "include": ["../src/**/*", "./**/*"],
@@ -250,9 +247,9 @@ dist/
    - 从 `src/` 扩大到项目根目录
    - 确保能包含 `src/` 和 `test/` 两个目录
 
-3. **调整路径别名** (`baseUrl` 和 `paths`):
-   - `baseUrl` 改为 `"../"`（相对于 test/ 目录）
-   - `paths` 保持 `"./src/*"`（相对于 baseUrl）
+3. **调整路径别名** (`paths`):
+   - `paths` 使用相对于配置文件的路径 `"../src/*"`
+   - TypeScript 7+ 推荐方式，无需 `baseUrl`
    - 确保 `#/utils/log` 正确解析到 `src/utils/log`
 
 4. **包含测试文件** (`include`):
@@ -442,7 +439,7 @@ import { logger } from '#/utils/log';
    #/utils/log
        ↓ (tsconfig.json paths 映射)
    ./src/utils/log
-       ↓ (baseUrl: .)
+       ↓ (相对于配置文件位置)
    /project/src/utils/log.ts
    ```
 
@@ -861,7 +858,7 @@ Lines        : 99.5% ( 198/199 )
    ```json
    {
      "compilerOptions": {
-       "baseUrl": ".",
+       "moduleResolution": "bundler",
        "paths": {
          "#/*": ["./src/*"]
        }

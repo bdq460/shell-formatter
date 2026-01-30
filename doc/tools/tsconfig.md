@@ -3,6 +3,7 @@
 ## 目录
 
 - [概述](#概述)
+- [TypeScript 7+ 配置指南](#typescript-7-配置指南)
 - [文件结构](#文件结构)
 - [编译选项详解](#编译选项详解)
   - [模块相关选项](#模块相关选项)
@@ -18,6 +19,202 @@
 ## 概述
 
 `tsconfig.json` 是 TypeScript 项目的配置文件，用于指定编译器选项、包含/排除的文件、以及项目根目录等信息。TypeScript 编译器（tsc）根据此配置文件将 TypeScript 代码编译为 JavaScript。
+
+## TypeScript 7+ 配置指南
+
+TypeScript 7 引入了多项重要的配置变化，本文档优先介绍 TypeScript 7+ 的推荐配置方式。
+
+### TypeScript 7 主要变化
+
+#### 1. 不再推荐使用 `baseUrl`
+
+**原因**:
+
+- `baseUrl` 与 Node.js 的模块解析策略不一致
+- 容易导致路径解析混乱
+- 现代打包工具（Vite、Webpack、Rollup）不再需要 `baseUrl`
+
+**迁移方式**:
+
+```json
+// ❌ TypeScript 7 之前（不推荐）
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  }
+}
+
+// ✅ TypeScript 7+ 推荐
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  }
+}
+```
+
+#### 2. 推荐 `moduleResolution: "bundler"`
+
+**适用场景**:
+
+- 使用 Vite、Webpack、Rollup 等现代打包工具
+- 项目使用 ES Modules
+- 需要支持路径别名
+
+**配置示例**:
+
+```json
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2020"
+  }
+}
+```
+
+#### 3. `paths` 使用相对于配置文件的路径
+
+TypeScript 7+ 中，`paths` 的解析更加直观：
+
+```json
+// tsconfig.json（项目根目录）
+{
+  "compilerOptions": {
+    "paths": {
+      "#/*": ["./src/*"]      // 相对于 tsconfig.json 所在目录
+    }
+  }
+}
+
+// test/tsconfig.json（test/ 目录）
+{
+  "compilerOptions": {
+    "paths": {
+      "#/*": ["../src/*"]     // 相对于 test/tsconfig.json 所在目录
+    }
+  }
+}
+```
+
+### TypeScript 7+ 完整配置模板
+
+#### 项目主配置
+
+```json
+{
+  "compilerOptions": {
+    // 模块设置
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2020"],
+
+    // 输出设置
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "sourceMap": true,
+
+    // 类型检查
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+
+    // 路径别名（TS 7+ 风格）
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "test", "coverage"]
+}
+```
+
+#### 测试配置
+
+```json
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    // 扩大编译范围
+    "rootDir": "../",
+    "outDir": "../dist-test",
+
+    // 测试类型
+    "types": ["jest", "node"],
+
+    // 路径别名（相对于 test/tsconfig.json）
+    "paths": {
+      "#/*": ["../src/*"]
+    }
+  },
+  "include": ["../src/**/*", "./**/*"],
+  "exclude": ["node_modules", "../dist", "../dist-test", "../coverage"]
+}
+```
+
+### TypeScript 7+ 配置检查清单
+
+配置 TypeScript 7+ 项目时，请确认：
+
+- [ ] 使用 `"moduleResolution": "bundler"`
+- [ ] 不使用 `"baseUrl"`
+- [ ] `"paths"` 使用相对于配置文件的路径
+- [ ] `"module"` 设置为 `"ESNext"` 或 `"NodeNext"`
+- [ ] `"target"` 至少为 `"ES2020"`
+- [ ] `package.json` 中配置 `"imports"` 字段（Node.js ESM 运行时支持）
+
+### 与 Jest 的配合
+
+TypeScript 7+ 配置需要与 Jest 的 `moduleNameMapper` 配合：
+
+```javascript
+// jest.config.js
+module.exports = {
+  moduleNameMapper: {
+    // 与 tsconfig.json 的 paths 保持一致
+    '^#/(.*)$': '<rootDir>/src/$1'
+  }
+};
+```
+
+### 与 package.json 的配合
+
+TypeScript 的 `paths` 只在编译时生效，Node.js 运行时需要 `package.json` 的 `imports` 字段：
+
+```json
+// package.json
+{
+  "type": "module",
+  "imports": {
+    "#*": "./src/*"
+  }
+}
+```
+
+**关键区别**:
+
+| 配置位置 | 作用时机 | 语法 | 示例 |
+|---------|---------|------|------|
+| `tsconfig.json` `paths` | 编译时 | `"#/*": ["./src/*"]` | TypeScript 类型检查 |
+| `package.json` `imports` | 运行时 | `"#*": "./src/*"` | Node.js ESM 解析 |
+
+**注意**: `package.json` 中的 `imports` 键名**不带斜杠**（`#*`），而 `tsconfig.json` 中的 `paths` 键名**带斜杠**（`#/*`）。这是两套系统的不同语法要求。
+
+### 版本兼容性
+
+| TypeScript 版本 | `moduleResolution` 推荐 | `baseUrl` |
+|----------------|------------------------|-----------|
+| 5.0 - 5.6 | `"node"` 或 `"bundler"` | 可用但不推荐 |
+| 5.7+ (TS 7) | `"bundler"` | 不推荐 |
+| 6.0+ | `"bundler"` | 已弃用 |
 
 ## 文件结构
 
@@ -430,35 +627,9 @@ dist/
 
 ### 路径解析选项
 
-#### baseUrl
-
-**作用**: 指定非相对路径导入的基础目录
-
-**类型**: `string`
-
-**示例**:
-
-```json
-{
-  "compilerOptions": {
-    "baseUrl": "./"
-  }
-}
-```
-
-**说明**:
-
-```typescript
-// 没有配置 baseUrl
-import { logger } from './src/utils/log'; // 相对路径
-
-// 配置 baseUrl: "./"
-import { logger } from 'src/utils/log'; // 非相对路径
-```
-
 #### paths
 
-**作用**: 配置模块路径映射
+**作用**: 配置模块路径映射（TypeScript 7+ 推荐方式）
 
 **类型**: `object`
 
@@ -467,7 +638,6 @@ import { logger } from 'src/utils/log'; // 非相对路径
 ```json
 {
   "compilerOptions": {
-    "baseUrl": "./",
     "paths": {
       "#/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],
@@ -491,9 +661,36 @@ import { Button } from '@components/Button';
 
 **说明**:
 
-- `paths` 必须与 `baseUrl` 一起使用
+- `paths` 使用相对于配置文件的路径（TypeScript 7+ 推荐）
 - 映射模式中使用 `*` 作为通配符
 - 本项目使用 `#/` 作为 src 目录的别名
+- 配合 `moduleResolution: "bundler"` 使用（推荐）
+
+**TypeScript 7+ 注意事项**:
+
+TypeScript 7 不推荐使用 `baseUrl`，建议直接使用相对于配置文件的完整路径：
+
+```json
+// ✅ TypeScript 7+ 推荐
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  }
+}
+
+// ❌ TypeScript 7 不推荐（使用 baseUrl）
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  }
+}
+```
 
 ### 其他选项
 
@@ -1000,7 +1197,24 @@ dist/
 
 #### 最佳实践
 
-1. **保持一致性**
+1. **使用 TypeScript 7+ 推荐配置**
+
+   ```json
+   {
+     "compilerOptions": {
+       "module": "ESNext",
+       "moduleResolution": "bundler",
+       "target": "ES2020",
+       "paths": {
+         "#/*": ["./src/*"]
+       }
+     }
+   }
+   ```
+
+   ✅ 不使用 `baseUrl`，直接使用相对于配置文件的路径
+
+2. **保持一致性**
 
    ```json
    {
@@ -1013,31 +1227,38 @@ dist/
 
    ✅ `rootDir` 和 `include` 指向相同范围
 
-2. **测试配置使用项目根目录**
+3. **测试配置使用项目根目录**
 
    ```json
    {
      "compilerOptions": {
-       "rootDir": "../"
+       "rootDir": "../",
+       "paths": {
+         "#/*": ["../src/*"]
+       }
      },
      "include": ["../src/**/*.ts", "./**/*"]
    }
    ```
 
    ✅ 确保所有文件都在 rootDir 范围内
+   ✅ 路径别名使用相对于测试配置文件的路径
 
-3. **显式指定 rootDir**
+4. **显式指定 rootDir**
    - 即使可以自动推断，也显式指定 `rootDir`
    - 避免意外导致输出结构变化
 
-4. **使用 extends 继承基础配置**
+5. **使用 extends 继承基础配置**
 
    ```json
    // tsconfig.json (生产)
    {
      "compilerOptions": {
        "rootDir": "src",
-       "outDir": "dist"
+       "outDir": "dist",
+       "paths": {
+         "#/*": ["./src/*"]
+       }
      },
      "include": ["src/**/*.ts"]
    }
@@ -1047,7 +1268,10 @@ dist/
      "extends": "../tsconfig.json",
      "compilerOptions": {
        "rootDir": "../",
-       "outDir": "dist-test"
+       "outDir": "dist-test",
+       "paths": {
+         "#/*": ["../src/*"]
+       }
      },
      "include": ["../src/**/*.ts", "./**/*"]
    }
@@ -1061,11 +1285,15 @@ dist/
 {
   "compilerOptions": {
     "module": "ESNext",
+    "moduleResolution": "bundler",
     "target": "ES2020",
-    "rootDir": "src",        // 源代码根目录
-    "outDir": "dist"
+    "rootDir": "./src",        // 源代码根目录
+    "outDir": "./dist",
+    "paths": {
+      "#/*": ["./src/*"]       // 路径别名（TS 7+ 风格）
+    }
   },
-  "include": ["src/**/*.ts"]  // 只编译生产代码
+  "include": ["src/**/*.ts"]    // 只编译生产代码
 }
 ```
 
@@ -1075,15 +1303,18 @@ dist/
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "rootDir": "../",        // 项目根目录
-    "outDir": "dist-test",
-    "types": ["jest", "node"]
+    "rootDir": "../",          // 项目根目录
+    "outDir": "../dist-test",
+    "types": ["jest", "node"],
+    "paths": {
+      "#/*": ["../src/*"]      // 相对于 test/tsconfig.json 的路径
+    }
   },
   "include": [
-    "../src/**/*.ts",       // 源代码
-    "./**/*"                  // 测试代码
+    "../src/**/*.ts",         // 源代码
+    "./**/*"                    // 测试代码
   ],
-  "exclude": ["node_modules", "dist", "dist-test"]
+  "exclude": ["node_modules", "../dist", "../dist-test", "../coverage"]
 }
 ```
 
@@ -1106,7 +1337,7 @@ dist/
 | **outDir** | `dist` | `dist-test` 或 `./test/dist` |
 | **types** | 生产环境类型 (`node`, `vscode`) | 测试环境类型 (`jest`, `node`) |
 | **extends** | 可能继承基础配置 | 继承主配置 `../tsconfig.json` |
-| **paths** | 相对于项目根目录 | 需要调整相对路径 |
+| **paths** | 相对于配置文件 (`./src/*`) | 相对于配置文件 (`../src/*`) |
 
 ### 完整测试配置示例
 
@@ -1338,15 +1569,15 @@ test/
 - `../src/*` 指向项目根目录下的 `src/`
 - 确保测试文件中的路径别名能正确解析
 
-**对比**:
+**TypeScript 7+ 风格对比**:
 
 ```json
 // 主配置 tsconfig.json (在项目根目录)
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "moduleResolution": "bundler",
     "paths": {
-      "#/*": ["./src/*"]      // 相对于项目根目录
+      "#/*": ["./src/*"]      // 相对于 tsconfig.json
     }
   }
 }
@@ -1354,13 +1585,19 @@ test/
 // 测试配置 test/tsconfig.json
 {
   "compilerOptions": {
-    "baseUrl": "../",
+    "moduleResolution": "bundler",
     "paths": {
-      "#/*": ["../src/*"]     // 相对于 test/ 目录
+      "#/*": ["../src/*"]     // 相对于 test/tsconfig.json
     }
   }
 }
 ```
+
+**说明**:
+
+- TypeScript 7+ 不需要 `baseUrl`
+- `paths` 使用相对于配置文件的路径
+- 测试配置使用 `"../src/*"` 指向项目根目录的 `src/`
 
 **测试文件中使用路径别名**:
 
@@ -1485,14 +1722,14 @@ describe('logger', () => {
 - 便于清理测试编译结果
 - 不影响生产构建
 
-#### 3. 正确配置路径别名
+#### 3. 正确配置路径别名（TypeScript 7+ 风格）
 
 **推荐**:
 
 ```json
 {
   "compilerOptions": {
-    "baseUrl": "../",
+    "moduleResolution": "bundler",
     "paths": {
       "#/*": ["../src/*"]
     }
@@ -1502,7 +1739,9 @@ describe('logger', () => {
 
 **注意事项**:
 
-- 路径需要相对于测试配置文件的位置
+- TypeScript 7+ 不需要 `baseUrl`
+- 路径使用相对于测试配置文件的位置
+- 主配置使用 `"./src/*"`，测试配置使用 `"../src/*"`
 - 确保与主配置的路径别名映射一致
 - 测试文件中的导入语句使用相同的别名
 
@@ -1897,7 +2136,7 @@ npm test
 }
 ```
 
-### 3. 测试配置
+### 3. 测试配置（TypeScript 7+ 风格）
 
 ```json
 {
@@ -1906,7 +2145,6 @@ npm test
     "types": ["jest", "node"],
     "rootDir": ".",
     "outDir": "dist-test",
-    "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]
     }
@@ -1934,7 +2172,6 @@ npm test
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "types": ["node"],
-    "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]
     }
@@ -1974,18 +2211,38 @@ import { logger } from '#/utils/log';
 
 **解决方案**:
 
-1. 确保 `tsconfig.json` 中配置了 `paths`:
+1. 确保 `tsconfig.json` 中配置了 `paths`（TypeScript 7+ 风格）:
 
 ```json
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "moduleResolution": "bundler",
     "paths": {
       "#/*": ["./src/*"]
     }
   }
 }
 ```
+
+1. 确保 `package.json` 中配置了 `imports` 字段（Node.js ESM 子路径导入）:
+
+```json
+{
+  "type": "module",
+  "imports": {
+    "#*": "./src/*"
+  }
+}
+```
+
+**重要说明**:
+
+- `imports` 是 Node.js 的 **ESM 子路径导入** 特性，与 TypeScript 的 `paths` 是两套系统
+- TypeScript 编译时只识别 `tsconfig.json` 中的 `paths`
+- Node.js 运行时只识别 `package.json` 中的 `imports`
+- 两者需要保持一致，但配置语法不同：
+  - `tsconfig.json`: `"#/*": ["./src/*"]`（带斜杠）
+  - `package.json`: `"#*": "./src/*"`（不带斜杠，这是 Node.js 的匹配规则）
 
 1. 为测试编译使用 `tsconfig.test.json`（包含 `baseUrl` 和 `paths`），并在 VS Code 中为 test 目录添加专用配置文件：
 

@@ -219,7 +219,6 @@ shell_formatter/
     "moduleResolution": "bundler",
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]
     },
@@ -236,7 +235,7 @@ shell_formatter/
 
 - `rootDir`: `./src` - 源代码根目录
 - `outDir`: `./dist` - 编译输出目录
-- `paths`: `#/*` → `./src/*` - 路径别名
+- `paths`: `#/*` → `./src/*` - 路径别名（TS 7+ 推荐，相对于配置文件）
 - `include`: 只包含 `src/` 目录
 
 ### 3. test/tsconfig.json - 测试配置
@@ -251,9 +250,8 @@ shell_formatter/
   "compilerOptions": {
     "rootDir": "../",
     "outDir": "../dist-test",
-    "baseUrl": "../",
     "paths": {
-      "#/*": ["./src/*"]
+      "#/*": ["../src/*"]
     }
   },
   "include": ["../src/**/*", "./**/*"],
@@ -264,6 +262,7 @@ shell_formatter/
 **与主配置的区别**:
 
 - `rootDir`: 扩大到项目根目录（包含 src 和 test）
+- `paths`: 使用相对于配置文件的路径 `"../src/*"`（TS 7+ 推荐方式）
 - `include`: 同时包含源代码和测试代码
 - `outDir`: 输出到 `dist-test/`
 

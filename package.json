@@ -7,7 +7,7 @@
     "icon": "resources/icon.png",
     "type": "module",
     "imports": {
-        "#/*": "./src/*"
+        "#*": "./src/*"
     },
     "repository": {
         "type": "git",
