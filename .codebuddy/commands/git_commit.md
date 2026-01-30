@@ -9,6 +9,8 @@
 - 遵循 Conventional Commits 规范
 - Commit Message 必须提供中文与英文两套描述，分别完整说明变更内容
 - 中文在前、英文在后，内容不交叉混排
+- 自动生成描述要添加自动生成标记
+- 自动生成描述要简洁, 中文描述不超过150字
 - 交互式确认机制
 - 支持自定义提交信息
 - 自动推送到 GitHub
@@ -17,7 +19,7 @@
 
 ### 基本格式
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -57,7 +59,7 @@
 
 **示例**：
 
-```
+```text
 docs: 重构开发者文档结构
 docs: refactor developer documentation structure
 ```
@@ -71,7 +73,7 @@ docs: refactor developer documentation structure
 
 **示例**：
 
-```
+```text
 docs: 重构开发者文档结构
 
 按 00-08 编号重新组织文档
@@ -93,7 +95,7 @@ Delete obsolete getting-started.md
 
 **示例**：
 
-```
+```text
 feat(api): remove deprecated endpoint
 
 Remove the deprecated /v1/users endpoint
@@ -265,7 +267,7 @@ Closes #45
 
 ### 示例 3: 修复 Bug
 
-```
+```text
 fix(auth): 修复 token 过期检查问题
 
 修正 token 过期时间计算错误
@@ -279,7 +281,7 @@ Closes #78
 
 ### 示例 4: 重构
 
-```
+```text
 refactor(core): 优化数据处理流程
 
 简化数据转换逻辑
@@ -293,7 +295,7 @@ Improve readability and maintainability
 
 ### 示例 5: 性能优化
 
-```
+```text
 perf(render): 减少组件渲染时间
 
 优化虚拟滚动算法
@@ -307,7 +309,7 @@ Improve scrolling performance
 
 ### 示例 6: 破坏性变更
 
-```
+```text
 feat(api): 升级 API 版本到 v2
 
 重构所有 API 端点
