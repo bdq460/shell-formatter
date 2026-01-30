@@ -1,4 +1,6 @@
-# Shell Formatter 架构设计文档
+# 架构与核心设计
+
+本篇聚焦项目整体架构设计、关键模块职责与性能优化策略。建议在阅读[项目结构与目录布局](03-project-layout.md)后进入本篇。
 
 ## 概述
 
@@ -6,69 +8,157 @@ Shell Formatter 是一个基于 VSCode 扩展 API 的 Shell 脚本格式化和�
 
 > **注意**：本文档专注于项目整体架构设计。
 >
-> - 关于 **插件机制详解**，请参考 [plugin.md](./plugin.md)
+> - 关于 **插件机制详解**，请参考 [插件系统详解](06-plugin-system.md)
 > - 关于 VSCode Extension API 的详细说明，请参考 [extension-api.md](../vscode/extension-api.md)
 
 ## 核心概念
 
 ### 插件系统 (Plugin System)
 
-Shell Formatter 采用插件架构，所有格式化和诊断功能都通过插件实现。插件系统支持：
-
 - **动态注册和注销** - 运行时注册/移除插件
 - **插件激活管理** - 基于配置激活/停用插件
 - **并行激活** - 支持并行插件激活（40% 性能提升）
-- **可用性检查** - 自动检测插件是否可用
+
+**插件管理器（关键初始化）**：
+
+```typescript
+export class PluginManager {
+  private baseManager: BasePluginManager<IFormatPlugin>;
+
+  constructor() {
+    this.baseManager = new BasePluginManager({
+      throwOnActivationError: false,
+      throwOnDeactivationError: false,
+    });
+  }
+
+  register(plugin: IFormatPlugin): void {
+    this.baseManager.register(plugin);
+  }
+
+  async unregister(name: string): Promise<void> {
+    await this.baseManager.unregister(name);
+  }
+
+  async activateMultiple(names: string[]): Promise<number> {
+    return this.baseManager.activateMultiple(names);
+  }
+}
+```
 
 **插件接口**：
 
 ```typescript
-export interface IFormatPlugin {
+export interface IFormatPlugin extends IPlugin {
   name: string;
   displayName: string;
   version: string;
   description: string;
   isAvailable(): Promise<boolean>;
-  format(document: TextDocument, options: FormatOptions): Promise<TextEdit[]>;
-  check(document: TextDocument, options: CheckOptions): Promise<CheckResult>;
+  format?(
+    document: TextDocument,
+    options: PluginFormatOptions,
+  ): Promise<PluginFormatResult>;
+  check(
+    document: TextDocument,
+    options: PluginCheckOptions,
+  ): Promise<PluginCheckResult>;
   getSupportedExtensions(): string[];
 }
 ```
 
 ### 依赖注入 (Dependency Injection)
 
-项目使用自定义的轻量级依赖注入容器（DIContainer），支持：
-
-- **单例模式** - 服务实例全局唯一
-- **瞬时模式** - 每次解析返回新实例
-- **循环依赖检测** - 自动检测循环依赖
-- **清理钩子** - 支持服务自定义清理逻辑
-
-**DI 容器特性**：
+使用轻量级 DI 容器管理服务与插件依赖，支持单例、瞬时模式与循环依赖检测：
 
 ```typescript
-class DIContainer {
+export class DIContainer {
   registerSingleton<T>(
     name: string,
     factory: ServiceFactory<T>,
     dependencies: string[],
   ): void;
+
   registerTransient<T>(
     name: string,
     factory: ServiceFactory<T>,
     dependencies: string[],
   ): void;
+
   resolve<T>(name: string): T;
-  has(name: string): boolean;
-  reset(): void;
-  clear(): void;
-  async cleanup(): Promise<void>;
 }
 ```
 
 ### 诊断集合 (DiagnosticCollection)
 
 用于集中管理 Shell 脚本的格式化和语法检查诊断信息。详细 API 说明请参考 [../vscode/extension-api.md](../vscode/extension-api.md)。
+
+### 模块导入和路径解析
+
+项目使用 **ES Modules** (`type: "module"`) 配合路径别名系统，实现清晰的模块导入。
+
+#### 导入配置
+
+项目通过两套配置系统实现路径别名：
+
+| 配置文件 | 配置项 | 值 | 作用阶段 |
+|---------|---------|------|---------|
+| `package.json` | `imports` | `"#*": "./src/*"` | Node.js 运行时解析 |
+| `tsconfig.json` | `paths` | `"#/*": ["./src/*"]` | TypeScript 编译时解析 |
+
+#### 工作原理
+
+```typescript
+// 1. 代码中使用路径别名
+import { logger } from '#/utils/log';
+
+// 2. TypeScript 编译时通过 tsconfig.json 的 paths 解析
+//    #/utils/log → ./src/utils/log
+
+// 3. Node.js 运行时通过 package.json 的 imports 解析
+//    #/utils/log → ./src/utils/log
+
+// 4. 最终都指向同一个文件
+//    src/utils/log.ts
+```
+
+#### 配置注意事项
+
+| 要点 | 说明 |
+|------|------|
+| **语法差异** | `package.json` 的 `imports` 使用 `#*`（不带斜杠），`tsconfig.json` 的 `paths` 使用 `#/*`（带斜杠） |
+| **路径相对性** | `paths` 的路径相对于配置文件位置。主配置用 `./src/*`，测试配置用 `../src/*` |
+| **一致性** | 两个配置系统的映射必须保持一致，否则会导致编译或运行时错误 |
+| **ESM 要求** | 必须在 `package.json` 中设置 `"type": "module"` 才能启用 ESM |
+
+#### 示例：配置多个路径别名
+
+```json
+// package.json
+{
+  "type": "module",
+  "imports": {
+    "#*": "./src/*",
+    "#utils/*": "./src/utils/*",
+    "#config/*": "./src/config/*"
+  }
+}
+```
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "resolvePackageJsonImports": true,
+    "paths": {
+      "#/*": ["./src/*"],
+      "#utils/*": ["./src/utils/*"],
+      "#config/*": ["./src/config/*"]
+    }
+  }
+}
+```
 
 ### 文档过滤
 
@@ -90,7 +180,15 @@ class DIContainer {
 ```typescript
 function shouldSkipFile(fileName: string): boolean {
   const baseName = path.basename(fileName);
-  const skipPatterns = [/\.git$/, /\.swp$/, /\.swo$/, /~$/, /\.tmp$/, /\.bak$/];
+  const skipPatterns = [
+    /\.git$/,
+    /\.swp$/,
+    /\.swo$/,
+    /~$/,
+    /\.tmp$/,
+    /\.bak$/,
+    /^extension-output-/,
+  ];
   return skipPatterns.some((pattern) => pattern.test(baseName));
 }
 ```
@@ -717,16 +815,7 @@ export class SettingInfo {
       tabSize: this.getTabSizeImpl(),
       log: this.getLogImpl(),
       onError: this.getOnErrorImpl(),
-      plugins: {
-        shfmt: {
-          enabled: this.getShfmtEnabledImpl(),
-          path: this.getShfmtPathImpl(),
-        },
-        shellcheck: {
-          enabled: this.getShellcheckEnabledImpl(),
-          path: this.getShellcheckPathImpl(),
-        },
-      },
+      plugins: this.getPluginsImpl(),
     };
   }
 
@@ -735,11 +824,11 @@ export class SettingInfo {
     event: vscode.ConfigurationChangeEvent,
   ): boolean {
     const keys = [
-      "shell-format.plugins.shfmt",
-      "shell-format.plugins.shellcheck",
-      "shell-format.tabSize",
-      "shell-format.log",
-      "shell-format.onError",
+      "shell-formatter.plugins.shfmt",
+      "shell-formatter.plugins.shellcheck",
+      "shell-formatter.tabSize",
+      "shell-formatter.log",
+      "shell-formatter.onError",
     ];
 
     for (const key of keys) {
@@ -823,7 +912,7 @@ const report = monitor.generateReport();
 - `format-document` - 总格式化耗时
 - `diagnose-document` - 总诊断耗时
 
-> 详见 [monitor.md](./monitor.md) 了解完整实现细节
+> 详见 [可观测性与性能监控](07-observability.md) 了解完整实现细节
 
 ## 关键设计模式
 
@@ -1112,11 +1201,17 @@ export class MyPlugin implements IFormatPlugin {
     version = "1.0.0";
     description = "My custom plugin";
 
-    async format(document: TextDocument, options: FormatOptions): Promise<TextEdit[]> {
+    async format(
+      document: TextDocument,
+      options: PluginFormatOptions,
+    ): Promise<PluginFormatResult> {
         // 格式化逻辑
     }
 
-    async check(document: TextDocument, options: CheckOptions): Promise<CheckResult> {
+    async check(
+      document: TextDocument,
+      options: PluginCheckOptions,
+    ): Promise<PluginCheckResult> {
         // 检查逻辑
     }
 }
@@ -1134,7 +1229,7 @@ if (SettingInfo.isMyPluginEnabled()) {
 }
 
 // 4. 在 package.json 中添加配置
-"shell-format.plugins.myPlugin": {
+"shell-formatter.plugins.myPlugin": {
     "type": "object",
     "default": { "enabled": true, "path": "myPlugin" }
 }
@@ -1145,7 +1240,7 @@ if (SettingInfo.isMyPluginEnabled()) {
 ```typescript
 // 在 commands/ 下创建新文件
 export function registerMyCommand(): vscode.Disposable {
-  return vscode.commands.registerCommand("shell-format.myCommand", () => {
+  return vscode.commands.registerCommand("shell-formatter.myCommand", () => {
     // 实现命令逻辑
   });
 }
@@ -1153,8 +1248,10 @@ export function registerMyCommand(): vscode.Disposable {
 // 在 index.ts 中注册
 export function registerAllCommands(): vscode.Disposable[] {
   return [
-    registerFormatCommand(),
-    registerFixCommand(),
+    registerFixAllCommand(),
+    registerPerformanceReportCommand(),
+    registerResetPerformanceCommand(),
+    registerPluginStatusCommand(),
     registerMyCommand(), // 注册新命令
   ];
 }
@@ -1166,7 +1263,7 @@ export function registerAllCommands(): vscode.Disposable[] {
 // 在 package.json 中添加
 "configuration": {
     "properties": {
-        "shell-format.plugins.myPlugin": {
+        "shell-formatter.plugins.myPlugin": {
             "type": "object",
             "default": { "enabled": true, "path": "myPlugin" }
         }
@@ -1221,13 +1318,13 @@ const result = await pluginManager.format(document, { token });
 
 **旧架构**：
 
-- 平铺配置结构（shell-format.shfmtPath, shell-format.shellcheckPath）
+- 平铺配置结构（shell-formatter.shfmtPath, shell-formatter.shellcheckPath）
 - 每次调用都读取 VSCode API
 - 缺少配置缓存机制
 
 **新架构**：
 
-- 嵌套配置结构（shell-format.plugins.shfmt.path）
+- 嵌套配置结构（shell-formatter.plugins.shfmt.path）
 - 配置快照机制
 - 支持插件启用/禁用
 - 细粒度配置变化检测
@@ -1235,7 +1332,7 @@ const result = await pluginManager.format(document, { token });
 ```typescript
 // 新架构：嵌套配置
 {
-  "shell-format.plugins": {
+  "shell-formatter.plugins": {
     "shfmt": { "enabled": true, "path": "shfmt" },
     "shellcheck": { "enabled": true, "path": "shellcheck" }
   }

@@ -1,4 +1,6 @@
-# 性能监控和告警模块
+# 可观测性与性能监控
+
+本篇介绍性能监控与告警模块的设计与使用方式，帮助你定位性能瓶颈并量化优化效果。
 
 ## 概述
 
@@ -139,10 +141,9 @@ clearAlertHistory();
 ```tree
 src/utils/performance/
 ├── alertManager.ts       # 告警管理器
-├── monitor.ts           # 性能监控器和计时器
+├── example.ts            # 使用示例
 ├── integration.ts       # 便捷 API 和集成接口
-├── example.ts          # 使用示例
-└── README.md          # 本文档
+└── monitor.ts           # 性能监控器和计时器
 ```
 
 ## API 参考
@@ -243,10 +244,7 @@ import {
   getAlertManager,
   setAlertManager,
   resetAlertManager,
-} from "./utils/performance/alertManager"
-    setAlertManager,
-    resetAlertManager,
-} from './utils/performance/alertManager';
+} from "./utils/performance/alertManager";
 
 // 测试前重置
 resetMetrics();
@@ -287,4 +285,3 @@ console.log(`Alerts: ${alerts.length}`);
 ## 相关文档
 
 - [ARCHITECTURE_REVIEW.md](../../../ARCHITECTURE_REVIEW.md) - 架构评审
-- [PLUGIN_INTERFACE_IMPROVEMENTS.md](../../../PLUGIN_INTERFACE_IMPROVEMENTS.md) - 插件接口改进

@@ -199,7 +199,13 @@
         "readme:replace": "bash scripts/manage-readme.sh replace",
         "readme:restore": "bash scripts/manage-readme.sh restore",
         "readme:check": "bash scripts/manage-readme.sh check",
-        "test:readme:backup": "bash scripts/test-readme-backup.sh"
+        "test:readme:backup": "bash scripts/test-readme-backup.sh",
+        "git:status": "bash .codebuddy/skills/git-auto-commit/cli.sh status",
+        "git:add": "bash .codebuddy/skills/git-auto-commit/cli.sh add",
+        "git:commit": "bash .codebuddy/skills/git-auto-commit/cli.sh commit",
+        "git:push": "bash .codebuddy/skills/git-auto-commit/cli.sh push",
+        "git:full": "bash .codebuddy/skills/git-auto-commit/cli.sh full",
+        "git:auto-commit": "bash .codebuddy/skills/git-auto-commit/commit.sh"
     },
     "devDependencies": {
         "@types/jest": "^29.5.14",

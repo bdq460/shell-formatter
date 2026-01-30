@@ -1,6 +1,6 @@
-# Shell Formatter 测试体系指南
+# 测试体系与实践
 
-本文档全面介绍 Shell Formatter 项目的测试体系架构、配置原理和最佳实践。帮助新手快速理解测试配置的功能，掌握测试编写方法，建立完整的测试思维。
+本篇全面介绍 Shell Formatter 项目的测试体系、配置原理与最佳实践。
 
 ## 目录
 
@@ -36,7 +36,7 @@
 | **语言支持** | TypeScript - 类型安全，IDE 友好 |
 | **模块系统** | ES Modules - 现代标准，Tree-shaking 友好 |
 | **覆盖率** | 内置支持，多格式输出 |
-| **路径别名** | `#/` 映射到 `src/`，简化导入 |
+| **路径别名** | 编译期 `#/*`，Jest 运行时映射 `#utils/*` |
 
 ### 测试类型
 
@@ -46,9 +46,9 @@
 │   └── 测试单个函数、类的行为
 │   └── 位置: test/unit/
 │
-└── 集成测试 (Integration Tests)
-    └── 测试多个模块的协作
-    └── 位置: test/integration/
+└── 测试夹具 (Fixtures)
+  └── 供单元测试使用的样例脚本
+  └── 位置: test/fixtures/
 ```
 
 ---
@@ -69,7 +69,7 @@
 | 配置 | 用途 | 编译范围 | 输出目录 |
 |------|------|----------|----------|
 | `tsconfig.json` | 生产构建 | `src/**/*.ts` | `dist/` |
-| `test/tsconfig.json` | 测试运行 | `src/**/*.ts` + `test/**/*.ts` | `dist-test/` |
+| `test/tsconfig.json` | 测试运行 | `src/**/*.ts` + `test/**/*.ts` | `dist-test/`（noEmit） |
 
 **核心区别**:
 
@@ -77,7 +77,7 @@
 - 测试配置需要同时编译源代码和测试代码，确保类型检查通过
 - 分离配置避免测试代码混入生产构建
 
-### 2. 路径别名 `#/`
+### 2. 路径别名 `#/*` 与 `#utils/*`
 
 **什么是路径别名？**
 
@@ -113,18 +113,19 @@ TypeScript 配置 (`tsconfig.json`):
 Jest 配置 (`jest.config.js`):
 
 ```javascript
-module.exports = {
+export default {
   moduleNameMapper: {
-    '^#/(.*)$': '<rootDir>/src/$1'
+    '^#utils/(.*)$': '<rootDir>/src/utils/$1'
   }
 };
 ```
+
+> 说明：当前 Jest 运行时仅映射 `#utils/*`。如果测试代码使用 `#/` 前缀，请补充 `^#/(.*)$` 的映射或统一改用 `#utils/*`。
 
 **映射关系**:
 
 ```text
 #/utils/log     →    src/utils/log
-#/plugin/Manager    →    src/plugin/Manager
 ```
 
 ### 3. Jest 与 ts-jest
@@ -170,15 +171,14 @@ module.exports = {
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
-    "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "resolvePackageJsonImports": true,
     "paths": {
       "#/*": ["./src/*"]
     }
@@ -226,14 +226,16 @@ dist/
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "types": ["jest", "node"],
     "rootDir": "../",
     "outDir": "../dist-test",
+    "noEmit": true,
     "paths": {
       "#/*": ["../src/*"]
     }
   },
-  "include": ["../src/**/*", "./**/*"],
-  "exclude": ["node_modules", "../dist", "../dist-test", "../coverage"]
+  "include": ["../src/**/*", "../test/**/*"],
+  "exclude": ["node_modules", "dist", "dist-test", "coverage"]
 }
 ```
 
@@ -248,37 +250,19 @@ dist/
    - 确保能包含 `src/` 和 `test/` 两个目录
 
 3. **调整路径别名** (`paths`):
-   - `paths` 使用相对于配置文件的路径 `"../src/*"`
-   - TypeScript 7+ 推荐方式，无需 `baseUrl`
-   - 确保 `#/utils/log` 正确解析到 `src/utils/log`
 
-4. **包含测试文件** (`include`):
-   - `"../src/**/*"`: 源代码
-   - `"./**/*"`: 测试代码（test/ 目录下的所有文件）
+- `paths` 使用相对于配置文件的路径 `"../src/*"`
+- TypeScript 7+ 推荐方式，无需 `baseUrl`
+- 编译期 `#/*` 指向 `src/`（Jest 运行时仍以 `#utils/*` 映射为准）
+
+1. **包含测试文件** (`include`):
+
+- `"../src/**/*"`: 源代码
+- `"../test/**/*"`: 测试代码
 
 **输出结构**:
 
-```text
-项目根目录/
-├── src/
-│   └── utils/
-│       └── log.ts
-└── test/
-    └── unit/
-        └── utils/
-            └── log.test.ts
-
-编译后 →
-
-dist-test/
-├── src/
-│   └── utils/
-│       └── log.js
-└── test/
-    └── unit/
-        └── utils/
-            └── log.test.js
-```
+由于 `noEmit: true`，测试配置默认只做类型检查，不会生成 `dist-test/` 输出。如需生成编译产物，可临时将 `noEmit` 设为 `false`。
 
 ### 3. Jest 配置: `jest.config.js`
 
@@ -300,9 +284,9 @@ export default {
     '**/__tests__/**/*.test.ts',
   ],
 
-  // 路径别名映射（与 tsconfig.json 对应）
+  // 路径别名映射（运行时仅映射 #utils/*）
   moduleNameMapper: {
-    '^#/(.*)$': '<rootDir>/src/$1',
+    '^#utils/(.*)$': '<rootDir>/src/utils/$1',
   },
 
   // 覆盖率配置
@@ -364,7 +348,7 @@ export default {
 |--------|------|
 | `preset` | 使用 `ts-jest/presets/default-esm` 支持 TypeScript + ES Modules |
 | `testMatch` | 匹配 `test/**/*.test.ts` 文件 |
-| `moduleNameMapper` | 将 `#/` 映射到 `src/`，与 tsconfig 保持一致 |
+| `moduleNameMapper` | 将 `#utils/*` 映射到 `src/utils/`（运行时别名） |
 | `collectCoverage` | 开启覆盖率收集 |
 | `coverageThreshold` | 设置覆盖率阈值，不满足时测试失败 |
 | `transform` | 使用 ts-jest 转换 `.ts` 文件，指定使用 `test/tsconfig.json` |
@@ -435,23 +419,27 @@ import { logger } from '#/utils/log';
 
 1. **TypeScript 编译阶段**:
 
-   ```text
-   #/utils/log
+```text
+
+  #/utils/log
        ↓ (tsconfig.json paths 映射)
    ./src/utils/log
        ↓ (相对于配置文件位置)
    /project/src/utils/log.ts
-   ```
 
-2. **Jest 运行阶段**:
+```
 
-   ```text
-   #/utils/log
+1. **Jest 运行阶段**:
+
+```text
+
+  #/utils/log
        ↓ (jest.config.js moduleNameMapper)
    <rootDir>/src/utils/log
        ↓ (<rootDir> = 项目根目录)
    /project/src/utils/log.ts
-   ```
+
+```
 
 **关键点**: TypeScript 和 Jest 的路径映射必须保持一致！
 
@@ -847,7 +835,7 @@ Lines        : 99.5% ( 198/199 )
 
 ## 常见问题
 
-### Q1: 导入路径别名 `#/` 报错怎么办？
+### Q1: 导入路径别名 `#/*` 或 `#utils/*` 报错怎么办？
 
 **问题**: `Cannot find module '#/utils/log' or its corresponding type declarations.`
 
@@ -869,9 +857,20 @@ Lines        : 99.5% ( 198/199 )
 2. 检查 `jest.config.js` 的 `moduleNameMapper`:
 
    ```javascript
-   module.exports = {
+   export default {
      moduleNameMapper: {
-       '^#/(.*)$': '<rootDir>/src/$1'
+       '^#utils/(.*)$': '<rootDir>/src/utils/$1'
+     }
+   };
+   ```
+
+   若测试中使用 `#/` 前缀，可增加一条映射：
+
+   ```javascript
+   export default {
+     moduleNameMapper: {
+       '^#/(.*)$': '<rootDir>/src/$1',
+       '^#utils/(.*)$': '<rootDir>/src/utils/$1'
      }
    };
    ```
@@ -964,9 +963,10 @@ start coverage/index.html  # Windows
 
 **项目文档**:
 
-- [项目结构与核心配置](./project-structure.md) - 目录结构和配置文件详解
+- [项目结构与目录布局](03-project-layout.md) - 目录结构概览
+- [核心配置与工程规范](04-configuration-reference.md) - 配置文件详解
+- [环境准备与调试](01-setup.md) - 开发环境配置
 - [TypeScript 配置详解](../tools/tsconfig.md) - tsconfig 完整说明
-- [快速开始指南](./getting-started.md) - 开发环境配置
 
 **外部文档**:
 

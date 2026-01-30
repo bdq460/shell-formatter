@@ -1,4 +1,6 @@
-# 插件机制完整指南
+# 插件系统详解
+
+本篇系统梳理 Shell Formatter 插件机制、生命周期与消息系统。建议先阅读 [架构与核心设计](05-architecture.md)。
 
 ## 概述
 
@@ -707,7 +709,7 @@ async onDeactivate(): Promise<void> {
 
 ## 扩展阅读
 
-- [Architecture](./architecture.md) - 详细的架构设计
-- [Getting Started](./getting-started.md) - 开发环境设置
+- [架构与核心设计](05-architecture.md) - 详细的架构设计
+- [环境准备与调试](01-setup.md) - 开发环境设置
 - [Plugin Quick Start](./plugin/PLUGIN_QUICK_START.md) - 插件快速开始
 - [Plugin Adoption Guide](./plugin/PLUGIN_FRAMEWORK_ADOPTION.md) - 框架采用指南

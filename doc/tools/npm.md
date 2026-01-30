@@ -1,16 +1,21 @@
 # npm 完整使用指南
 
-本指南涵盖了 npm 的常用命令、镜像源管理、安全审计、依赖管理等全方位使用说明。
+本指南涵盖了 npm 的基础命令、包管理、依赖管理、安全审计、镜像源管理、版本管理、测试配置等全方位使用说明。
 
 ## 目录
 
 - [基础命令](#基础命令)
 - [包管理](#包管理)
 - [依赖管理](#依赖管理)
+- [版本管理](#版本管理)
 - [安全审计](#安全审计)
 - [镜像源管理](#镜像源管理)
 - [配置管理](#配置管理)
+- [Node.js 版本管理](#nodejs-版本管理)
+- [测试环境配置](#测试环境配置)
+- [实用技巧](#实用技巧)
 - [常见问题](#常见问题)
+- [附录](#附录)
 
 ---
 
@@ -226,9 +231,60 @@ npm run
 npm run <script> -- --arg1 --arg2
 ```
 
+### package.json 字段说明
+
+```json
+{
+  "name": "project-name",
+  "version": "1.0.0",
+  "description": "项目描述",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./lib": "./lib/index.js"
+  },
+  "imports": {
+    "#*": "./src/*"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "typescript": "^5.0.0"
+  },
+  "optionalDependencies": {},
+  "peerDependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "bin": {
+    "mycli": "./bin/cli.js"
+  },
+  "config": {
+    "port": "3000"
+  }
+}
+```
+
+---
+
+## 版本管理
+
 ### 版本号规则 (SemVer)
 
-```tree
+```text
 格式: MAJOR.MINOR.PATCH
 
 1.2.3
@@ -238,18 +294,80 @@ npm run <script> -- --arg1 --arg2
  └──────── MAJOR: 重大变更，可能不兼容
 ```
 
-版本范围符号：
+### 版本范围符号
 
-- `^1.2.3` - 兼容次版本: >=1.2.3 <2.0.0
-- `~1.2.3` - 兼容补丁版本: >=1.2.3 <1.3.0
-- `1.2.3` - 精确版本
-- `>=1.2.3` - 大于等于
-- `>1.2.3` - 大于
-- `<=1.2.3` - 小于等于
-- `<1.2.3` - 小于
-- `1.2.*` - 通配符
-- `*` - 任意版本
-- `latest` - 最新版本
+| 符号 | 说明 | 示例 | 范围 |
+|------|------|------|------|
+| `^` | 兼容次版本 | `^1.2.3` | `>=1.2.3 <2.0.0` |
+| `~` | 兼容补丁版本 | `~1.2.3` | `>=1.2.3 <1.3.0` |
+| `1.2.3` | 精确版本 | `1.2.3` | `1.2.3` |
+| `>=` | 大于等于 | `>=1.2.3` | `>=1.2.3` |
+| `>` | 大于 | `>1.2.3` | `>1.2.3` |
+| `<=` | 小于等于 | `<=1.2.3` | `<=1.2.3` |
+| `<` | 小于 | `<1.2.3` | `<1.2.3` |
+| `*` | 通配符 | `1.2.*` | `1.2.x` |
+| `latest` | 最新版本 | `latest` | 最新发布 |
+| `beta` | 测试版 | `beta` | 最新测试版 |
+
+### 发布版本
+
+```bash
+# 更新版本号并创建 git tag
+npm version patch   # 1.0.0 -> 1.0.1
+npm version minor    # 1.0.0 -> 1.1.0
+npm version major    # 1.0.0 -> 2.0.0
+
+# 更新预发布版本
+npm version prerelease --preid alpha   # 1.0.0 -> 1.0.1-alpha.0
+npm version prerelease --preid beta    # 1.0.0 -> 1.0.1-beta.0
+npm version prerelease --preid rc      # 1.0.0 -> 1.0.1-rc.0
+
+# 指定版本
+npm version 2.0.0
+
+# 跳过 git tag
+npm version patch --no-git-tag-version
+```
+
+### 发布包
+
+```bash
+# 登录 npm 账号
+npm login
+
+# 检查登录状态
+npm whoami
+
+# 发布到 npm
+npm publish
+
+# 发布特定 tag
+npm publish --tag beta
+
+# 从本地文件发布
+npm publish ./package.tgz
+
+# 发布到特定 registry
+npm publish --registry https://registry.npmmirror.com/
+
+# 撤销发布（只能撤销 24 小时内的版本）
+npm unpublish <package>@<version>
+npm unpublish <package> --force  # 危险操作
+```
+
+### package-lock.json
+
+```bash
+# 作用说明
+# 1. 锁定依赖的确切版本
+# 2. 确保团队成员安装相同版本的依赖
+# 3. 加快安装速度
+# 4. 不要手动修改此文件
+
+# 重新生成 lock 文件
+rm package-lock.json
+npm install
+```
 
 ---
 
@@ -317,6 +435,20 @@ npm audit fix --dry-run
 | **moderate** | 中危漏洞 | 影响有限，需关注 |
 | **low** | 低危漏洞 | 影响较小 |
 | **info** | 信息性 | 需要了解的信息 |
+
+### 安全最佳实践
+
+```bash
+# CI/CD 流程中的安全检查
+npm ci
+npm audit --audit-level=moderate
+npm run test
+
+# 生产部署前
+npm ci
+npm audit fix
+npm audit --audit-level=critical
+```
 
 ---
 
@@ -499,7 +631,7 @@ npm config set save-exact true
 ### 用户配置文件 (~/.npmrc)
 
 ```ini
-# .npmrc 示例
+# ~/.npmrc 示例
 registry=https://mirrors.tencent.com/npm/
 save-prefix=^
 save-exact=false
@@ -515,6 +647,415 @@ registry=https://mirrors.tencent.com/npm/
 save-exact=true
 # 项目特定的配置
 @mycompany:registry=https://registry.mycompany.com/
+```
+
+---
+
+## Node.js 版本管理
+
+### 使用 nvm 管理版本
+
+nvm (Node Version Manager) 是最流行的 Node.js 版本管理工具。
+
+```bash
+# 安装 nvm (macOS/Linux)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+source ~/.bashrc
+
+# 安装特定版本
+nvm install 20
+nvm install 18
+nvm install 22
+
+# 切换版本
+nvm use 20
+nvm use 22
+
+# 查看已安装的版本
+nvm ls
+
+# 查看可用的远程版本
+nvm ls-remote
+
+# 设置默认版本
+nvm alias default 20
+
+# 卸载版本
+nvm uninstall 18
+
+# 查看当前版本
+node -v
+nvm current
+```
+
+### Node.js 版本兼容性
+
+主流框架和工具的 Node.js 版本要求：
+
+| 工具/框架 | 最低版本 | 推荐版本 |
+|-----------|---------|---------|
+| npm | 18.0.0 | 20.x / 22.x |
+| Jest | 18.14.0 / 20.0.0 / 22.0.0 / 24.0.0+ | 20.x / 22.x |
+| TypeScript | 14.x | 20.x / 22.x |
+| Webpack 5 | 16.13.0 | 20.x / 22.x |
+| Vite | 18.0.0 | 20.x / 22.x |
+| React | 14.x | 20.x / 22.x |
+| Vue 3 | 16.x | 20.x / 22.x |
+
+### Node.js 版本生命周期
+
+| 系列 | 最新版本 | 当前状态 | 停止支持 |
+|------|---------|---------|---------|
+| 20.x | 20.12.x | Active LTS | 2026-04 |
+| 22.x | 22.12.x | Current | 2027-04 |
+| 18.x | 18.19.x | Maintenance | 2025-04 |
+| 16.x | 16.20.x | End of Life | 2023-09 |
+
+**推荐版本**：
+
+- 生产环境：Node 20.x (LTS)
+- 开发环境：Node 22.x (Current)
+- 遗留项目：Node 18.x (Maintenance)
+
+### package.json engines 字段
+
+在 `package.json` 中声明 Node.js 和 npm 版本要求：
+
+```json
+{
+  "engines": {
+    "node": ">=18.0.0 <22.0.0",
+    "npm": ">=9.0.0"
+  }
+}
+```
+
+**版本范围说明**：
+
+- `>=18.0.0`: 大于等于 18.0.0
+- `<22.0.0`: 小于 22.0.0
+- `18.0.0 - 20.0.0`: 18.0.0 到 20.0.0
+- `18 || 20`: 18.x 或 20.x
+
+**强制检查**：
+
+```bash
+# 安装时强制检查版本
+npm install --engine-strict
+
+# 或在 .npmrc 中设置
+engine-strict=true
+```
+
+### 版本切换最佳实践
+
+```bash
+# 检查项目要求的版本
+cat package.json | grep -A 3 "engines"
+
+# 切换到支持的版本
+nvm use 20  # 或 nvm use 22
+
+# 验证版本
+node -v
+npm -v
+
+# 运行测试验证
+npm ci
+npm test
+```
+
+---
+
+## 测试环境配置
+
+### 测试依赖安装
+
+```bash
+# 清理全局安装的包（避免版本冲突）
+npm uninstall -g @types/jest
+
+# 在项目中本地安装依赖
+npm install
+
+# 或者单独安装测试相关的依赖
+npm install --save-dev jest @types/jest ts-jest
+```
+
+### 测试脚本配置
+
+在 `package.json` 中配置测试脚本：
+
+```json
+{
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest test/unit/**/*.test.ts",
+    "test:integration": "jest test/integration/**/*.test.ts",
+    "pretest": "npm run lint"
+  }
+}
+```
+
+### 测试文件规范
+
+**推荐目录结构**：
+
+```text
+project/
+├── src/
+│   ├── utils/
+│   └── services/
+├── test/
+│   ├── unit/
+│   │   ├── utils.test.ts
+│   │   └── services.test.ts
+│   ├── integration/
+│   │   └── api.test.ts
+│   └── __tests__/
+│       └── app.test.ts
+```
+
+**命名规范**：
+
+- `*.test.ts` - 单元测试
+- `*.spec.ts` - 规范测试（BDD 风格）
+- `__tests__/*.ts` - 集成测试
+
+### Jest 配置示例
+
+```javascript
+// jest.config.js
+export default {
+  preset: 'ts-jest/presets/default-esm',
+  testEnvironment: 'node',
+
+  // 测试文件匹配模式
+  testMatch: [
+    '**/test/**/*.test.ts',
+    '**/__tests__/**/*.test.ts',
+  ],
+
+  // 模块名映射
+  moduleNameMapper: {
+    '^#/(.*)$': '<rootDir>/src/$1',
+  },
+
+  // 覆盖率收集
+  collectCoverage: true,
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.example.ts',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+
+  // 转换配置
+  transform: {
+    '^.+\\.ts$': ['ts-jest', {
+      useESM: true,
+      tsconfig: './test/tsconfig.json',
+    }],
+  },
+
+  // 超时时间
+  testTimeout: 10000,
+
+  // 详细输出
+  verbose: true,
+};
+```
+
+### 测试文件模板
+
+```typescript
+/**
+ * 模块名称单元测试
+ */
+
+import { functionToTest } from '#/utils/module';
+
+describe('ModuleName', () => {
+  beforeEach(() => {
+    // 每个测试前的准备工作
+  });
+
+  afterEach(() => {
+    // 每个测试后的清理工作
+  });
+
+  describe('functionName', () => {
+    it('should do something', () => {
+      const input = 'test';
+      const expected = 'expected output';
+
+      const result = functionToTest(input);
+
+      expect(result).toBe(expected);
+    });
+
+    it('should handle edge cases', () => {
+      expect(() => functionToTest(null)).toThrow();
+    });
+  });
+});
+```
+
+### 运行测试
+
+```bash
+# 运行所有测试
+npm test
+
+# 监听模式（文件变化时自动重新运行）
+npm run test:watch
+
+# 生成覆盖率报告
+npm run test:coverage
+
+# 运行特定测试文件
+npm test -- utils.test.ts
+
+# 运行匹配特定模式的测试
+npm test -- --testNamePattern="should handle"
+```
+
+### 测试环境最佳实践
+
+**1. 隔离测试环境**：
+
+```bash
+# 测试前检查环境
+nvm use 20
+npm ci
+npm run test:unit
+```
+
+**2. 使用 TypeScript 类型检查**：
+
+```json
+// test/tsconfig.json
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "noEmit": true
+  },
+  "include": ["../src/**/*", "../test/**/*"]
+}
+```
+
+**3. CI/CD 集成**：
+
+```yaml
+# .github/workflows/test.yml
+name: Test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:coverage
+```
+
+---
+
+## 实用技巧
+
+### 快速重置项目
+
+```bash
+# 删除 node_modules 和 lock 文件
+rm -rf node_modules package-lock.json
+
+# 重新安装
+npm install
+```
+
+### 批量安装多个包
+
+```bash
+# 从文件安装包列表
+cat packages.txt | xargs npm install
+
+# 使用 npx 执行包而不安装
+npx create-react-app my-app
+npx typescript --init
+```
+
+### 查看 npm 使用统计
+
+```bash
+# 查看包的下载量
+npm view <package> downloads
+
+# 查看包的 GitHub 信息
+npm view <package> repository
+```
+
+### 使用 npm scripts 快捷方式
+
+```bash
+# 直接运行（不需要 run 前缀）
+npm start
+npm test
+npm stop
+
+# 需要使用 run 前缀
+npm run build
+npm run dev
+```
+
+### 缓存管理
+
+```bash
+# 清理缓存
+npm cache clean --force
+
+# 验证缓存
+npm cache verify
+
+# 查看缓存内容
+ls -la ~/.npm/_cacache
+```
+
+### 调试 npm
+
+```bash
+# 启用详细日志
+npm install --loglevel verbose
+
+# 启用调试日志
+npm install --dd
+
+# 查看 npm 日志位置
+npm config get cache
+# 日志在: <cache>/_logs/
+```
+
+### 离线安装
+
+```bash
+# 下载包但不安装
+npm pack <package>
+
+# 从 .tgz 文件安装
+npm install <package>-<version>.tgz
+
+# 缓存所有依赖
+npm install --cache-min 999999
 ```
 
 ---
@@ -615,69 +1156,40 @@ npm config delete proxy
 npm config delete https-proxy
 ```
 
-### Q: 如何离线安装 npm 包？
+### Q: Node.js 版本不匹配怎么办？
+
+A: 使用 nvm 切换到支持的版本：
 
 ```bash
-# 下载包但不安装
-npm pack <package>
+# 查看项目要求的版本
+cat package.json | grep -A 3 "engines"
 
-# 从 .tgz 文件安装
-npm install <package>-<version>.tgz
+# 切换版本
+nvm use 20  # 或 nvm use 22
 
-# 缓存所有依赖
-npm install --cache-min 999999
-
-# 使用 npm-offline 工具
-npm install -g npm-offline
-npm-offline download
+# 验证版本
+node -v
 ```
 
----
+### Q: 测试依赖为什么要本地安装？
 
-## 实用技巧
+A: 本地安装的优势：
 
-### 快速重置项目
+- 不同项目可以使用不同版本的测试框架
+- 避免全局版本冲突
+- 确保团队成员使用相同版本
+- 更容易依赖管理
 
-```bash
-# 删除 node_modules 和 lock 文件
-rm -rf node_modules package-lock.json
+### Q: 如何创建新的测试文件？
 
-# 重新安装
-npm install
-```
-
-### 批量安装多个包
+A: 遵循命名和目录规范：
 
 ```bash
-# 从文件安装包列表
-cat packages.txt | xargs npm install
+# 创建测试文件
+touch test/unit/my-module.test.ts
 
-# 使用 npx 执行包而不安装
-npx create-react-app my-app
-npx typescript --init
-```
-
-### 查看 npm 使用统计
-
-```bash
-# 查看包的下载量
-npm view <package> downloads
-
-# 查看包的 GitHub 信息
-npm view <package> repository
-```
-
-### 使用 npm scripts 快捷方式
-
-```bash
-# 直接运行（不需要 run 前缀）
-npm start
-npm test
-npm stop
-
-# 需要使用 run 前缀
-npm run build
-npm run dev
+# 编写测试
+# 参考：测试文件模板
 ```
 
 ---
@@ -700,6 +1212,21 @@ npm run dev
 | `npm list` | 查看依赖树 |
 | `npm config get/set` | 配置管理 |
 | `npm run` | 运行脚本 |
+| `npm version` | 更新版本号 |
+| `npm publish` | 发布包 |
+| `npm cache clean` | 清理缓存 |
+
+### nvm 命令速查表
+
+| 命令 | 说明 |
+|------|------|
+| `nvm install <version>` | 安装版本 |
+| `nvm use <version>` | 切换版本 |
+| `nvm ls` | 查看已安装版本 |
+| `nvm ls-remote` | 查看可用版本 |
+| `nvm alias default <version>` | 设置默认版本 |
+| `nvm uninstall <version>` | 卸载版本 |
+| `nvm current` | 查看当前版本 |
 
 ### 常用镜像源列表
 
@@ -718,10 +1245,25 @@ https://r.cnpmjs.org/
 
 # 华为云镜像
 https://repo.huaweicloud.com/repository/npm/
-
-# Yarn 镜像
-https://registry.yarnpkg.com/
 ```
+
+### package.json 常用字段
+
+| 字段 | 说明 |
+|------|------|
+| `name` | 包名称 |
+| `version` | 版本号 (SemVer) |
+| `description` | 描述 |
+| `main` | 入口文件 |
+| `type` | 模块类型 (module/commonjs) |
+| `scripts` | 脚本命令 |
+| `dependencies` | 生产依赖 |
+| `devDependencies` | 开发依赖 |
+| `engines` | Node/npm 版本要求 |
+| `files` | 发布时包含的文件 |
+| `bin` | 命令行工具入口 |
+| `exports` | 导出配置 |
+| `imports` | 内部导入映射 |
 
 ### 相关资源
 
@@ -729,8 +1271,12 @@ https://registry.yarnpkg.com/
 - [npm 语义化版本规范](https://semver.org/lang/zh-CN/)
 - [npm 包搜索](https://www.npmjs.com/)
 - [nrm 仓库](https://github.com/Pana/nrm)
+- [nvm 官网](https://github.com/nvm-sh/nvm)
+- [Jest 官方文档](https://jestjs.io/)
+- [ts-jest 文档](https://kulshekhar.github.io/ts-jest/)
+- [测试最佳实践](https://github.com/goldbergyoni/javascript-testing-best-practices)
 
 ---
 
-**最后更新**: 2026-01-11
-**适用版本**: npm >= 9.0.0
+**最后更新**: 2026-01-30
+**适用版本**: npm >= 9.0.0, Node.js >= 18.0.0

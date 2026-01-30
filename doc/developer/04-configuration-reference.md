@@ -1,168 +1,15 @@
-# 项目结构与核心配置
+# 核心配置与工程规范
 
-本文档详细介绍 Shell Formatter 项目的目录结构、核心配置文件及其作用，帮助开发者快速理解项目组织方式。
+本文档详细介绍 Shell Formatter 项目的核心配置文件、配置关系与开发工作流，帮助开发者掌握构建与测试的工程规范。
 
 ## 目录
 
-- [项目概览](#项目概览)
-- [目录结构详解](#目录结构详解)
 - [核心配置文件](#核心配置文件)
+- [README 管理流程](#readme-管理流程)
 - [配置文件关系图](#配置文件关系图)
 - [开发工作流](#开发工作流)
-
----
-
-## 项目概览
-
-### 项目定位
-
-Shell Formatter 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊断功能。
-
-### 技术栈
-
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| TypeScript | ^5.0 | 开发语言 |
-| Node.js | >= 16.x | 运行时 |
-| VSCode API | ^1.74.0 | 扩展框架 |
-| Jest | ^29.7.0 | 测试框架 |
-| ES Modules | - | 模块系统 |
-
----
-
-## 目录结构详解
-
-### 完整目录树
-
-```text
-shell_formatter/
-├── .vscode/                    # VSCode 工作区配置
-│   ├── launch.json            # 调试配置
-│   ├── settings.json          # 编辑器设置
-│   └── tasks.json             # 任务配置
-│
-├── doc/                        # 文档目录
-│   ├── developer/             # 开发者文档
-│   │   ├── architecture.md    # 架构设计
-│   │   ├── getting-started.md # 快速开始
-│   │   ├── plugin.md          # 插件机制
-│   │   ├── test.md            # 测试指南
-│   │   ├── project-structure.md # 本文档
-│   │   └── monitor.md         # 性能监控
-│   ├── tools/                 # 工具文档
-│   │   ├── tsconfig.md        # TypeScript 配置
-│   │   ├── npm.md             # npm 使用
-│   │   ├── npm_test.md        # npm test 说明
-│   │   ├── shellcheck.md      # shellcheck 工具
-│   │   ├── shfmt.md           # shfmt 工具
-│   │   └── spawn.md           # spawn API
-│   ├── user/                  # 用户文档
-│   │   └── README.md          # 用户手册
-│   └── INDEX.md               # 文档索引
-│
-├── scripts/                    # 脚本目录
-│   ├── safe-package.sh        # 安全打包脚本（处理 README 切换）
-│   ├── manage-readme.sh       # README 备份/替换/恢复脚本
-│   └── test-readme-backup.sh  # README 备份测试脚本
-│
-├── src/                        # 源代码目录
-│   ├── commands/              # 命令实现
-│   │   ├── formatCommand.ts
-│   │   ├── fixCommand.ts
-│   │   └── index.ts
-│   ├── config/                # 配置管理
-│   │   └── settingInfo.ts
-│   ├── di/                    # 依赖注入容器
-│   │   └── container.ts
-│   ├── plugins/               # 插件目录
-│   │   ├── shfmtPlugin.ts
-│   │   ├── shellcheckPlugin.ts
-│   │   └── index.ts
-│   ├── utils/                 # 工具函数
-│   │   ├── log.ts
-│   │   ├── debounce.ts
-│   │   ├── performance/
-│   │   │   └── alertManager.ts
-│   │   └── plugin/
-│   │       ├── BasePlugin.ts
-│   │       ├── PluginManager.ts
-│   │       └── MessageBus.ts
-│   └── extension.ts           # 扩展入口
-│
-├── test/                       # 测试目录
-│   ├── tsconfig.json          # 测试专用 TS 配置
-│   └── unit/                  # 单元测试
-│       └── utils/
-│           ├── log.test.ts
-│           └── plugin/
-│               └── PluginManager.test.ts
-│
-├── resources/                  # 资源文件
-│   ├── icon.png               # 扩展图标
-│   ├── language-configuration.json  # 语言配置
-│   └── USER_README.md         # 用户文档（插件市场展示）
-│
-├── dist/                       # 编译输出（自动生成）
-├── coverage/                   # 覆盖率报告（自动生成）
-├── node_modules/               # 依赖包（自动生成）
-│
-├── .eslintrc.js               # ESLint 配置
-├── .gitignore                 # Git 忽略规则
-├── .markdownlintrc.json       # Markdown 检查配置
-├── .vscodeignore              # VSCode 打包忽略
-│
-├── jest.config.js             # Jest 测试配置
-├── package.json               # 项目配置
-├── tsconfig.json              # TypeScript 主配置
-│
-├── LICENSE                    # 许可证
-├── README.md                  # 项目说明
-└── README_EN.md               # 英文说明
-```
-
-### 关键目录说明
-
-#### `src/` - 源代码
-
-| 子目录 | 说明 | 关键文件 |
-|--------|------|----------|
-| `commands/` | VSCode 命令实现 | `formatCommand.ts`, `fixCommand.ts` |
-| `config/` | 配置管理 | `settingInfo.ts` |
-| `di/` | 依赖注入容器 | `container.ts` |
-| `plugins/` | 格式化/诊断插件 | `shfmtPlugin.ts`, `shellcheckPlugin.ts` |
-| `utils/` | 通用工具函数 | `log.ts`, `debounce.ts`, `performance/` |
-
-#### `test/` - 测试代码
-
-| 子目录 | 说明 |
-|--------|------|
-| `unit/` | 单元测试 |
-| `tsconfig.json` | 测试专用 TypeScript 配置 |
-
-#### `doc/` - 文档
-
-| 子目录 | 说明 |
-|--------|------|
-| `developer/` | 开发者文档 |
-| `tools/` | 工具使用文档 |
-| `user/` | 用户文档（`USER_README.md`） |
-| `INDEX.md` | 文档索引和导航 |
-
-#### `resources/` - 资源文件
-
-| 文件 | 说明 |
-|------|------|
-| `icon.png` | 扩展图标（插件市场展示） |
-| `language-configuration.json` | Shell 语言配置 |
-| `USER_README.md` | 用户文档（发布时会复制到根目录） |
-
-#### `scripts/` - 脚本目录
-
-| 脚本 | 用途 |
-|------|------|
-| `safe-package.sh` | 安全打包脚本，自动处理 README 切换 |
-| `manage-readme.sh` | README 备份/替换/恢复管理 |
-| `test-readme-backup.sh` | 测试 README 备份功能 |
+- [配置文件速查表](#配置文件速查表)
+- [相关文档](#相关文档)
 
 ---
 
@@ -182,6 +29,9 @@ shell_formatter/
   "displayName": "Shell Formatter",
   "version": "1.0.1",
   "type": "module",
+  "imports": {
+    "#*": "./src/*"
+  },
   "main": "./dist/extension.js",
   "engines": {
     "vscode": "^1.74.0"
@@ -219,6 +69,7 @@ shell_formatter/
     "moduleResolution": "bundler",
     "outDir": "./dist",
     "rootDir": "./src",
+    "resolvePackageJsonImports": true,
     "paths": {
       "#/*": ["./src/*"]
     },
@@ -248,23 +99,27 @@ shell_formatter/
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "types": ["jest", "node"],
     "rootDir": "../",
     "outDir": "../dist-test",
+    "noEmit": true,
     "paths": {
       "#/*": ["../src/*"]
     }
   },
-  "include": ["../src/**/*", "./**/*"],
-  "exclude": ["node_modules", "../dist", "../dist-test", "../coverage"]
+  "include": ["../src/**/*", "../test/**/*"],
+  "exclude": ["node_modules", "dist", "dist-test", "coverage"]
 }
 ```
 
 **与主配置的区别**:
 
 - `rootDir`: 扩大到项目根目录（包含 src 和 test）
+- `types`: 添加 `jest` 与 `node` 的类型声明
 - `paths`: 使用相对于配置文件的路径 `"../src/*"`（TS 7+ 推荐方式）
 - `include`: 同时包含源代码和测试代码
-- `outDir`: 输出到 `dist-test/`
+- `noEmit`: 测试阶段只做类型检查
+- `outDir`: 输出目录仍保持为 `dist-test/`（但 `noEmit` 为 true）
 
 ### 4. jest.config.js - 测试框架配置
 
@@ -274,24 +129,78 @@ shell_formatter/
 
 ```javascript
 export default {
+  // 使用 ts-jest 预设
   preset: 'ts-jest/presets/default-esm',
+
+  // 运行环境
   testEnvironment: 'node',
-  testMatch: ['**/test/**/*.test.ts'],
+
+  // 测试文件匹配模式
+  testMatch: [
+    '**/test/**/*.test.ts',
+    '**/__tests__/**/*.test.ts',
+  ],
+
+  // 模块名映射（支持 package.json imports 的内部别名）
   moduleNameMapper: {
-    '^#/(.*)$': '<rootDir>/src/$1',
+    '^#utils/(.*)$': '<rootDir>/src/utils/$1',
   },
+
+  // 覆盖率收集
   collectCoverage: true,
+  collectCoverageFrom: [
+    'src/utils/**/*.ts',
+    '!src/utils/**/*.example.ts',
+    '!src/utils/**/example.ts',
+  ],
   coverageDirectory: 'coverage',
-  transform: {
-    '^.+\\.ts$': ['ts-jest', { useESM: true, tsconfig: './test/tsconfig.json' }],
+  coverageReporters: [
+    'text',
+    'text-summary',
+    'json',
+    'json-summary',
+    'lcov',
+    'html',
+  ],
+  coverageThreshold: {
+    global: {
+      statements: 99,
+      branches: 90,
+      functions: 100,
+      lines: 99,
+    },
   },
+
+  // ESM 支持
+  extensionsToTreatAsEsm: ['.ts'],
+  moduleFileExtensions: ['ts', 'js', 'json'],
+
+  // 转换配置
+  transform: {
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        useESM: true,
+        tsconfig: './test/tsconfig.json',
+      },
+    ],
+  },
+
+  // 超时时间
+  testTimeout: 10000,
+
+  // 没有测试时通过
+  passWithNoTests: true,
+
+  // 详细输出
+  verbose: true,
 };
 ```
 
 **关键配置**:
 
 - `preset`: 使用 ts-jest 支持 TypeScript
-- `moduleNameMapper`: 路径别名映射（与 tsconfig 对应）
+- `moduleNameMapper`: 运行时路径别名（当前仅映射 `#utils/*`）
 - `transform`: 使用 `test/tsconfig.json` 编译
 
 ### 5. .eslintrc.js - 代码检查配置
@@ -301,26 +210,33 @@ export default {
 **作用**: 配置 ESLint 代码规范检查
 
 ```javascript
-module.exports = {
+export default {
   root: true,
   parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module'
+  },
   plugins: ['@typescript-eslint'],
   extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended'
   ],
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: 'module',
+  env: {
+    mocha: true,
+    node: true
   },
+  rules: {
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
+  }
 };
 ```
 
-### 6. .vscode/launch.json - 调试配置
+### 6. .vscode/launch.json - 调试配置（可选）
 
 **位置**: `.vscode/` 目录
 
-**作用**: 配置 VSCode 调试器
+**作用**: 本地调试配置（仓库未默认跟踪，可自行创建）
 
 ```json
 {
@@ -350,7 +266,7 @@ module.exports = {
 src/**
 test/**
 out/**
-scripts/**
+script/**
 .gitignore
 .yarnrc
 webpack.config.js
@@ -381,6 +297,10 @@ vsc-extension-quickstart.md
 | `USER_README.md` | `resources/` | 终端用户 | 功能说明、使用指南 |
 | `README.md` | 根目录 | 开发者 | 项目概述、架构设计 |
 | `doc/developer/*.md` | `doc/developer/` | 开发者 | 详细开发文档 |
+
+---
+
+## README 管理流程
 
 **README 管理流程**:
 
@@ -455,13 +375,104 @@ jest.config.js (通过 tsconfig 选项)
 
 ### 路径别名映射
 
+#### # 导入（imports / paths / Jest）统一说明
+
+项目使用 `#` 前缀作为内部模块别名，分别由运行时与编译/测试阶段配置解析：
+
+**注意事项**：
+
+- `package.json` 的 `imports` 使用 `#*`（不带斜杠），`tsconfig.json` 的 `paths` 使用 `#/*`（带斜杠）。
+- 代码里应写 `#/` 前缀，例如 `#/utils/log`。
+- TypeScript 编译后，`import` 的模块标识符保持原样（`#/utils/log` 仍带斜杠）。
+- Node.js 运行时会用 `imports` 的 `#*` 匹配并解析该带斜杠的标识符。
+
+**多配置项匹配规则**：
+
+- `imports` 与 `paths` 都遵循“**优先匹配更具体的模式**”的规则（如 `#utils/*` 优先于 `#*`）。
+- 当多个规则都能匹配时，优先选择**更具体**的那条；因此建议把更细的别名单独列出。
+- `jest.config.js` 的 `moduleNameMapper` 也是类似逻辑，建议先写更具体的正则。
+- `paths` 的值可以是**数组**，编译时会按数组顺序依次尝试，**命中第一个存在的路径即停止**。
+- 如果数组中的多个路径都存在，**始终优先使用排在前面的路径**，因此请把首选路径放在前面。
+
+```json
+// package.json（Node.js 运行时）
+{
+  "type": "module",
+  "imports": {
+    "#*": "./src/*",
+    "#utils/*": "./src/utils/*" // 更具体的别名, #/utils/ 优先匹配
+  }
+}
+```
+
+```json
+// tsconfig.json（TypeScript 编译时）
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+      "#/*": ["./src/*"],
+      "#utils/*": ["./src/utils/*"] // 更具体的别名, #/utils/ 优先匹配
+    }
+}
+```
+
+**示例：`paths` 多路径与冲突处理**
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "#/*": [
+        "./src/*",
+        "./generated/*"  // 备选路径：仅当 src 不存在时才会使用
+      ],
+      "#utils/*": [
+        "./src/utils/*",
+        "./shared/utils/*" // 与 src/utils 同名时，优先使用前者
+      ]
+    }
+  }
+}
+```
+
+**解析顺序说明**：
+
+1. 先匹配更具体的 key：`#utils/*` 优先于 `#*`。
+2. 再按该 key 的数组顺序依次尝试，命中第一个存在的路径即停止。
+
+```json
+// test/tsconfig.json（测试编译时）
+{
+  "compilerOptions": {
+    "paths": {
+      "#/*": ["../src/*"]
+    }
+  }
+}
+```
+
+```javascript
+// jest.config.js（Jest 运行时）
+export default {
+  moduleNameMapper: {
+    '^#/(.*)$': '<rootDir>/src/$1',
+    '^#utils/(.*)$': '<rootDir>/src/utils/$1'
+  }
+};
+```
+
+**注意**：当前 Jest 仅映射 `#utils/*`。如果测试代码使用 `#/` 前缀，请补充 `^#/(.*)$` 映射或统一改用 `#utils/*`。
+
 ```text
 代码中: import { x } from '#/utils/log';
-    ↓
+  ↓
 TypeScript: tsconfig.json paths → ./src/utils/log
-    ↓
-Jest: jest.config.js moduleNameMapper → <rootDir>/src/log
-    ↓
+  ↓
+Node.js: package.json imports → ./src/utils/log
+  ↓
+Jest: jest.config.js moduleNameMapper → <rootDir>/src/utils/log
+  ↓
 实际文件: src/utils/log.ts
 ```
 
@@ -540,7 +551,7 @@ npm run install:extension
 | `test/tsconfig.json` | 测试编译配置 | 低 |
 | `jest.config.js` | 测试框架配置 | 低 |
 | `.eslintrc.js` | 代码规范配置 | 低 |
-| `.vscode/launch.json` | 调试配置 | 低 |
+| `.vscode/launch.json` | 调试配置（可选，本地自建） | 低 |
 | `.vscodeignore` | 打包忽略配置 | 低 |
 
 ### 文档和脚本
@@ -557,7 +568,7 @@ npm run install:extension
 
 ## 相关文档
 
-- [快速开始指南](./getting-started.md) - 开发环境配置
-- [测试指南](./test.md) - 测试体系详解
-- [架构设计文档](./architecture.md) - 项目架构说明
+- [环境准备与调试](01-setup.md) - 开发环境配置
+- [测试体系与实践](08-testing.md) - 测试体系详解
+- [架构与核心设计](05-architecture.md) - 项目架构说明
 - [TypeScript 配置详解](../tools/tsconfig.md) - tsconfig 完整说明
