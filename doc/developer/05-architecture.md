@@ -56,16 +56,18 @@ export interface IFormatPlugin extends IPlugin {
   description: string;
   isAvailable(): Promise<boolean>;
   format?(
-    document: TextDocument,
+    document: Document,        // 领域类型，不依赖 VSCode
     options: PluginFormatOptions,
   ): Promise<PluginFormatResult>;
   check(
-    document: TextDocument,
+    document: Document,        // 领域类型，不依赖 VSCode
     options: PluginCheckOptions,
   ): Promise<PluginCheckResult>;
   getSupportedExtensions(): string[];
 }
 ```
+
+> **架构说明**：插件接口使用领域类型（`Document`, `Diagnostic`, `TextEdit` 等），不依赖 VSCode 类型。这种设计使得插件层可以在 CLI、Web、桌面应用等多种场景中复用。VSCode 特定的类型转换由适配器层（`DocumentAdapter`）处理。
 
 ### 依赖注入 (Dependency Injection)
 
@@ -233,31 +235,148 @@ function shouldSkipFile(fileName: string): boolean {
 模块之间保持单向依赖关系：
 
 ```text
-extension.ts
+extension.ts (VSCode 入口层)
     ↓
-commands/  diagnostics/  formatters/
+commands/  diagnostics/  formatters/ (VSCode 适配层)
     ↓           ↓              ↓
-plugins/ (插件层) ←────────────────────┘
+plugins/ (领域层 - 使用领域类型)
     ↓
 DI Container
     ↓
-config/  tools/  utils/  adapters/
+config/  tools/  utils/ (基础设施层)
 ```
 
-- `extension.ts` 依赖所有功能模块
+- `extension.ts` 依赖所有功能模块，作为 VSCode 扩展入口
 - 业务模块（commands/、diagnostics/、formatters/）依赖 `plugins/`
-- `plugins/` 依赖 DI 容器和工具层
+- `plugins/` 使用领域类型（`Document`, `Diagnostic`, `TextEdit`），不依赖 VSCode
+- `PluginManager` 作为适配器层，负责 VSCode 类型与领域类型的转换
 - 业务模块之间相互独立
+
+### 2.1 类型转换架构
+
+为了实现领域层与 VSCode 的解耦，引入适配器层进行类型转换：
+
+```text
+VSCode 类型                    领域类型
+───────────                   ─────────
+TextDocument    ←───────→     Document
+Diagnostic        ←───────→   Diagnostic
+TextEdit          ←───────→   TextEdit
+Range             ←───────→   Range
+Position          ←───────→   Position
+```
+
+**转换流程**：
+
+```typescript
+// 1. VSCode 调用 PluginManager
+const result = await pluginManager.format(vscodeDocument, options);
+
+// 2. PluginManager 内部转换为领域类型
+const domainDocument = DocumentAdapter.toDocument(vscodeDocument);
+const domainResult = await plugin.format(domainDocument, options);
+
+// 3. 插件返回领域类型结果
+return {
+    textEdits: domainResult.textEdits,  // 领域类型 TextEdit[]
+    diagnostics: domainResult.diagnostics  // 领域类型 Diagnostic[]
+};
+
+// 4. PluginManager 转换回 VSCode 类型
+return {
+    textEdits: DocumentAdapter.fromTextEdits(domainResult.textEdits),
+    diagnostics: DocumentAdapter.fromDiagnostics(domainResult.diagnostics)
+};
+```
 
 ### 3. 关注点分离
 
-| 层级       | 职责         | 示例                                       |
-| ---------- | ------------ | ------------------------------------------ |
-| **入口层** | 注册和协调   | `extension.ts`                             |
-| **业务层** | 实现具体功能 | `commands/`, `diagnostics/`, `formatters/` |
-| **插件层** | 插件管理     | `plugins/`, `di/`                          |
-| **工具层** | 提供通用能力 | `tools/`, `utils/`, `adapters/`            |
-| **配置层** | 配置管理     | `config/`, `metrics/`                      |
+| 层级         | 职责           | 示例                                       | 依赖关系                |
+| ------------ | -------------- | ------------------------------------------ | ----------------------- |
+| **入口层**   | 注册和协调     | `extension.ts`                             | 依赖所有下层            |
+| **适配层**   | 类型转换       | `adapters/`, `PluginManager`               | 连接 VSCode 与领域层    |
+| **业务层**   | 实现具体功能   | `commands/`, `diagnostics/`, `formatters/`| 依赖插件层              |
+| **插件层**   | 插件管理       | `plugins/`, `di/`                          | 使用领域类型，无外部依赖 |
+| **工具层**   | 提供通用能力   | `tools/`, `utils/`                         | 基础设施层              |
+| **配置层**   | 配置管理       | `config/`, `metrics/`                      | 基础设施层              |
+
+**领域类型说明**：
+
+插件层使用领域类型（Domain Types），这些类型是对 VSCode 类型的抽象，不依赖任何外部框架：
+
+| 领域类型         | 对应 VSCode 类型     | 说明                           |
+| ---------------- | -------------------- | ------------------------------ |
+| `Document`       | `TextDocument`       | 文档内容、URI、语言 ID 等      |
+| `Diagnostic`     | `Diagnostic`         | 诊断信息（位置、消息、级别）   |
+| `TextEdit`       | `TextEdit`           | 文本编辑操作                   |
+| `Range`          | `Range`              | 文本范围                       |
+| `Position`       | `Position`           | 行号和列号                     |
+| `DiagnosticSeverity` | `DiagnosticSeverity` | 错误、警告、信息、提示         |
+
+### 3.1 领域类型定义
+
+领域类型定义在 `src/plugins/types.ts`：
+
+```typescript
+/**
+ * 文档领域模型
+ */
+export interface Document {
+    uri: string;           // 文档 URI
+    content: string;       // 文档内容
+    languageId: string;    // 语言 ID
+    fileName: string;      // 文件名
+    lineCount: number;     // 行数
+}
+
+/**
+ * 诊断领域模型
+ */
+export interface Diagnostic {
+    range: Range;                              // 诊断范围
+    message: string;                           // 诊断消息
+    severity: DiagnosticSeverity;              // 严重级别
+    code?: string | number;                    // 诊断代码
+    source?: string;                           // 诊断源
+}
+
+/**
+ * 文本编辑领域模型
+ */
+export interface TextEdit {
+    range: Range;          // 编辑范围
+    newText: string;       // 新文本内容
+}
+```
+
+### 3.2 适配器实现
+
+`DocumentAdapter` 提供双向类型转换：
+
+```typescript
+export class DocumentAdapter {
+    // VSCode → 领域类型
+    static toDocument(document: vscode.TextDocument): Document;
+    static toDiagnostic(diagnostic: vscode.Diagnostic): Diagnostic;
+    static toTextEdit(edit: vscode.TextEdit): TextEdit;
+
+    // 领域类型 → VSCode
+    static fromDocument(document: Document): vscode.TextDocument;
+    static fromDiagnostic(diagnostic: Diagnostic): vscode.Diagnostic;
+    static fromTextEdit(edit: TextEdit): vscode.TextEdit;
+
+    // 批量转换
+    static toDiagnostics(diagnostics: vscode.Diagnostic[]): Diagnostic[];
+    static fromDiagnostics(diagnostics: Diagnostic[]): vscode.Diagnostic[];
+}
+```
+
+### 3.3 架构优势
+
+1. **框架无关**：插件层可在 CLI、Web、桌面应用等场景复用
+2. **易于测试**：领域类型不依赖 VSCode，便于单元测试
+3. **清晰边界**：通过适配器层隔离外部框架依赖
+4. **类型安全**：编译时检查类型转换的正确性
 
 ## 核心模块详解
 
