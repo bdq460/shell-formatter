@@ -4,17 +4,21 @@
  * 职责：
  * - 注册所有服务到 DI 容器
  * - 协调领域层服务的创建
+ * - 创建适配器并注入到领域层
  *
- * 依赖：domain/, config/, utils/
+ * 依赖：domain/, config/, utils/, infrastructure/
  */
 
-import { SettingInfo } from "../../config";
+import { PackageInfo, SettingInfo } from "../../config";
+import { IPluginConfig } from "../../domain/port";
 import { PluginManager } from "../../domain/plugin-manager";
 import { PureShellcheckPlugin } from "../../domain/plugins/shellcheck-plugin";
 import { PureShfmtPlugin } from "../../domain/plugins/shfmt-plugin";
+import { ShellcheckToolAdapter, ShfmtToolAdapter } from "../../infrastructure/adapters";
+import { PERFORMANCE_METRICS } from "../../shared/performance-metrics";
 import { DIContainer, ServiceNames } from "../../utils/di/container";
 import { logger } from "../../utils/log";
-import { PERFORMANCE_METRICS, startTimer } from "../services/performance-service";
+import { startTimer } from "../../utils/performance/monitor";
 
 /**
  * 初始化 DI 容器
@@ -42,8 +46,19 @@ function registerDomainServices(container: DIContainer): void {
         ServiceNames.SHFMT_PLUGIN,
         () => {
             const shfmtPath = SettingInfo.getShfmtPath();
-            const tabSize = SettingInfo.getRealTabSize();
-            return new PureShfmtPlugin(shfmtPath, tabSize);
+            const tabSize = SettingInfo.getRealTabSize() ?? 4; // 提供默认值
+
+            // 创建适配器
+            const toolAdapter = new ShfmtToolAdapter(shfmtPath, { tabSize });
+
+            // 创建插件配置
+            const pluginConfig: IPluginConfig = {
+                tabSize,
+                diagnosticSource: PackageInfo.diagnosticSource,
+                fileExtensions: PackageInfo.fileExtensions,
+            };
+
+            return new PureShfmtPlugin(toolAdapter, pluginConfig);
         },
     );
 
@@ -52,7 +67,18 @@ function registerDomainServices(container: DIContainer): void {
         ServiceNames.SHELLCHECK_PLUGIN,
         () => {
             const shellcheckPath = SettingInfo.getShellcheckPath();
-            return new PureShellcheckPlugin(shellcheckPath);
+
+            // 创建适配器
+            const toolAdapter = new ShellcheckToolAdapter(shellcheckPath);
+
+            // 创建插件配置
+            const pluginConfig: IPluginConfig = {
+                tabSize: SettingInfo.getRealTabSize() ?? 4, // 提供默认值
+                diagnosticSource: PackageInfo.diagnosticSource,
+                fileExtensions: PackageInfo.fileExtensions,
+            };
+
+            return new PureShellcheckPlugin(toolAdapter, pluginConfig);
         },
     );
 

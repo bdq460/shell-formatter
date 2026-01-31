@@ -151,3 +151,12 @@ export function setLogger(log: Logger): void {
         logger = log;
     }
 }
+
+/**
+ * 重置日志记录器（仅用于测试）
+ *
+ * 警告：此函数仅应在测试环境中使用
+ */
+export function resetLogger(): void {
+    logger = undefined as any;
+}

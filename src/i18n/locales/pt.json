@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "Ativado",
+    "disabled": "Desativado",
+    "active": "Ativo",
+    "inactive": "Inativo"
+  },
+  "messages": {
+    "noActiveDocument": "Nenhum documento ativo para formatar",
+    "allProblemsFixed": "Todos os problemas foram corrigidos com sucesso.",
+    "partialFixSuccess": "{count} correções aplicadas, mas {remaining} problemas permanecem. Verifique o painel de Problemas.",
+    "formattingFailed": "Falha na formatação com avisos. Verifique o painel de Problemas.",
+    "confirmResetMetrics": "Tem certeza de que deseja redefinir todas as métricas de desempenho?",
+    "resetMetricsSuccess": "As métricas de desempenho foram redefinidas."
+  },
+  "performance": {
+    "title": "Shell Formatter - Relatório de Desempenho",
+    "reportGenerated": "Relatório gerado: {date}",
+    "summaryTitle": "=== Resumo de Desempenho ===",
+    "monitoring": "Monitoramento: {status}",
+    "totalMetrics": "Total de métricas: {count}",
+    "topMetrics": "Principais métricas (por contagem de chamadas):",
+    "metricLine": "  {name}: {count} chamadas, média {avg}ms",
+    "detailedReport": "Relatório detalhado:",
+    "totalMetricsLabel": "Total de métricas: {count}",
+    "totalAlerts": "Total de alertas: {count}",
+    "reportGeneratedLog": "Relatório de desempenho gerado"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - Status do Plugin",
+    "configuration": "Configuração:",
+    "shfmt": "shfmt: {status}",
+    "shellcheck": "shellcheck: {status}",
+    "registeredPlugins": "Plugins registrados: {count}",
+    "noPluginsRegistered": "Nenhum plugin registrado",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "Plugins ativos: {count}",
+    "statusDisplayed": "Status do plugin exibido"
+  }
+}

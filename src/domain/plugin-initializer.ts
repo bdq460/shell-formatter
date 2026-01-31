@@ -11,10 +11,11 @@
  * - 管理插件的生命周期
  */
 
-import { SettingInfo } from "../config/settingInfo";
+import { SettingInfo } from "../config/setting-info";
+import { PERFORMANCE_METRICS } from "../shared/performance-metrics";
 import { getContainer, ServiceNames } from "../utils/di/container";
 import { logger } from "../utils/log";
-import { startTimer, PERFORMANCE_METRICS } from "../application/services/performance-service";
+import { startTimer } from "../utils/performance/monitor";
 import { PluginManager } from "./plugin-manager";
 
 /**

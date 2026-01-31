@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "सक्षम",
+    "disabled": "अक्षम",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय"
+  },
+  "messages": {
+    "noActiveDocument": "स्वरूपित करने के लिए कोई सक्रिय दस्तावेज़ नहीं",
+    "allProblemsFixed": "सभी समस्याएं सफलतापूर्वक ठीक हो गईं।",
+    "partialFixSuccess": "{count} सुधार लागू किए गए, लेकिन {remaining} समस्याएं बनी हुई हैं। समस्याएं पैनल की जांच करें।",
+    "formattingFailed": "चेतावनियों के साथ स्वरूपण विफल। समस्याएं पैनल की जांच करें।",
+    "confirmResetMetrics": "क्या आप वाकई सभी प्रदर्शन मेट्रिक्स रीसेट करना चाहते हैं?",
+    "resetMetricsSuccess": "प्रदर्शन मेट्रिक्स रीसेट कर दिए गए हैं।"
+  },
+  "performance": {
+    "title": "Shell Formatter - प्रदर्शन रिपोर्ट",
+    "reportGenerated": "रिपोर्ट उत्पन्न: {date}",
+    "summaryTitle": "=== प्रदर्शन सारांश ===",
+    "monitoring": "निगरानी: {status}",
+    "totalMetrics": "कुल मेट्रिक्स: {count}",
+    "topMetrics": "शीर्ष मेट्रिक्स (कॉल संख्या के अनुसार):",
+    "metricLine": "  {name}: {count} कॉल, औसत {avg}ms",
+    "detailedReport": "विस्तृत रिपोर्ट:",
+    "totalMetricsLabel": "कुल मेट्रिक्स: {count}",
+    "totalAlerts": "कुल अलर्ट: {count}",
+    "reportGeneratedLog": "प्रदर्शन रिपोर्ट उत्पन्न हुई"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - प्लगइन स्थिति",
+    "configuration": "कॉन्फ़िगरेशन:",
+    "shfmt": "shfmt: {status}",
+    "shellcheck": "shellcheck: {status}",
+    "registeredPlugins": "पंजीकृत प्लगइन्स: {count}",
+    "noPluginsRegistered": "कोई प्लगइन्स पंजीकृत नहीं",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "सक्रिय प्लगइन्स: {count}",
+    "statusDisplayed": "प्लगइन स्थिति प्रदर्शित"
+  }
+}

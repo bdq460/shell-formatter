@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "已启用",
+    "disabled": "已禁用",
+    "active": "活跃",
+    "inactive": "非活跃"
+  },
+  "messages": {
+    "noActiveDocument": "没有活动的文档可格式化",
+    "allProblemsFixed": "所有问题已成功修复。",
+    "partialFixSuccess": "已应用 {count} 处修复，但仍有 {remaining} 个问题。请检查问题面板。",
+    "formattingFailed": "格式化失败，存在警告。请检查问题面板。",
+    "confirmResetMetrics": "确定要重置所有性能指标吗？",
+    "resetMetricsSuccess": "性能指标已重置。"
+  },
+  "performance": {
+    "title": "Shell Formatter - 性能报告",
+    "reportGenerated": "报告生成时间：{date}",
+    "summaryTitle": "=== 性能摘要 ===",
+    "monitoring": "监控状态：{status}",
+    "totalMetrics": "总指标数：{count}",
+    "topMetrics": "常用指标（按调用次数）：",
+    "metricLine": "  {name}：{count} 次调用，平均 {avg}ms",
+    "detailedReport": "详细报告：",
+    "totalMetricsLabel": "总指标数：{count}",
+    "totalAlerts": "总警报数：{count}",
+    "reportGeneratedLog": "性能报告已生成"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - 插件状态",
+    "configuration": "配置状态：",
+    "shfmt": "shfmt：{status}",
+    "shellcheck": "shellcheck：{status}",
+    "registeredPlugins": "已注册插件：{count}",
+    "noPluginsRegistered": "未注册插件",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "活跃插件：{count}",
+    "statusDisplayed": "插件状态已显示"
+  }
+}

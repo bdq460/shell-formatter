@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "Włączone",
+    "disabled": "Wyłączone",
+    "active": "Aktywne",
+    "inactive": "Nieaktywne"
+  },
+  "messages": {
+    "noActiveDocument": "Brak aktywnego dokumentu do formatowania",
+    "allProblemsFixed": "Wszystkie problemy zostały pomyślnie naprawione.",
+    "partialFixSuccess": "Zastosowano {count} poprawkę/poprawki, ale pozostało {remaining} problemów. Sprawdź panel Problemów.",
+    "formattingFailed": "Formatowanie nie powiodło się z ostrzeżeniami. Sprawdź panel Problemów.",
+    "confirmResetMetrics": "Czy na pewno chcesz zresetować wszystkie metryki wydajności?",
+    "resetMetricsSuccess": "Metryki wydajności zostały zresetowane."
+  },
+  "performance": {
+    "title": "Shell Formatter - Raport Wydajności",
+    "reportGenerated": "Raport wygenerowany: {date}",
+    "summaryTitle": "Podsumowanie Wydajności",
+    "monitoring": "Monitorowanie: {status}",
+    "totalMetrics": "Wszystkie Metryki: {count}",
+    "topMetrics": "Najważniejsze Metryki (według liczby):",
+    "metricLine": "  {name}: {count} wywołań, średnio {avg}ms",
+    "detailedReport": "Szczegółowy Raport:",
+    "totalMetricsLabel": "Wszystkie metryki: {count}",
+    "totalAlerts": "Wszystkie alerty: {count}",
+    "reportGeneratedLog": "Raport wydajności wygenerowany"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - Stan Wtyczek",
+    "configuration": "Konfiguracja:",
+    "shfmt": "shfmt: {status}",
+    "shellcheck": "shellcheck: {status}",
+    "registeredPlugins": "Zarejestrowane Wtyczki: {count}",
+    "noPluginsRegistered": "Brak zarejestrowanych wtyczek",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "Aktywne Wtyczki: {count}",
+    "statusDisplayed": "Stan wtyczek wyświetlony"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "Etkin",
+    "disabled": "Devre Dışı",
+    "active": "Aktif",
+    "inactive": "Pasif"
+  },
+  "messages": {
+    "noActiveDocument": "Biçimlendirilecek aktif belge yok",
+    "allProblemsFixed": "Tüm sorunlar başarıyla düzeltildi.",
+    "partialFixSuccess": "{count} düzeltme uygulandı, ancak {remaining} sorun kaldı. Sorunlar panelini kontrol edin.",
+    "formattingFailed": "Biçimlendirme uyarılarla başarısız oldu. Sorunlar panelini kontrol edin.",
+    "confirmResetMetrics": "Tüm performans metriklerini sıfırlamak istediğinizden emin misiniz?",
+    "resetMetricsSuccess": "Performans metrikleri sıfırlandı."
+  },
+  "performance": {
+    "title": "Shell Formatter - Performans Raporu",
+    "reportGenerated": "Rapor oluşturuldu: {date}",
+    "summaryTitle": "Performans Özeti",
+    "monitoring": "İzleme: {status}",
+    "totalMetrics": "Toplam Metrik: {count}",
+    "topMetrics": "En İyi Metrikler (sayıya göre):",
+    "metricLine": "  {name}: {count} çağrı, ortalama {avg}ms",
+    "detailedReport": "Detaylı Rapor:",
+    "totalMetricsLabel": "Toplam metrik: {count}",
+    "totalAlerts": "Toplam uyarı: {count}",
+    "reportGeneratedLog": "Performans raporu oluşturuldu"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - Eklenti Durumu",
+    "configuration": "Yapılandırma:",
+    "shfmt": "shfmt: {status}",
+    "shellcheck": "shellcheck: {status}",
+    "registeredPlugins": "Kayıtlı Eklentiler: {count}",
+    "noPluginsRegistered": "Kayıtlı eklenti yok",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "Aktif Eklentiler: {count}",
+    "statusDisplayed": "Eklenti durumu görüntülendi"
+  }
+}

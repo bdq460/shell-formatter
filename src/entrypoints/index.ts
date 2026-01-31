@@ -6,10 +6,10 @@
  */
 
 export * from "./commands";
+export * from "./diagnostic-collection";
 export * from "./listeners";
-export * from "./formattingProvider";
-export * from "./codeActionsProvider";
-export * from "./diagnosticCollection";
+export * from "./providers/code-actions-provider";
+export * from "./providers/formatting-provider";
 
 // 重新导出 shouldSkipFile，供其他模块使用
-export { shouldSkipFile } from "./listeners/saveListener";
+export { shouldSkipFile } from "./listeners/save-listener";

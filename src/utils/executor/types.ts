@@ -11,6 +11,15 @@ export interface Disposable {
 }
 
 /**
+ * 取消令牌接口
+ * 抽象取消机制，不依赖 VSCode
+ */
+export interface CancellationToken {
+    readonly isCancellationRequested: boolean;
+    onCancellationRequested(callback: () => void): Disposable | void;
+}
+
+/**
  * 执行选项
  */
 export interface ExecutorOptions {
@@ -20,15 +29,8 @@ export interface ExecutorOptions {
     token?: CancellationToken;
     /** 标准输入内容（可选，用于stdin模式） */
     stdin?: string;
-}
-
-/**
- * 取消令牌接口
- * 抽象取消机制，不依赖 VSCode
- */
-export interface CancellationToken {
-    readonly isCancellationRequested: boolean;
-    onCancellationRequested(callback: () => void): Disposable | void;
+    /** 超时时间（毫秒，可选） */
+    timeout?: number;
 }
 
 /**
@@ -60,6 +62,7 @@ export interface ExecutionError {
     /** 错误消息 */
     message: string;
 }
+
 /**
  * 错误类型枚举
  */

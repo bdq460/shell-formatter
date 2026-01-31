@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "有効",
+    "disabled": "無効",
+    "active": "アクティブ",
+    "inactive": "非アクティブ"
+  },
+  "messages": {
+    "noActiveDocument": "フォーマットするアクティブなドキュメントがありません",
+    "allProblemsFixed": "すべての問題が正常に修正されました。",
+    "partialFixSuccess": "{count} 件の修正が適用されましたが、{remaining} 件の問題が残っています。問題パネルを確認してください。",
+    "formattingFailed": "警告付きでフォーマットに失敗しました。問題パネルを確認してください。",
+    "confirmResetMetrics": "すべてのパフォーマンス指標をリセットしてもよろしいですか？",
+    "resetMetricsSuccess": "パフォーマンス指標がリセットされました。"
+  },
+  "performance": {
+    "title": "Shell Formatter - パフォーマンスレポート",
+    "reportGenerated": "レポート生成日時：{date}",
+    "summaryTitle": "=== パフォーマンス概要 ===",
+    "monitoring": "監視状態：{status}",
+    "totalMetrics": "総指標数：{count}",
+    "topMetrics": "上位指標（呼び出し回数順）：",
+    "metricLine": "  {name}：{count} 回呼び出し、平均 {avg}ms",
+    "detailedReport": "詳細レポート：",
+    "totalMetricsLabel": "総指標数：{count}",
+    "totalAlerts": "総アラート数：{count}",
+    "reportGeneratedLog": "パフォーマンスレポートが生成されました"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - プラグイン状態",
+    "configuration": "設定状態：",
+    "shfmt": "shfmt：{status}",
+    "shellcheck": "shellcheck：{status}",
+    "registeredPlugins": "登録済みプラグイン：{count}",
+    "noPluginsRegistered": "プラグインが登録されていません",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "アクティブプラグイン：{count}",
+    "statusDisplayed": "プラグイン状態が表示されました"
+  }
+}

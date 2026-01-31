@@ -15,7 +15,8 @@
  *
  * 架构说明：
  * - 使用领域类型（Document, Diagnostic, TextEdit 等），不依赖 VSCode
- * - 领域层保持纯净，通过适配器层与 VSCode 集成
+ * - 领域层保持纯净，不依赖基础设施和配置
+ * - 通过构造函数注入依赖（依赖倒置原则）
  * - 支持在 CLI、Web、桌面应用等多种场景使用
  *
  * 继承关系：
@@ -25,8 +26,6 @@
  *         └── PureShellcheckPlugin
  */
 
-import { ToolCheckResult, ToolFormatResult } from "../../infrastructure/shell-tools/types";
-import { PackageInfo } from "../../config";
 import { logger } from "../../utils/log";
 import { BasePlugin as BasePluginBase } from "../../utils/plugin";
 import {
@@ -39,15 +38,11 @@ import {
     Range,
     TextEdit,
 } from "../plugin-interface";
+import { IPluginConfig } from "../port";
 
 /**
  * 创建执行错误诊断（私有工具方法）
  * 用于捕获异常时生成诊断对象
- *
- * 为什么是私有方法：
- * - 这是基类的内部实现细节
- * - 子类通过 handleCheckError/handleFormatError 使用，不直接调用
- * - 避免子类误用
  */
 function createErrorDiagnostic(
     document: Document,
@@ -72,7 +67,7 @@ function createErrorDiagnostic(
  * 基础插件抽象类
  *
  * 继承 BasePlugin（通用插件机制），提供格式化和检查功能的基础实现
- * 使用领域类型，不依赖 VSCode
+ * 使用领域类型，不依赖 VSCode、基础设施和配置
  */
 export abstract class BasePlugin
     extends BasePluginBase
@@ -80,11 +75,25 @@ export abstract class BasePlugin
     protected configChangeSubId?: string;
 
     /**
+     * 插件配置（通过构造函数注入）
+     * 子类必须在构造函数中初始化此属性
+     */
+    protected abstract pluginConfig: IPluginConfig;
+
+    /**
      * 获取插件的诊断源名称
-     * 用于在诊断面板中显示
+     * 从注入的配置中获取
      */
     getDiagnosticSource(): string {
-        return PackageInfo.diagnosticSource;
+        return this.pluginConfig.diagnosticSource;
+    }
+
+    /**
+     * 获取支持的文件扩展名
+     * 从注入的配置中获取
+     */
+    getSupportedExtensions(): string[] {
+        return this.pluginConfig.fileExtensions;
     }
 
     /**
@@ -92,12 +101,6 @@ export abstract class BasePlugin
      * 通常检查工具是否已安装
      */
     abstract isAvailable(): Promise<boolean>;
-
-    /**
-     * 获取支持的文件扩展名
-     * 用于过滤哪些文件应该被此插件处理
-     */
-    abstract getSupportedExtensions(): string[];
 
     /**
      * 获取插件依赖
@@ -147,18 +150,6 @@ export abstract class BasePlugin
     /**
      * 处理 check 操作的异常
      *
-     * 使用场景：
-     * 子类的 check() 方法中
-     * ```typescript
-     * try {
-     *   const result = await tool.check();
-     *   return this.createCheckResult(result, document, source);
-     * } catch (error) {
-     *   logger.error(`Check failed: ${error}`);
-     *   return this.handleCheckError(document, error);
-     * }
-     * ```
-     *
      * @param document 文档对象（领域类型）
      * @param error 捕获到的异常
      * @returns PluginCheckResult（包含错误诊断）
@@ -185,18 +176,6 @@ export abstract class BasePlugin
     /**
      * 处理 format 操作的异常
      *
-     * 使用场景：
-     * 子类的 format() 方法中
-     * ```typescript
-     * try {
-     *   const result = await tool.format();
-     *   return this.createFormatResult(result, document, source);
-     * } catch (error) {
-     *   logger.error(`Format failed: ${error}`);
-     *   return this.handleFormatError(document, error);
-     * }
-     * ```
-     *
      * @param document 文档对象（领域类型）
      * @param error 捕获到的异常
      * @returns PluginFormatResult（包含错误诊断，没有 TextEdit）
@@ -222,175 +201,28 @@ export abstract class BasePlugin
     }
 
     /**
-     * 处理检查结果：转换工具结果到插件结果
+     * 创建格式化结果
      *
-     * 职责：
-     * 1. 将 ToolCheckResult 转换为领域 Diagnostic[]
-     * 2. 检查诊断中是否包含 Error 级别（设置 hasErrors 标志）
-     * 3. 返回统一的 PluginCheckResult 结构
-     *
-     * 为什么需要这个方法：
-     * - 避免在每个插件的 check() 方法中重复转换逻辑
-     * - 确保所有诊断转换逻辑一致
-     * - 简化子类代码
-     *
-     * @param toolResult 工具返回的检查结果
-     * @param document 文档对象（领域类型）
-     * @param source 诊断源
-     * @returns PluginCheckResult
-     */
-    protected createCheckResult(
-        toolResult: ToolCheckResult,
-        document: Document,
-        source: string,
-    ): PluginCheckResult {
-        const errorCount =
-            (toolResult.syntaxErrors?.length || 0) +
-            (toolResult.executeErrors?.length || 0) +
-            (toolResult.formatIssues?.length || 0) +
-            (toolResult.linterIssues?.length || 0);
-
-        logger?.debug(
-            `${this.name}.createCheckResult: Converting tool result with ${errorCount} total errors`,
-        );
-
-        const diagnostics: Diagnostic[] = [];
-
-        // 转换执行错误
-        if (toolResult.executeErrors?.length) {
-            for (const err of toolResult.executeErrors) {
-                diagnostics.push({
-                    range: {
-                        start: { line: 0, character: 0 },
-                        end: { line: 0, character: 0 },
-                    },
-                    message: `[${err.command}] Exit code ${err.exitCode}: ${err.message}`,
-                    severity: DiagnosticSeverity.Error,
-                    code: "execute-error",
-                    source,
-                });
-            }
-        }
-
-        // 转换语法错误
-        if (toolResult.syntaxErrors?.length) {
-            for (const err of toolResult.syntaxErrors) {
-                diagnostics.push({
-                    range: {
-                        start: { line: err.line, character: err.column },
-                        end: { line: err.line, character: err.column + 1 },
-                    },
-                    message: err.message,
-                    severity: DiagnosticSeverity.Error,
-                    code: "syntax-error",
-                    source,
-                });
-            }
-        }
-
-        // 转换格式问题
-        if (toolResult.formatIssues?.length) {
-            for (const issue of toolResult.formatIssues) {
-                diagnostics.push({
-                    range: {
-                        start: { line: issue.line, character: issue.column },
-                        end: {
-                            line: issue.line,
-                            character: issue.column + (issue.rangeLength || 1),
-                        },
-                    },
-                    message: issue.message || "Format issue",
-                    severity: DiagnosticSeverity.Warning,
-                    code: "format-issue",
-                    source,
-                });
-            }
-        }
-
-        // 转换 linter 问题
-        if (toolResult.linterIssues?.length) {
-            for (const issue of toolResult.linterIssues) {
-                let severity: DiagnosticSeverity;
-                switch (issue.type) {
-                    case "error":
-                        severity = DiagnosticSeverity.Error;
-                        break;
-                    case "warning":
-                        severity = DiagnosticSeverity.Warning;
-                        break;
-                    case "info":
-                        severity = DiagnosticSeverity.Information;
-                        break;
-                    default:
-                        severity = DiagnosticSeverity.Warning;
-                }
-
-                diagnostics.push({
-                    range: {
-                        start: { line: issue.line, character: issue.column },
-                        end: { line: issue.line, character: issue.column + 1 },
-                    },
-                    message: `[${issue.code}] ${issue.message}`,
-                    severity,
-                    code: issue.code,
-                    source,
-                });
-            }
-        }
-
-        const hasErrors = diagnostics.some(
-            (diag) => diag.severity === DiagnosticSeverity.Error,
-        );
-
-        logger?.debug(
-            `${this.name}.createCheckResult: Result has ${diagnostics.length} diagnostics, hasErrors=${hasErrors}`,
-        );
-
-        return {
-            hasErrors,
-            diagnostics,
-        };
-    }
-
-    /**
-     * 处理格式化结果：转换工具结果到插件结果
-     *
-     * 职责：
-     * 1. 将 ToolFormatResult 转换为领域类型 { textEdits, diagnostics }
-     * 2. 检查诊断中是否包含 Error 级别（设置 hasErrors 标志）
-     * 3. 返回统一的 PluginFormatResult 结构
-     *
-     * @param toolResult 工具返回的格式化结果
-     * @param document 文档对象（领域类型）
-     * @param diagnosticSource 诊断源
+     * @param formattedContent 格式化后的内容
+     * @param document 原始文档
+     * @param diagnostics 诊断信息
      * @returns PluginFormatResult
      */
     protected createFormatResult(
-        toolResult: ToolFormatResult,
+        formattedContent: string | undefined,
         document: Document,
-        diagnosticSource: string,
+        diagnostics: Diagnostic[],
     ): PluginFormatResult {
-        logger?.debug(
-            `${this.name}.createFormatResult: Converting tool format result`,
+        const hasErrors = diagnostics.some(
+            (diag) => diag.severity === DiagnosticSeverity.Error,
         );
-
-        // 首先获取诊断信息
-        const checkResult: ToolCheckResult = {
-            syntaxErrors: toolResult.syntaxErrors,
-            formatIssues: toolResult.formatIssues,
-            linterIssues: toolResult.linterIssues,
-            executeErrors: toolResult.executeErrors,
-        };
-
-        const { diagnostics, hasErrors } =
-            this.createCheckResult(checkResult, document, diagnosticSource);
 
         // 生成 TextEdit（仅当无致命错误且内容有变化时）
         let textEdits: TextEdit[] = [];
         if (
             !hasErrors &&
-            toolResult.formattedContent &&
-            toolResult.formattedContent !== document.content
+            formattedContent &&
+            formattedContent !== document.content
         ) {
             textEdits = [
                 {
@@ -401,14 +233,10 @@ export abstract class BasePlugin
                             character: 0,
                         },
                     },
-                    newText: toolResult.formattedContent,
+                    newText: formattedContent,
                 },
             ];
         }
-
-        logger?.debug(
-            `${this.name}.createFormatResult: Generated ${textEdits.length} TextEdits and ${diagnostics.length} diagnostics, hasErrors=${hasErrors}`,
-        );
 
         return {
             hasErrors,

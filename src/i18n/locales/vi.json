@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "Đã bật",
+    "disabled": "Đã tắt",
+    "active": "Đang hoạt động",
+    "inactive": "Không hoạt động"
+  },
+  "messages": {
+    "noActiveDocument": "Không có tài liệu đang hoạt động để định dạng",
+    "allProblemsFixed": "Tất cả các vấn đề đã được khắc phục thành công.",
+    "partialFixSuccess": "Đã áp dụng {count} bản sửa lỗi, nhưng vẫn còn {remaining} vấn đề. Vui lòng kiểm tra bảng Vấn đề.",
+    "formattingFailed": "Định dạng thất bại với cảnh báo. Vui lòng kiểm tra bảng Vấn đề.",
+    "confirmResetMetrics": "Bạn có chắc chắn muốn đặt lại tất cả các chỉ số hiệu suất không?",
+    "resetMetricsSuccess": "Các chỉ số hiệu suất đã được đặt lại."
+  },
+  "performance": {
+    "title": "Shell Formatter - Báo cáo Hiệu suất",
+    "reportGenerated": "Báo cáo được tạo: {date}",
+    "summaryTitle": "=== Tóm tắt Hiệu suất ===",
+    "monitoring": "Giám sát: {status}",
+    "totalMetrics": "Tổng số chỉ số: {count}",
+    "topMetrics": "Chỉ số hàng đầu (theo số lần gọi):",
+    "metricLine": "  {name}: {count} lần gọi, trung bình {avg}ms",
+    "detailedReport": "Báo cáo chi tiết:",
+    "totalMetricsLabel": "Tổng số chỉ số: {count}",
+    "totalAlerts": "Tổng số cảnh báo: {count}",
+    "reportGeneratedLog": "Báo cáo hiệu suất đã được tạo"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - Trạng thái Plugin",
+    "configuration": "Cấu hình:",
+    "shfmt": "shfmt: {status}",
+    "shellcheck": "shellcheck: {status}",
+    "registeredPlugins": "Plugin đã đăng ký: {count}",
+    "noPluginsRegistered": "Chưa có plugin nào được đăng ký",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "Plugin đang hoạt động: {count}",
+    "statusDisplayed": "Trạng thái plugin đã được hiển thị"
+  }
+}

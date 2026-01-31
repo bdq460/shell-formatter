@@ -5,11 +5,12 @@
  * 这是应用层的用例编排，不直接依赖 VSCode
  */
 
-import { Document, PluginFormatResult, TextEdit } from "../../domain/types";
 import { PluginManager } from "../../domain/plugin-manager";
-import { logger } from "../../utils/log";
+import { Document, PluginFormatResult, TextEdit } from "../../domain/types";
+import { PERFORMANCE_METRICS } from "../../shared/performance-metrics";
 import { getContainer, ServiceNames } from "../../utils/di/container";
-import { startTimer, PERFORMANCE_METRICS } from "../services/performance-service";
+import { logger } from "../../utils/log";
+import { startTimer } from "../../utils/performance/monitor";
 
 /**
  * 格式化文档

@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "เปิดใช้งาน",
+    "disabled": "ปิดใช้งาน",
+    "active": "ใช้งานอยู่",
+    "inactive": "ไม่ใช้งาน"
+  },
+  "messages": {
+    "noActiveDocument": "ไม่มีเอกสารที่ใช้งานอยู่ให้จัดรูปแบบ",
+    "allProblemsFixed": "แก้ไขปัญหาทั้งหมดเรียบร้อยแล้ว",
+    "partialFixSuccess": "ใช้การแก้ไข {count} รายการ แต่ยังคงมีปัญหาอีก {remaining} รายการ โปรดตรวจสอบแผงปัญหา",
+    "formattingFailed": "การจัดรูปแบบล้มเหลวพร้อมคำเตือน โปรดตรวจสอบแผงปัญหา",
+    "confirmResetMetrics": "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตตัวชี้วัดประสิทธิภาพทั้งหมด?",
+    "resetMetricsSuccess": "ตัวชี้วัดประสิทธิภาพได้รับการรีเซ็ตแล้ว"
+  },
+  "performance": {
+    "title": "Shell Formatter - รายงานประสิทธิภาพ",
+    "reportGenerated": "สร้างรายงานเมื่อ: {date}",
+    "summaryTitle": "สรุปประสิทธิภาพ",
+    "monitoring": "การตรวจสอบ: {status}",
+    "totalMetrics": "ตัวชี้วัดทั้งหมด: {count}",
+    "topMetrics": "ตัวชี้วัดสำคัญ (ตามจำนวน):",
+    "metricLine": "  {name}: {count} การเรียก, เฉลี่ย {avg}ms",
+    "detailedReport": "รายงานโดยละเอียด:",
+    "totalMetricsLabel": "ตัวชี้วัดทั้งหมด: {count}",
+    "totalAlerts": "การแจ้งเตือนทั้งหมด: {count}",
+    "reportGeneratedLog": "สร้างรายงานประสิทธิภาพแล้ว"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - สถานะปลั๊กอิน",
+    "configuration": "การกำหนดค่า:",
+    "shfmt": "shfmt: {status}",
+    "shellcheck": "shellcheck: {status}",
+    "registeredPlugins": "ปลั๊กอินที่ลงทะเบียน: {count}",
+    "noPluginsRegistered": "ไม่มีปลั๊กอินที่ลงทะเบียน",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "ปลั๊กอินที่ใช้งานอยู่: {count}",
+    "statusDisplayed": "แสดงสถานะปลั๊กอินแล้ว"
+  }
+}

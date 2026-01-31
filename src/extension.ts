@@ -10,9 +10,11 @@
 
 import * as vscode from "vscode";
 import { initializeDIContainer } from "./application";
+import { initializeI18n } from "./i18n";
+import { PackageInfo } from "./config";
 import { initializePlugins } from "./domain/plugin-initializer";
 import * as entrypoints from "./entrypoints";
-import { initializeLoggerService, LoggerService } from "./platform/logger";
+import { initializeLogger } from "./shared/logger";
 import { DebounceManager } from "./utils/debounce";
 import { getContainer } from "./utils/di/container";
 import { logger } from "./utils/log";
@@ -27,12 +29,16 @@ const debounceManager = new DebounceManager();
 export async function activate(context: vscode.ExtensionContext) {
 
     // 初始化日志
-    console.log("Start initialize logger");
+    console.log(`[${PackageInfo.extensionName}] Start initialize logger`);
 
     // 初始化日志
-    initializeLoggerService();
+    initializeLogger();
 
     logger.info("Extension is now active");
+
+    // 初始化 i18n
+    logger.info("Initializing i18n");
+    initializeI18n();
 
     // 初始化 DI 容器
     logger.info("Initializing DI container");
@@ -93,7 +99,7 @@ export function deactivate() {
         }
 
         // 清理日志输出通道
-        if (logger instanceof LoggerService) {
+        if (logger instanceof vscode.Disposable) {
             logger.dispose();
         }
 

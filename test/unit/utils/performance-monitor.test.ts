@@ -14,7 +14,7 @@ import {
     startTimer,
 } from '../../../src/utils/performance/monitor';
 
-import { setAlertManager } from '../../../src/utils/performance/alertManager';
+import { setAlertManager } from '../../../src/utils/performance/alert-manager';
 
 // Provide a lightweight alert manager mock to avoid side effects in timer checks
 setAlertManager({

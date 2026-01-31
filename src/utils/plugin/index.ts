@@ -105,8 +105,8 @@
  * ```
  */
 
-export * from "./BasePlugin";
-export * from "./IPlugin";
-export * from "./MessageBus";
-export * from "./PluginManager";
+export * from "./base-plugin";
+export * from "./plugin-interface";
+export * from "./message-bus";
+export * from "./plugin-manager";
 export * from "./types";

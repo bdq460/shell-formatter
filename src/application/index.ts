@@ -19,13 +19,23 @@ export {
 export { diagnoseDocument } from "./usecases/diagnose-document";
 export { formatDocument } from "./usecases/format-document";
 
-// Services
+// Services - Performance Service
 export {
-    getPerformanceMetrics,
-    PERFORMANCE_METRICS, resetPerformanceMetrics, showPerformanceReport, startTimer
+    checkPerformanceHealth,
+    getPerformanceStats,
+    getPerformanceSummary,
+    showPerformanceReport,
+    startTimer
 } from "./services/performance-service";
 
+export type { MetricData } from "./services/performance-service";
+
+// Domain - Performance Metrics (re-export for convenience)
+export { PERFORMANCE_METRICS } from "../shared/performance-metrics";
+
+// Services - Plugin Status Service
 export {
-    getAllPluginStatus,
-    isPluginAvailable, showPluginStatus
+    getAllPluginStatus, isPluginAvailable, showPluginStatus
 } from "./services/plugin-status-service";
+
+export type { PluginStatus } from "./services/plugin-status-service";

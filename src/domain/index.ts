@@ -5,10 +5,12 @@
  * 不依赖 VSCode，可在 CLI、Web、桌面应用等场景复用
  */
 
-export * from "./plugins/base-plugin";
+export * from "../shared/performance-metrics";
 export * from "./plugin-initializer";
 export * from "./plugin-interface";
 export * from "./plugin-manager";
+export * from "./plugins/base-plugin";
 export * from "./plugins/shellcheck-plugin";
 export * from "./plugins/shfmt-plugin";
+export * from "./port";
 export * from "./types";

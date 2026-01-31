@@ -14,8 +14,13 @@ import {
     getAlertManager,
     resetAlertManager,
     setAlertManager,
-} from "./alertManager";
-import { PerformanceTimer, performanceMonitor, startTimer } from "./monitor";
+} from "./alert-manager";
+import {
+    MetricData,
+    PerformanceTimer,
+    performanceMonitor,
+    startTimer,
+} from "./monitor";
 
 /**
  * 性能监控装饰器

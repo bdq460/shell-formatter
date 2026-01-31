@@ -53,6 +53,8 @@ interface ServiceMetadata<T> {
     instance?: T;
     /** 依赖列表（用于循环依赖检测） */
     dependencies: string[];
+    /** 是否为单例 */
+    isSingleton?: boolean;
 }
 
 /**
@@ -89,6 +91,7 @@ export class DIContainer {
             factory: factory as ServiceFactory<unknown>,
             instantiated: false,
             dependencies,
+            isSingleton: true,
         });
 
         logger.debug(`Registered singleton service: ${name}`);
@@ -113,8 +116,9 @@ export class DIContainer {
 
         this.services.set(name, {
             factory: factory as ServiceFactory<unknown>,
-            instantiated: false, // 总是 false，因为每次都创建新实例
+            instantiated: false,
             dependencies,
+            isSingleton: false,
         });
 
         logger.debug(`Registered transient service: ${name}`);
@@ -140,7 +144,7 @@ export class DIContainer {
         }
 
         // 如果是单例且已实例化，直接返回
-        if (service.instantiated && service.instance !== undefined) {
+        if (service.isSingleton && service.instantiated && service.instance !== undefined) {
             logger.debug(`Resolving existing singleton: ${name}`);
             return service.instance as T;
         }
@@ -152,7 +156,7 @@ export class DIContainer {
             const instance = service.factory() as T;
 
             // 如果是单例，缓存实例
-            if (service.instantiated === false) {
+            if (service.isSingleton) {
                 service.instantiated = true;
                 service.instance = instance;
             }

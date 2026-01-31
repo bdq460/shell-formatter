@@ -1,12 +1,20 @@
 import {
+    LOG_LEVEL_VALUES,
     LogLevel,
+    Logger,
     getLogLevelRank,
     logger,
     setLogger,
+    resetLogger,
     shouldLogByLevel,
-} from '#/utils/log';
+} from '../../../src/utils/log';
 
 describe('log utils', () => {
+    beforeEach(() => {
+        // Reset logger state before each test
+        resetLogger();
+    });
+
     it('should map log levels to numeric ranks', () => {
         expect(getLogLevelRank(LogLevel.DEBUG)).toBe(0);
         expect(getLogLevelRank('info')).toBe(1);
@@ -28,28 +36,90 @@ describe('log utils', () => {
         expect(shouldLogByLevel(LogLevel.WARN, LogLevel.INFO)).toBe(true);
     });
 
-    it('should set logger instance', () => {
-        // 保存原始logger
-        const originalLogger = logger;
+    it('should handle string comparison in shouldLogByLevel', () => {
+        expect(shouldLogByLevel('debug', 'info')).toBe(false);
+        expect(shouldLogByLevel('error', 'info')).toBe(true);
+        expect(shouldLogByLevel('warn', 'warn')).toBe(true);
+    });
 
-        // 设置新的logger
-        const mockLogger = {
+    it('should return default rank for unknown log level', () => {
+        expect(getLogLevelRank('invalid')).toBe(LOG_LEVEL_VALUES[LogLevel.INFO]);
+    });
+
+    it('should set logger instance', () => {
+        const mockLogger: Logger = {
             debug: () => { },
             info: () => { },
             warn: () => { },
             error: () => { },
         };
 
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
         setLogger(mockLogger);
 
-        // 验证logger已设置（通过调用不抛出错误来间接验证）
-        expect(() => logger.debug('test')).not.toThrow();
-        expect(() => logger.info('test')).not.toThrow();
-        expect(() => logger.warn('test')).not.toThrow();
-        expect(() => logger.error('test')).not.toThrow();
+        expect(consoleSpy).toHaveBeenCalledWith("Set logger");
 
-        // 注意：由于logger是模块级别的let变量，且setLogger只在logger为null时设置，
-        // 所以在后续测试中，logger已经被初始化，再次调用setLogger不会更新
-        // 这是正常的设计，确保logger只被设置一次
+        consoleSpy.mockRestore();
+    });
+
+    it('should not overwrite existing logger', () => {
+        const mockLogger1: Logger = {
+            debug: jest.fn(),
+            info: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+        };
+
+        const mockLogger2: Logger = {
+            debug: jest.fn(),
+            info: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+        };
+
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
+        // First set should succeed
+        setLogger(mockLogger1);
+        expect(consoleSpy).toHaveBeenCalledWith("Set logger");
+        expect(consoleSpy).toHaveBeenCalledWith("logger is null set by param");
+
+        consoleSpy.mockClear();
+
+        // Second set should not change the logger (logger is already set)
+        setLogger(mockLogger2);
+        // First call is always "Set logger"
+        expect(consoleSpy).toHaveBeenCalledWith("Set logger");
+        // But the second message should not appear since logger is already set
+        expect(consoleSpy).not.toHaveBeenCalledWith("logger is null set by param");
+
+        consoleSpy.mockRestore();
+    });
+
+    it('should have all log level values defined', () => {
+        expect(LOG_LEVEL_VALUES[LogLevel.DEBUG]).toBe(0);
+        expect(LOG_LEVEL_VALUES[LogLevel.INFO]).toBe(1);
+        expect(LOG_LEVEL_VALUES[LogLevel.WARN]).toBe(2);
+        expect(LOG_LEVEL_VALUES[LogLevel.ERROR]).toBe(3);
+    });
+
+    it('should handle case insensitivity in log level names', () => {
+        expect(getLogLevelRank('DEBUG')).toBe(0);
+        expect(getLogLevelRank('INFO')).toBe(1);
+        expect(getLogLevelRank('WARN')).toBe(2);
+        expect(getLogLevelRank('ERROR')).toBe(3);
+    });
+
+    it('should export logger object', () => {
+        // Set a mock logger for this test
+        const mockLogger: Logger = {
+            debug: () => {},
+            info: () => {},
+            warn: () => {},
+            error: () => {},
+        };
+        setLogger(mockLogger);
+        expect(logger).toBeDefined();
     });
 });

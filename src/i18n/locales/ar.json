@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "مُمكّن",
+    "disabled": "مُعطّل",
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "messages": {
+    "noActiveDocument": "لا يوجد مستند نشط للتنسيق",
+    "allProblemsFixed": "تم إصلاح جميع المشاكل بنجاح.",
+    "partialFixSuccess": "تم تطبيق {count} إصلاحات، لكن لا تزال هناك {remaining} مشاكل. تحقق من لوحة المشاكل.",
+    "formattingFailed": "فشل التنسيق مع وجود تحذيرات. تحقق من لوحة المشاكل.",
+    "confirmResetMetrics": "هل أنت متأكد من أنك تريد إعادة تعيين جميع مقاييس الأداء؟",
+    "resetMetricsSuccess": "تم إعادة تعيين مقاييس الأداء."
+  },
+  "performance": {
+    "title": "Shell Formatter - تقرير الأداء",
+    "reportGenerated": "تم إنشاء التقرير: {date}",
+    "summaryTitle": "=== ملخص الأداء ===",
+    "monitoring": "المراقبة: {status}",
+    "totalMetrics": "إجمالي المقاييس: {count}",
+    "topMetrics": "أهم المقاييس (حسب عدد الاستدعاءات):",
+    "metricLine": "  {name}: {count} استدعاء، متوسط {avg}ms",
+    "detailedReport": "تقرير مفصل:",
+    "totalMetricsLabel": "إجمالي المقاييس: {count}",
+    "totalAlerts": "إجمالي التنبيهات: {count}",
+    "reportGeneratedLog": "تم إنشاء تقرير الأداء"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - حالة المكون الإضافي",
+    "configuration": "التكوين:",
+    "shfmt": "shfmt: {status}",
+    "shellcheck": "shellcheck: {status}",
+    "registeredPlugins": "المكونات الإضافية المسجلة: {count}",
+    "noPluginsRegistered": "لا توجد مكونات إضافية مسجلة",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "المكونات الإضافية النشطة: {count}",
+    "statusDisplayed": "تم عرض حالة المكون الإضافي"
+  }
+}

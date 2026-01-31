@@ -1,175 +1,177 @@
 /**
  * 性能监控服务
  *
- * 职责：提供性能监控和报告功能
- * 属于应用层服务，协调性能监控的各个方面
+ * 职责：
+ * - 提供性能计时器的便捷访问
+ * - 提供具有业务逻辑的性能分析功能
+ *
+ * 使用场景：
+ * - 启动性能计时
+ * - 生成性能摘要和健康检查报告
+ *
+ * 注意：
+ * - 性能指标名称常量从 domain 层导入（PERFORMANCE_METRICS）
+ * - utils/performance/integration.ts 提供的通用工具函数应直接从 utils 层导入
  */
 
+import { t } from "../../i18n";
 import { logger } from "../../utils/log";
+import {
+    getAllMetricNames,
+    getMetricData,
+    isPerformanceMonitoringEnabled,
+} from "../../utils/performance/integration";
+import { MetricData, startTimer as utilsStartTimer } from "../../utils/performance/monitor";
+
+// 重新导出 domain 层的性能指标常量和 MetricData
+export { PERFORMANCE_METRICS } from "../../shared/performance-metrics";
+export type { MetricData };
 
 /**
- * 性能指标接口
+ * 性能统计信息
  */
-export interface PerformanceMetrics {
-    /** 插件加载耗时 */
-    pluginLoadDuration: number;
-    /** 插件执行格式化耗时 */
-    pluginExecuteFormatDuration: number;
-    /** 插件执行检查耗时 */
-    pluginExecuteCheckDuration: number;
-    /** shfmt 格式化耗时 */
-    shfmtFormatDuration: number;
-    /** shfmt 诊断耗时 */
-    shfmtDiagnoseDuration: number;
-    /** shellcheck 诊断耗时 */
-    shellcheckDiagnoseDuration: number;
-    /** Provider Code Actions 耗时 */
-    providerCodeActionsDuration: number;
-    /** DI 容器重新初始化耗时 */
-    diContainerReinitializationDuration: number;
-    /** 配置变更处理耗时 */
-    configurationChangeHandlerDuration: number;
-    /** 文档保存诊断耗时 */
-    documentSaveDiagnosisDuration: number;
+export interface PerformanceStats {
+    /** 总指标数 */
+    totalMetrics: number;
+    /** 所有指标数据 */
+    metrics: MetricData[];
+    /** 监控是否启用 */
+    monitoringEnabled: boolean;
 }
 
 /**
- * 性能指标存储
- */
-const metrics: Partial<PerformanceMetrics> = {};
-
-/**
- * 性能计时器
- */
-class PerformanceTimer {
-    private startTime: number = 0;
-    private metricName: keyof PerformanceMetrics;
-
-    constructor(metricName: keyof PerformanceMetrics) {
-        this.metricName = metricName;
-        this.startTime = Date.now();
-    }
-
-    /**
-     * 停止计时并记录结果
-     */
-    stop(): void {
-        const duration = Date.now() - this.startTime;
-        metrics[this.metricName] = duration;
-        logger.debug(`Performance: ${String(this.metricName)} = ${duration}ms`);
-    }
-}
-
-/**
- * 性能指标名称常量
- */
-export const PERFORMANCE_METRICS: Record<
-    string,
-    keyof PerformanceMetrics
-> = {
-    PLUGIN_LOAD_DURATION: "pluginLoadDuration",
-    PLUGIN_EXECUTE_FORMAT_DURATION: "pluginExecuteFormatDuration",
-    PLUGIN_EXECUTE_CHECK_DURATION: "pluginExecuteCheckDuration",
-    SHFMT_FORMAT_DURATION: "shfmtFormatDuration",
-    SHFMT_DIAGNOSE_DURATION: "shfmtDiagnoseDuration",
-    SHELLCHECK_DIAGNOSE_DURATION: "shellcheckDiagnoseDuration",
-    PROVIDER_CODE_ACTIONS_DURATION: "providerCodeActionsDuration",
-    DI_CONTAINER_REINITIALIZATION_DURATION:
-        "diContainerReinitializationDuration",
-    CONFIGURATION_CHANGE_HANDLER_DURATION: "configurationChangeHandlerDuration",
-    DOCUMENT_SAVE_DIAGNOSIS_DURATION: "documentSaveDiagnosisDuration",
-};
-
-/**
- * 开始性能计时
+ * 创建性能计时器
  *
- * @param metricName 性能指标名称
- * @returns 计时器实例
+ * @param metricName 指标名称
+ * @returns 性能计时器
  */
-export function startTimer(metricName: keyof PerformanceMetrics): PerformanceTimer {
-    return new PerformanceTimer(metricName);
+export function startTimer(metricName: string) {
+    logger.debug(`Starting timer for metric: ${metricName}`);
+    return utilsStartTimer(metricName);
 }
 
 /**
- * 显示性能报告
+ * 获取性能统计信息
  *
- * 显示当前收集的所有性能指标，按类别分组
+ * @returns 性能统计信息
  */
-export function showPerformanceReport(): void {
-    logger.info("=== Performance Report ===");
+export async function getPerformanceStats(): Promise<PerformanceStats> {
+    const metricNames = getAllMetricNames();
+    const metrics: MetricData[] = [];
 
-    const entries = Object.entries(metrics);
-    if (entries.length === 0) {
-        logger.info("No performance metrics collected yet");
-        return;
+    for (const name of metricNames) {
+        const metric = getMetricData(name);
+        if (metric) {
+            metrics.push(metric);
+        }
     }
 
-    // 按类别分组
-    const categories: Record<string, Array<[string, number]>> = {
-        "Core Operations": [],
-        "Plugin Execution": [],
-        "System Lifecycle": [],
-        "Event Handlers": [],
-        Other: [],
+    return {
+        totalMetrics: metricNames.length,
+        metrics,
+        monitoringEnabled: isPerformanceMonitoringEnabled(),
     };
-
-    for (const [name, value] of entries) {
-        switch (name) {
-            case "shfmtFormatDuration":
-            case "shfmtDiagnoseDuration":
-            case "shellcheckDiagnoseDuration":
-                categories["Core Operations"].push([name, value]);
-                break;
-            case "pluginExecuteFormatDuration":
-            case "pluginExecuteCheckDuration":
-                categories["Plugin Execution"].push([name, value]);
-                break;
-            case "pluginLoadDuration":
-            case "diContainerReinitializationDuration":
-                categories["System Lifecycle"].push([name, value]);
-                break;
-            case "configurationChangeHandlerDuration":
-            case "documentSaveDiagnosisDuration":
-            case "providerCodeActionsDuration":
-                categories["Event Handlers"].push([name, value]);
-                break;
-            default:
-                categories.Other.push([name, value]);
-        }
-    }
-
-    // 输出分类报告
-    for (const [category, items] of Object.entries(categories)) {
-        if (items.length === 0) continue;
-
-        logger.info(`\n--- ${category} ---`);
-        for (const [name, value] of items) {
-            logger.info(`  ${name}: ${value}ms`);
-        }
-
-        // 计算类别总计
-        const total = items.reduce((sum, [, v]) => sum + v, 0);
-        logger.info(`  Total: ${total}ms`);
-    }
-
-    logger.info("\n=========================");
 }
 
 /**
- * 重置性能指标
- */
-export function resetPerformanceMetrics(): void {
-    Object.keys(metrics).forEach((key) => {
-        delete (metrics as Record<string, number>)[key];
-    });
-    logger.info("Performance metrics reset");
-}
-
-/**
- * 获取性能指标
+ * 获取性能摘要（用于快速查看）
  *
- * @returns 当前性能指标的副本
+ * @returns 性能摘要文本
  */
-export function getPerformanceMetrics(): Partial<PerformanceMetrics> {
-    return { ...metrics };
+export async function getPerformanceSummary(): Promise<string> {
+    const stats = await getPerformanceStats();
+
+    const lines: string[] = [];
+    lines.push(t("performance.summaryTitle"));
+    lines.push("");
+    lines.push(t("performance.monitoring", {
+        status: stats.monitoringEnabled ? t("common.enabled") : t("common.disabled")
+    }));
+    lines.push(t("performance.totalMetrics", { count: stats.totalMetrics }));
+    lines.push("");
+
+    if (stats.metrics.length > 0) {
+        lines.push(t("performance.topMetrics"));
+        const sortedMetrics = [...stats.metrics]
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+
+        for (const metric of sortedMetrics) {
+            lines.push(t("performance.metricLine", {
+                name: metric.name,
+                count: metric.count,
+                avg: metric.avg.toFixed(2)
+            }));
+        }
+        lines.push("");
+    }
+
+    lines.push("========================");
+
+    return lines.join("\n");
+}
+
+/**
+ * 检查系统性能健康状况
+ *
+ * @returns 健康状态字符串
+ */
+export async function checkPerformanceHealth(): Promise<string> {
+    const stats = await getPerformanceStats();
+
+    const issues: string[] = [];
+
+    // 检查是否有超过阈值的指标
+    for (const metric of stats.metrics) {
+        if (metric.avg > 5000) {
+            issues.push(
+                `Metric "${metric.name}" has high average (${metric.avg.toFixed(2)}ms)`,
+            );
+        }
+    }
+
+    if (issues.length === 0) {
+        return "Performance health: OK (no issues detected)";
+    }
+
+    return `Performance health: ISSUES DETECTED\n${issues.map((i) => `  - ${i}`).join("\n")}`;
+}
+
+/**
+ * 生成并显示性能报告
+ *
+ * @param showContent 显示内容的回调函数（用于输出报告内容）
+ */
+export async function showPerformanceReport(showContent: (content: string) => void): Promise<void> {
+    const {
+        getPerformanceReport,
+        getAlertStats,
+    } = await import("../../utils/performance/integration");
+
+    const report = getPerformanceReport();
+    const stats = await getPerformanceStats();
+    const alertStats = getAlertStats();
+    const summary = await getPerformanceSummary();
+
+    const lines: string[] = [];
+    lines.push("=".repeat(60));
+    lines.push(t("performance.title"));
+    lines.push("=".repeat(60));
+    lines.push("");
+    lines.push(t("performance.reportGenerated", { date: new Date().toLocaleString() }));
+    lines.push("");
+    lines.push(summary);
+    lines.push("");
+    lines.push(t("performance.detailedReport"));
+    lines.push("");
+    lines.push(t("performance.totalMetricsLabel", { count: stats.totalMetrics }));
+    lines.push(t("performance.totalAlerts", { count: alertStats.total }));
+    lines.push("");
+    lines.push(report);
+    lines.push("=".repeat(60));
+
+    const content = lines.join("\n");
+    showContent(content);
+
+    logger.info(t("performance.reportGeneratedLog"));
 }

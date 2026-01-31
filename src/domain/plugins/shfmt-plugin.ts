@@ -1,16 +1,17 @@
 /**
  * shfmt 纯插件实现
  *
- * 直接使用 ShfmtTool，不依赖 Service 层
+ * 使用端口接口（IFormatTool），不直接依赖基础设施
  * 实现统一的插件接口
  * 使用领域类型，不依赖 VSCode
+ *
+ * 架构改进：
+ * - 通过构造函数注入 IFormatTool 和 IPluginConfig
+ * - 不再直接依赖 ShfmtTool 和 SettingInfo
+ * - 遵循依赖倒置原则
  */
 
-import { ShfmtTool } from "../../infrastructure/shell-tools/shfmt/shfmtTool";
-import { ShfmtFormatOptions } from "../../infrastructure/shell-tools/shfmt/shfmtTool";
-import { PackageInfo, SettingInfo } from "../../config";
 import { logger } from "../../utils/log";
-import { BasePlugin } from "./base-plugin";
 import {
     Document,
     PluginCheckOptions,
@@ -18,9 +19,13 @@ import {
     PluginFormatOptions,
     PluginFormatResult,
 } from "../plugin-interface";
+import { IFormatTool, IPluginConfig } from "../port";
+import { BasePlugin } from "./base-plugin";
 
 /**
  * shfmt 纯插件
+ *
+ * 通过端口接口与工具交互，不直接依赖具体实现
  */
 export class PureShfmtPlugin extends BasePlugin {
     name = "shfmt";
@@ -28,41 +33,28 @@ export class PureShfmtPlugin extends BasePlugin {
     version = "1.0.0";
     description = "Format and check shell scripts using shfmt";
 
-    private tool: ShfmtTool;
-    private defaultShfmtOptions: ShfmtFormatOptions;
+    private tool: IFormatTool;
+    protected pluginConfig: IPluginConfig;
 
-    constructor(shfmtPath?: string, indent?: number) {
+    /**
+     * 构造函数
+     * @param tool 格式化工具（通过端口接口注入）
+     * @param config 插件配置（通过接口注入，而非直接依赖 SettingInfo）
+     */
+    constructor(tool: IFormatTool, config: IPluginConfig) {
         super();
-        this.tool = new ShfmtTool(shfmtPath);
-        this.defaultShfmtOptions = this.buildDefaultShfmtOptions();
+        this.tool = tool;
+        this.pluginConfig = config;
         logger.info(
-            `PureShfmtPlugin initialized with path: ${shfmtPath || "shfmt"}, default indent: ${indent}`,
+            `PureShfmtPlugin initialized with diagnosticSource: ${config.diagnosticSource}`,
         );
-    }
-
-    buildDefaultShfmtOptions(): ShfmtFormatOptions {
-        return {
-            indent: SettingInfo.getRealTabSize(),
-            binaryNextLine: true,
-            caseIndent: true,
-            spaceRedirects: true,
-        };
     }
 
     /**
      * 检查 shfmt 是否可用
      */
     async isAvailable(): Promise<boolean> {
-        try {
-            await this.tool.check("-", {
-                ...this.defaultShfmtOptions,
-                content: "# test",
-            });
-            return true;
-        } catch (error) {
-            logger.warn(`shfmt is not available: ${String(error)}`);
-            return false;
-        }
+        return this.tool.isAvailable();
     }
 
     /**
@@ -77,21 +69,19 @@ export class PureShfmtPlugin extends BasePlugin {
         );
 
         try {
-            const result = await this.tool.format("-", {
-                ...this.defaultShfmtOptions,
+            const formattedContent = await this.tool.format(document.content, {
+                indent: this.pluginConfig.tabSize,
                 token: options.token,
-                content: document.content,
             });
 
             logger.debug(`PureShfmtPlugin.format completed`);
 
             return this.createFormatResult(
-                result,
+                formattedContent,
                 document,
-                this.getDiagnosticSource(),
+                [], // 格式化本身不产生诊断
             );
         } catch (error) {
-            logger.error(`PureShfmtPlugin.format failed: ${String(error)}`);
             logger.error(`PureShfmtPlugin.format failed: ${String(error)}`);
             return this.handleFormatError(document, error);
         }
@@ -109,30 +99,17 @@ export class PureShfmtPlugin extends BasePlugin {
         );
 
         try {
-            const result = await this.tool.check("-", {
-                ...this.defaultShfmtOptions,
+            const result = await this.tool.check(document.content, {
                 token: options.token,
-                content: document.content,
             });
 
             logger.debug(`PureShfmtPlugin.check completed`);
 
-            return this.createCheckResult(
-                result,
-                document,
-                this.getDiagnosticSource(),
-            );
+            return result;
         } catch (error) {
             logger.error(`PureShfmtPlugin.check failed: ${String(error)}`);
             return this.handleCheckError(document, error);
         }
-    }
-
-    /**
-     * 获取支持的文件扩展名
-     */
-    getSupportedExtensions(): string[] {
-        return PackageInfo.fileExtensions;
     }
 
     /**
@@ -150,9 +127,12 @@ export class PureShfmtPlugin extends BasePlugin {
                     logger.debug(`${this.name} received config:change message`);
                     // 处理配置变更
                     if (msg.payload?.indent !== undefined) {
-                        this.defaultShfmtOptions = this.buildDefaultShfmtOptions();
+                        this.pluginConfig = {
+                            ...this.pluginConfig,
+                            tabSize: msg.payload.indent,
+                        };
                         logger.debug(
-                            `${this.name} reloaded default options with new indent`,
+                            `${this.name} reloaded config with new indent: ${msg.payload.indent}`,
                         );
                     }
                 },

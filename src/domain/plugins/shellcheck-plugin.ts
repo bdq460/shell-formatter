@@ -1,23 +1,30 @@
 /**
  * shellcheck 纯插件实现
  *
- * 直接使用 ShellcheckTool，不依赖 Service 层
+ * 使用端口接口（ICheckTool），不直接依赖基础设施
  * 实现统一的插件接口
  * 使用领域类型，不依赖 VSCode
+ *
+ * 架构改进：
+ * - 通过构造函数注入 ICheckTool 和 IPluginConfig
+ * - 不再直接依赖 ShellcheckTool 和 PackageInfo
+ * - 遵循依赖倒置原则
  */
-import { ShellcheckTool } from "../../infrastructure/shell-tools/shellcheck/shellcheckTool";
-import { PackageInfo } from "../../config";
+
 import { logger } from "../../utils/log";
 import {
     Document,
     PluginCheckOptions,
     PluginCheckResult,
 } from "../plugin-interface";
+import { ICheckTool, IPluginConfig } from "../port";
 import { BasePlugin } from "./base-plugin";
 
 /**
  * shellcheck 纯插件
  * 注意：shellcheck 只提供检查功能，不提供格式化功能
+ *
+ * 通过端口接口与工具交互，不直接依赖具体实现
  */
 export class PureShellcheckPlugin extends BasePlugin {
     name = "shellcheck";
@@ -25,13 +32,20 @@ export class PureShellcheckPlugin extends BasePlugin {
     version = "1.0.0";
     description = "Check shell scripts for common errors using shellcheck";
 
-    private tool: ShellcheckTool;
+    private tool: ICheckTool;
+    protected pluginConfig: IPluginConfig;
 
-    constructor(shellcheckPath?: string) {
+    /**
+     * 构造函数
+     * @param tool 检查工具（通过端口接口注入）
+     * @param config 插件配置（通过接口注入，而非直接依赖 PackageInfo）
+     */
+    constructor(tool: ICheckTool, config: IPluginConfig) {
         super();
-        this.tool = new ShellcheckTool(shellcheckPath);
+        this.tool = tool;
+        this.pluginConfig = config;
         logger.info(
-            `PureShellcheckPlugin initialized with path: ${shellcheckPath || "shellcheck"}`,
+            `PureShellcheckPlugin initialized with diagnosticSource: ${config.diagnosticSource}`,
         );
     }
 
@@ -39,13 +53,7 @@ export class PureShellcheckPlugin extends BasePlugin {
      * 检查 shellcheck 是否可用
      */
     async isAvailable(): Promise<boolean> {
-        try {
-            await this.tool.check({ file: "-", content: "# test" });
-            return true;
-        } catch (error) {
-            logger.warn(`shellcheck is not available: ${String(error)}`);
-            return false;
-        }
+        return this.tool.isAvailable();
     }
 
     /**
@@ -60,30 +68,17 @@ export class PureShellcheckPlugin extends BasePlugin {
         );
 
         try {
-            const result = await this.tool.check({
-                file: "-",
+            const result = await this.tool.check(document.content, {
                 token: options.token,
-                content: document.content,
             });
 
             logger.debug(`PureShellcheckPlugin.check completed`);
 
-            return this.createCheckResult(
-                result,
-                document,
-                this.getDiagnosticSource(),
-            );
+            return result;
         } catch (error) {
             logger.error(`PureShellcheckPlugin.check failed: ${String(error)}`);
             return this.handleCheckError(document, error);
         }
-    }
-
-    /**
-     * 获取支持的文件扩展名
-     */
-    getSupportedExtensions(): string[] {
-        return PackageInfo.fileExtensions;
     }
 
     /**
@@ -107,7 +102,7 @@ export class PureShellcheckPlugin extends BasePlugin {
 
     /**
      * 插件停用时的钩子
-     * 取消配置变更消息订阅
+     * 取消消息订阅
      */
     async onDeactivate(): Promise<void> {
         logger.info(`${this.name} plugin deactivated`);

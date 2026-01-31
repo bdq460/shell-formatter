@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "Включено",
+    "disabled": "Отключено",
+    "active": "Активно",
+    "inactive": "Неактивно"
+  },
+  "messages": {
+    "noActiveDocument": "Нет активного документа для форматирования",
+    "allProblemsFixed": "Все проблемы успешно исправлены.",
+    "partialFixSuccess": "Применено {count} исправлений, но осталось {remaining} проблем. Проверьте панель проблем.",
+    "formattingFailed": "Ошибка форматирования с предупреждениями. Проверьте панель проблем.",
+    "confirmResetMetrics": "Вы уверены, что хотите сбросить все метрики производительности?",
+    "resetMetricsSuccess": "Метрики производительности сброшены."
+  },
+  "performance": {
+    "title": "Shell Formatter - Отчет о производительности",
+    "reportGenerated": "Отчет создан: {date}",
+    "summaryTitle": "=== Сводка производительности ===",
+    "monitoring": "Мониторинг: {status}",
+    "totalMetrics": "Всего метрик: {count}",
+    "topMetrics": "Топ метрик (по количеству вызовов):",
+    "metricLine": "  {name}: {count} вызовов, среднее {avg}мс",
+    "detailedReport": "Подробный отчет:",
+    "totalMetricsLabel": "Всего метрик: {count}",
+    "totalAlerts": "Всего оповещений: {count}",
+    "reportGeneratedLog": "Отчет о производительности создан"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - Статус плагинов",
+    "configuration": "Конфигурация:",
+    "shfmt": "shfmt: {status}",
+    "shellcheck": "shellcheck: {status}",
+    "registeredPlugins": "Зарегистрированные плагины: {count}",
+    "noPluginsRegistered": "Нет зарегистрированных плагинов",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "Активные плагины: {count}",
+    "statusDisplayed": "Статус плагинов отображен"
+  }
+}

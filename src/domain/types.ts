@@ -92,24 +92,9 @@ export interface Diagnostic {
     source?: string;
 }
 
-/**
- * 可释放对象接口
- */
-export interface Disposable {
-    dispose(): void;
-}
-
-/**
- * 取消令牌领域模型
- * 对应 VSCode CancellationToken 的领域表示
- * 与 tools/executor/types.ts 中的定义兼容
- */
-export interface CancellationToken {
-    /** 是否已请求取消 */
-    readonly isCancellationRequested: boolean;
-    /** 注册取消回调 */
-    onCancellationRequested(callback: () => void): Disposable | void;
-}
+// 从基础设施层导入基础类型
+import type { CancellationToken, Disposable } from "../utils/executor/types";
+export type { CancellationToken, Disposable };
 
 /**
  * 通用插件选项

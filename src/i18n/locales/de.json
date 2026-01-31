@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
+  },
+  "messages": {
+    "noActiveDocument": "Kein aktives Dokument zum Formatieren",
+    "allProblemsFixed": "Alle Probleme wurden erfolgreich behoben.",
+    "partialFixSuccess": "{count} Korrekturen angewendet, aber {remaining} Probleme verbleiben. Überprüfen Sie die Problemanzeige.",
+    "formattingFailed": "Formatierung mit Warnungen fehlgeschlagen. Überprüfen Sie die Problemanzeige.",
+    "confirmResetMetrics": "Möchten Sie alle Leistungsmetriken zurücksetzen?",
+    "resetMetricsSuccess": "Leistungsmetriken wurden zurückgesetzt."
+  },
+  "performance": {
+    "title": "Shell Formatter - Leistungsbericht",
+    "reportGenerated": "Bericht erstellt: {date}",
+    "summaryTitle": "=== Leistungsübersicht ===",
+    "monitoring": "Überwachung: {status}",
+    "totalMetrics": "Gesamtmetriken: {count}",
+    "topMetrics": "Top-Metriken (nach Aufrufen):",
+    "metricLine": "  {name}: {count} Aufrufe, Ø {avg}ms",
+    "detailedReport": "Detaillierter Bericht:",
+    "totalMetricsLabel": "Gesamtmetriken: {count}",
+    "totalAlerts": "Gesamtwarnungen: {count}",
+    "reportGeneratedLog": "Leistungsbericht erstellt"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - Plugin-Status",
+    "configuration": "Konfiguration:",
+    "shfmt": "shfmt: {status}",
+    "shellcheck": "shellcheck: {status}",
+    "registeredPlugins": "Registrierte Plugins: {count}",
+    "noPluginsRegistered": "Keine Plugins registriert",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "Aktive Plugins: {count}",
+    "statusDisplayed": "Plugin-Status angezeigt"
+  }
+}

@@ -3,12 +3,12 @@
  * 提供性能指标收集和统计功能
  */
 
-import { getAlertManager } from "./alertManager";
+import { getAlertManager } from "./alert-manager";
 
 /**
  * 性能指标数据
  */
-interface MetricData {
+export interface MetricData {
     /** 指标名称 */
     name: string;
     /** 指标值数组 */

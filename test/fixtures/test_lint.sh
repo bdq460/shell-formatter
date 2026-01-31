@@ -16,4 +16,4 @@ if [ "$name" = "Klein" ]; then
 fi
 
 # 调用函数
-hello "World".
+hello "World"

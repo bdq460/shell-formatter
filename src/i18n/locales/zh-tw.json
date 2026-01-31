@@ -1,0 +1,40 @@
+{
+  "common": {
+    "enabled": "已啟用",
+    "disabled": "已停用",
+    "active": "活躍",
+    "inactive": "非活躍"
+  },
+  "messages": {
+    "noActiveDocument": "沒有活動的文件可格式化",
+    "allProblemsFixed": "所有問題已成功修復。",
+    "partialFixSuccess": "已套用 {count} 處修復，但仍有 {remaining} 個問題。請檢查問題面板。",
+    "formattingFailed": "格式化失敗，存在警告。請檢查問題面板。",
+    "confirmResetMetrics": "確定要重置所有效能指標嗎？",
+    "resetMetricsSuccess": "效能指標已重置。"
+  },
+  "performance": {
+    "title": "Shell Formatter - 效能報告",
+    "reportGenerated": "報告產生時間：{date}",
+    "summaryTitle": "=== 效能摘要 ===",
+    "monitoring": "監控狀態：{status}",
+    "totalMetrics": "總指標數：{count}",
+    "topMetrics": "常用指標（依呼叫次數）：",
+    "metricLine": "  {name}：{count} 次呼叫，平均 {avg}ms",
+    "detailedReport": "詳細報告：",
+    "totalMetricsLabel": "總指標數：{count}",
+    "totalAlerts": "總警示數：{count}",
+    "reportGeneratedLog": "效能報告已產生"
+  },
+  "pluginStatus": {
+    "title": "Shell Formatter - 外掛程式狀態",
+    "configuration": "設定狀態：",
+    "shfmt": "shfmt：{status}",
+    "shellcheck": "shellcheck：{status}",
+    "registeredPlugins": "已註冊外掛程式：{count}",
+    "noPluginsRegistered": "未註冊外掛程式",
+    "pluginLine": "  {name} ({displayName} v{version}) - {status}",
+    "activePlugins": "活躍外掛程式：{count}",
+    "statusDisplayed": "外掛程式狀態已顯示"
+  }
+}

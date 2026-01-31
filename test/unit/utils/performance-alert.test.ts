@@ -14,7 +14,7 @@ import {
     PerformanceAlertManager,
     resetAlertManager,
     setAlertManager,
-} from '../../../src/utils/performance/alertManager';
+} from '../../../src/utils/performance/alert-manager';
 
 describe('PerformanceAlertManager', () => {
     it('should register thresholds and trigger alerts', async () => {

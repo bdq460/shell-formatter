@@ -5,11 +5,11 @@
  */
 
 import {
+    getLoggerService,
+    initializeLoggerService,
     LoggerService,
     LogLevel,
-    initializeLoggerService,
-    getLoggerService,
-} from '#/platform/logger';
+} from '../../../src/shared/logger';
 
 // Mock vscode 模块
 const mockOutputChannel = {
