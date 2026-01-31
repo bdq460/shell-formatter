@@ -1,10 +1,13 @@
 {
     "compilerOptions": {
+        "module": "commonjs",
         "target": "ES2020",
-        "module": "ESNext",
-        "moduleResolution": "bundler",
-        "outDir": "./dist",
-        "rootDir": "./src",
+        "outDir": "dist",
+        "rootDir": "src",
+        "lib": [
+            "ES2020"
+        ],
+        "sourceMap": true,
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
@@ -21,9 +24,6 @@
     ],
     "exclude": [
         "node_modules",
-        ".vscode-test",
-        "dist",
-        "test",
-        "coverage"
+        ".vscode-test"
     ]
 }
