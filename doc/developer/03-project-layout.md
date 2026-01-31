@@ -61,17 +61,31 @@ shell_formatter/
 │   └── test-readme-backup.sh  # README 备份测试脚本
 │
 ├── src/                        # 源代码目录
-│   ├── adapters/              # 适配器
-│   ├── commands/              # 命令实现
+│   ├── application/           # 应用层 - 用例编排
+│   │   ├── di/                # 依赖注入初始化
+│   │   ├── services/          # 应用服务
+│   │   └── usecases/          # 用例实现
 │   ├── config/                # 配置管理
-│   ├── di/                    # 依赖注入容器
-│   ├── diagnostics/           # 诊断模块
-│   ├── formatters/            # 格式化模块
-│   ├── metrics/               # 指标与常量
-│   ├── plugins/               # 插件目录
-│   ├── providers/             # VSCode Providers
-│   ├── tools/                 # 工具层（executor/shell 等）
-│   ├── utils/                 # 工具函数
+│   ├── domain/                # 领域层 - 核心业务逻辑
+│   │   ├── port/              # 端口接口
+│   │   ├── plugins/           # 插件实现
+│   │   └── types.ts           # 领域类型
+│   ├── entrypoints/           # 入口层 - VSCode API 接入
+│   │   ├── commands/          # 命令实现
+│   │   ├── listeners/         # 事件监听器
+│   │   └── providers/         # 功能提供者
+│   ├── infrastructure/        # 基础设施层 - 外部适配
+│   │   ├── adapters/          # 工具适配器
+│   │   └── shell-tools/       # Shell 工具封装
+│   ├── shared/                # 共享层 - 跨层工具
+│   │   ├── converters/        # 类型转换器
+│   │   └── logger.ts          # 日志适配器
+│   ├── utils/                 # 工具层 - 基础设施
+│   │   ├── di/                # DI 容器实现
+│   │   ├── executor/          # 命令执行器
+│   │   ├── performance/       # 性能监控
+│   │   └── plugin/            # 插件系统
+│   ├── i18n/                  # 国际化支持
 │   └── extension.ts           # 扩展入口
 │
 ├── test/                       # 测试目录
@@ -106,17 +120,14 @@ shell_formatter/
 
 | 子目录 | 说明 | 关键文件 |
 |--------|------|----------|
-| `adapters/` | 工具适配层 | `formatterAdapter.ts`, `diagnosticAdapter.ts` |
-| `commands/` | VSCode 命令实现 | `fixCommand.ts`, `performanceCommand.ts` |
-| `config/` | 配置管理 | `settingInfo.ts`, `packageInfo.ts` |
-| `di/` | 依赖注入容器 | `container.ts`, `initializer.ts` |
-| `diagnostics/` | 诊断模块 | `index.ts` |
-| `formatters/` | 格式化模块 | `index.ts` |
-| `metrics/` | 指标常量 | `performance.ts` |
-| `plugins/` | 格式化/诊断插件 | `shfmtPlugin.ts`, `shellcheckPlugin.ts` |
-| `providers/` | VSCode Providers | `index.ts` |
-| `tools/` | 外部工具执行 | `executor/`, `shell/` |
-| `utils/` | 通用工具函数 | `log.ts`, `debounce.ts`, `performance/`, `plugin/` |
+| `application/` | 应用层 - 用例编排 | `usecases/`, `services/`, `di/` |
+| `config/` | 配置管理 | `package-info.ts`, `setting-info.ts` |
+| `domain/` | 领域层 - 核心业务 | `port/`, `plugins/`, `types.ts`, `plugin-manager.ts` |
+| `entrypoints/` | 入口层 - VSCode 接入 | `commands/`, `listeners/`, `providers/` |
+| `infrastructure/` | 基础设施层 - 外部适配 | `adapters/`, `shell-tools/` |
+| `shared/` | 共享层 - 跨层工具 | `logger.ts`, `converters/`, `performance-metrics.ts` |
+| `utils/` | 工具层 - 基础设施 | `executor/`, `di/`, `plugin/`, `performance/` |
+| `i18n/` | 国际化支持 | `index.ts`, `locales/` |
 
 ### `test/` - 测试代码
 

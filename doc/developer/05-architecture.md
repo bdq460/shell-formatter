@@ -293,12 +293,12 @@ return {
 
 | 层级         | 职责           | 示例                                       | 依赖关系                |
 | ------------ | -------------- | ------------------------------------------ | ----------------------- |
-| **入口层**   | 注册和协调     | `extension.ts`                             | 依赖所有下层            |
-| **适配层**   | 类型转换       | `adapters/`, `PluginManager`               | 连接 VSCode 与领域层    |
-| **业务层**   | 实现具体功能   | `commands/`, `diagnostics/`, `formatters/`| 依赖插件层              |
-| **插件层**   | 插件管理       | `plugins/`, `di/`                          | 使用领域类型，无外部依赖 |
-| **工具层**   | 提供通用能力   | `tools/`, `utils/`                         | 基础设施层              |
-| **配置层**   | 配置管理       | `config/`, `metrics/`                      | 基础设施层              |
+| **Entrypoints 层** | VSCode API 接入 | `entrypoints/commands/`, `entrypoints/listeners/` | 依赖 Application 层     |
+| **Application 层** | 用例编排       | `application/usecases/`, `application/services/`  | 依赖 Domain 层          |
+| **Domain 层**      | 核心业务逻辑   | `domain/port/`, `domain/plugins/`                 | 完全独立，无外部依赖    |
+| **Infrastructure 层** | 外部适配    | `infrastructure/adapters/`, `infrastructure/shell-tools/` | 依赖 Domain 层和 Utils 层 |
+| **Shared 层**      | 跨层工具       | `shared/converters/`, `shared/logger.ts`          | 依赖 Utils 层           |
+| **Utils 层**       | 基础设施       | `utils/executor/`, `utils/di/`, `utils/plugin/`   | 完全独立，无项目依赖    |
 
 **领域类型说明**：
 
@@ -870,51 +870,78 @@ provideCodeActions()
 执行对应的命令
 ```
 
-### 9. 适配器模块 (adapters/)
+### 9. 基础设施适配器 (infrastructure/adapters/)
 
 **职责**：
 
-- 将工具结果转换为 VSCode 诊断
-- 统一诊断格式
+- 将外部工具适配到领域端口接口
+- 实现领域类型与 VSCode 类型的转换
+- 统一工具调用接口
 
 **核心设计**：
 
 ```typescript
-export class DiagnosticAdapter {
-  static convert(
-    result: ToolResult,
-    document: vscode.TextDocument,
-    source: string,
-  ): vscode.Diagnostic[] {
-    const diagnostics: vscode.Diagnostic[] = [];
+// infrastructure/adapters/shfmt-adapter.ts
+export class ShfmtToolAdapter implements IFormatTool {
+    private tool: ShfmtTool;
 
-    // 语法错误
-    if (result.syntaxErrors) {
-      for (const error of result.syntaxErrors) {
-        diagnostics.push(this.createSyntaxError(error, document, source));
-      }
+    constructor(tool: ShfmtTool) {
+        this.tool = tool;
     }
 
-    // 格式问题
-    if (result.formatIssues) {
-      for (const issue of result.formatIssues) {
-        diagnostics.push(this.createFormatIssue(issue, source));
-      }
+    async format(content: string, options?: FormatToolOptions): Promise<string> {
+        return this.tool.format(content, options);
     }
 
-    // Linter 问题
-    if (result.linterIssues) {
-      for (const issue of result.linterIssues) {
-        diagnostics.push(this.createLinterIssue(issue, source));
-      }
+    async check(content: string, options?: CheckToolOptions): Promise<ToolCheckResult> {
+        return this.tool.check(content, options);
     }
 
-    return diagnostics;
-  }
+    async isAvailable(): Promise<boolean> {
+        return this.tool.isAvailable();
+    }
 }
 ```
 
-### 10. 配置管理 (config/settingInfo.ts)
+### 10. 共享层转换器 (shared/converters/)
+
+**职责**：
+
+- 领域类型与 VSCode 类型的双向转换
+- 集中管理类型转换逻辑
+
+**核心设计**：
+
+```typescript
+// shared/converters/document.ts
+export class DocumentConverter {
+    // VSCode → 领域类型
+    static toDomain(document: vscode.TextDocument): Document {
+        return {
+            uri: document.uri.toString(),
+            content: document.getText(),
+            languageId: document.languageId,
+            fileName: document.fileName,
+            lineCount: document.lineCount,
+        };
+    }
+
+    // 领域类型 → VSCode
+    static toVscodeEdit(edit: TextEdit): vscode.TextEdit {
+        return new vscode.TextEdit(
+            new vscode.Range(
+                edit.range.start.line,
+                edit.range.start.character,
+                edit.range.end.line,
+                edit.range.end.character
+            ),
+            edit.newText
+        );
+    }
+}
+```
+
+### 11. 配置管理 (config/setting-info.ts)
 
 **职责**：
 

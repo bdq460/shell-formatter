@@ -29,6 +29,7 @@ Shell Formatter 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊�
 - **自动诊断** - 打开、保存或编辑时自动检查（300ms 防抖）
 - **插件系统** - 支持动态插件激活/停用，配置驱动
 - **性能监控** - 内置性能指标收集和报告
+- **国际化** - 支持 16 种语言，自动根据 VSCode 语言设置切换
 
 ### 开发文档
 
@@ -39,31 +40,42 @@ Shell Formatter 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊�
 - **[开发工作流](doc/developer/02-development-workflow.md)** - 开发流程指南
 - **[项目布局](doc/developer/03-project-layout.md)** - 项目结构说明
 - **[配置参考](doc/developer/04-configuration-reference.md)** - 配置选项详解
-- **[架构设计](doc/developer/05-architecture.md)** - 插件架构、依赖注入
+- **[架构设计](doc/developer/05-architecture.md)** - 六边形架构、依赖注入
 - **[插件系统](doc/developer/06-plugin-system.md)** - 插件开发指南
 - **[可观测性](doc/developer/07-observability.md)** - 性能监控和日志
 - **[测试](doc/developer/08-testing.md)** - 单元测试和集成测试
+- **[国际化](doc/developer/09-i18n-guide.md)** - 多语言支持指南
 
 ### 项目结构
 
 ```text
 ├── src/
 │   ├── extension.ts          # 扩展入口
-│   ├── adapters/             # 适配器层
-│   ├── commands/             # 命令模块
+│   ├── application/          # 应用层 - 用例编排
+│   │   ├── di/               # 依赖注入初始化
+│   │   ├── services/         # 应用服务
+│   │   └── usecases/         # 用例实现
 │   ├── config/               # 配置管理
-│   ├── di/                  # 依赖注入
-│   ├── diagnostics/          # 诊断模块
-│   ├── formatters/           # 格式化模块
-│   ├── metrics/             # 性能指标
-│   ├── plugins/             # 插件系统
-│   ├── providers/            # 提供者模块
-│   ├── tools/               # 工具层
-│   │   ├── executor/             # 执行器
-│   │   └── shell/                # Shell 工具
-│   └── utils/               # 工具函数
-│       ├── performance/         # 性能监控工具
-│       └── plugin/              # 插件工具
+│   ├── domain/               # 领域层 - 核心业务逻辑
+│   │   ├── port/             # 端口接口
+│   │   ├── plugins/          # 插件实现
+│   │   └── types.ts          # 领域类型
+│   ├── entrypoints/          # 入口层 - VSCode API 接入
+│   │   ├── commands/         # 命令实现
+│   │   ├── listeners/        # 事件监听器
+│   │   └── providers/        # 功能提供者
+│   ├── infrastructure/       # 基础设施层 - 外部适配
+│   │   ├── adapters/         # 工具适配器
+│   │   └── shell-tools/      # Shell 工具封装
+│   ├── shared/               # 共享层 - 跨层工具
+│   │   ├── converters/       # 类型转换器
+│   │   └── logger.ts         # 日志适配器
+│   ├── utils/                # 工具层 - 基础设施
+│   │   ├── di/               # DI 容器实现
+│   │   ├── executor/         # 命令执行器
+│   │   ├── performance/      # 性能监控
+│   │   └── plugin/           # 插件系统
+│   └── i18n/                 # 国际化支持
 ├── doc/
 │   ├── developer/            # 开发者文档
 │   ├── tools/                # 工具文档
@@ -85,12 +97,13 @@ Shell Formatter 是一个 VSCode 扩展，提供 Shell 脚本的格式化和诊�
 
 ### 技术架构
 
+- **六边形架构** - 清晰的端口/适配器分离，实现依赖倒置
 - **插件架构** - IFormatPlugin 接口，支持动态加载和配置
 - **依赖注入** - 自定义轻量级 DI 容器，支持循环依赖检测
-- **单例管理** - PluginManager、PerformanceMonitor 等全局单例
+- **领域独立** - 领域层完全独立，不依赖 VSCode 框架
 - **配置缓存** - 基于 SettingInfo 实现配置快照和自动失效
 - **性能优化** - 并行插件激活（40% 性能提升）、防抖机制
-- **适配器模式** - 工具结果转换为 VSCode 诊断
+- **国际化** - 支持 16 种语言，覆盖全球主要用户群体
 
 ### 快速上手
 

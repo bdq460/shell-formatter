@@ -29,6 +29,7 @@ Shell Formatter is a VSCode extension that provides Shell script formatting and 
 - **Automatic Diagnosis** - Automatic checking when opening, saving, or editing (300ms debounce)
 - **Plugin System** - Support for dynamic plugin activation/deactivation with configuration
 - **Performance Monitoring** - Built-in performance metrics collection and reporting
+- **Internationalization** - Support for 16 languages, auto-switch based on VSCode locale
 
 ### Developer Documentation
 
@@ -39,31 +40,42 @@ For detailed technical documentation, see [doc/developer/](doc/developer/):
 - **[Development Workflow](doc/developer/02-development-workflow.md)** - Development workflow guide
 - **[Project Layout](doc/developer/03-project-layout.md)** - Project structure description
 - **[Configuration Reference](doc/developer/04-configuration-reference.md)** - Configuration options details
-- **[Architecture Design](doc/developer/05-architecture.md)** - Plugin architecture, dependency injection
+- **[Architecture Design](doc/developer/05-architecture.md)** - Hexagonal architecture, dependency injection
 - **[Plugin System](doc/developer/06-plugin-system.md)** - Plugin development guide
 - **[Observability](doc/developer/07-observability.md)** - Performance monitoring and logging
 - **[Testing](doc/developer/08-testing.md)** - Unit tests and integration tests
+- **[Internationalization](doc/developer/09-i18n-guide.md)** - Multi-language support guide
 
 ### Project Structure
 
 ```text
 ├── src/
 │   ├── extension.ts          # Extension entry point
-│   ├── adapters/             # Adapter layer
-│   ├── commands/             # Command module
+│   ├── application/          # Application layer - Use case orchestration
+│   │   ├── di/               # Dependency injection initialization
+│   │   ├── services/         # Application services
+│   │   └── usecases/         # Use case implementations
 │   ├── config/               # Configuration management
-│   ├── di/                  # Dependency injection
-│   ├── diagnostics/          # Diagnosis module
-│   ├── formatters/           # Formatting module
-│   ├── metrics/             # Performance metrics
-│   ├── plugins/             # Plugin system
-│   ├── providers/            # Provider module
-│   ├── tools/               # Tool layer
-│   │   ├── executor/             # Executor
-│   │   └── shell/                # Shell tools
-│   └── utils/               # Utility functions
-│       ├── performance/         # Performance monitoring utilities
-│       └── plugin/              # Plugin utilities
+│   ├── domain/               # Domain layer - Core business logic
+│   │   ├── port/             # Port interfaces
+│   │   ├── plugins/          # Plugin implementations
+│   │   └── types.ts          # Domain types
+│   ├── entrypoints/          # Entrypoints layer - VSCode API access
+│   │   ├── commands/         # Command implementations
+│   │   ├── listeners/        # Event listeners
+│   │   └── providers/        # Feature providers
+│   ├── infrastructure/       # Infrastructure layer - External adapters
+│   │   ├── adapters/         # Tool adapters
+│   │   └── shell-tools/      # Shell tool wrappers
+│   ├── shared/               # Shared layer - Cross-layer utilities
+│   │   ├── converters/       # Type converters
+│   │   └── logger.ts         # Logger adapter
+│   ├── utils/                # Utils layer - Infrastructure
+│   │   ├── di/               # DI container implementation
+│   │   ├── executor/         # Command executor
+│   │   ├── performance/      # Performance monitoring
+│   │   └── plugin/           # Plugin system
+│   └── i18n/                 # Internationalization support
 ├── doc/
 │   ├── developer/            # Developer documentation
 │   ├── tools/                # Tools documentation
@@ -85,12 +97,13 @@ For detailed technical documentation, see [doc/developer/](doc/developer/):
 
 ### Technical Architecture
 
+- **Hexagonal Architecture** - Clear port/adapter separation, dependency inversion
 - **Plugin Architecture** - IFormatPlugin interface supporting dynamic loading and configuration
 - **Dependency Injection** - Lightweight DI container with circular dependency detection
-- **Singleton Management** - PluginManager, PerformanceMonitor, and other global singletons
+- **Domain Independence** - Domain layer completely independent, no VSCode framework dependency
 - **Configuration Caching** - Configuration snapshot and automatic invalidation via SettingInfo
 - **Performance Optimization** - Parallel plugin activation (40% improvement), debounce mechanism
-- **Adapter Pattern** - Tool results converted to VSCode diagnostics
+- **Internationalization** - Support for 16 languages, covering major global user groups
 
 ### Quick Start
 

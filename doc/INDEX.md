@@ -24,6 +24,7 @@
 - [插件系统详解](developer/06-plugin-system.md) - 插件系统详细介绍和开发指南
 - [可观测性与性能监控](developer/07-observability.md) - 性能监控和优化
 - [测试体系与实践](developer/08-testing.md) - 测试配置、编写和最佳实践
+- [国际化指南](developer/09-i18n.md) - 多语言支持和翻译指南
 
 **VSCode 扩展开发**:
 
