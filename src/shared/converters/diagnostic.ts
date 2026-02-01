@@ -26,7 +26,7 @@ export function fromDomainDiagnostics(diagnostics: DomainDiagnostic[]): vscode.D
         const diagnostic = new vscode.Diagnostic(range, d.message, d.severity);
         // diagnostic.source = d.source;
         // 统一设置来源为扩展名称
-        diagnostic.source = PackageInfo.extensionName;
+        diagnostic.source = PackageInfo.diagnosticSource;
         if (d.code !== undefined) {
             diagnostic.code = d.code;
         }

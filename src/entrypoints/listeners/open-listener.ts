@@ -6,11 +6,10 @@
 
 import * as vscode from "vscode";
 import { diagnoseDocument } from "../../application/usecases/diagnose-document";
-import { PackageInfo } from "../../config";
 import { fromDomainDiagnostics } from "../../shared/converters/diagnostic";
 import { toDomainDocument } from "../../shared/converters/document";
+import { shouldSkipFile } from "../../shared/file-checker";
 import { logger } from "../../utils/log";
-import { shouldSkipFile } from "./save-listener";
 
 /**
  * 注册文档打开监听器
@@ -23,14 +22,10 @@ export function registerOpenListener(
     logger.info("Registering document open listener");
 
     return vscode.workspace.onDidOpenTextDocument(async (document) => {
-        // 只处理 shell 语言文件
-        if (document.languageId !== PackageInfo.languageId) {
-            return;
-        }
 
         // 跳过特殊文件
-        if (shouldSkipFile(document.fileName)) {
-            logger.info(
+        if (shouldSkipFile(document)) {
+            logger.debug(
                 `Skipping open diagnosis for: ${document.fileName} (special file)`,
             );
             return;

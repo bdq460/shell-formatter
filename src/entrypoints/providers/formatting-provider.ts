@@ -8,8 +8,8 @@ import * as vscode from "vscode";
 import { formatDocument } from "../../application/usecases/format-document";
 import { PackageInfo } from "../../config";
 import { toDomainDocument } from "../../shared/converters/document";
+import { shouldSkipFile } from "../../shared/file-checker";
 import { logger } from "../../utils/log";
-import { shouldSkipFile } from "../listeners/save-listener";
 
 /**
  * 注册文档格式化提供者
@@ -26,14 +26,10 @@ export function registerFormattingProvider(): vscode.Disposable {
                 _options: vscode.FormattingOptions,
                 token: vscode.CancellationToken,
             ): Promise<vscode.TextEdit[]> {
-                // 防御性检查：确保语言类型匹配（虽然 VSCode 已过滤，但保持代码一致性）
-                if (document.languageId !== PackageInfo.languageId) {
-                    return [];
-                }
 
                 // 跳过特殊文件
-                if (shouldSkipFile(document.fileName)) {
-                    logger.info(
+                if (shouldSkipFile(document)) {
+                    logger.debug(
                         `Skipping range formatting for: ${document.fileName} (special file)`,
                     );
                     return [];

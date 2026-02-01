@@ -6,12 +6,11 @@
 
 import * as vscode from "vscode";
 import { diagnoseDocument } from "../../application/usecases/diagnose-document";
-import { PackageInfo } from "../../config";
 import { fromDomainDiagnostics } from "../../shared/converters/diagnostic";
 import { toDomainDocument } from "../../shared/converters/document";
+import { shouldSkipFile } from "../../shared/file-checker";
 import { DebounceManager } from "../../utils/debounce";
 import { logger } from "../../utils/log";
-import { shouldSkipFile } from "./save-listener";
 
 /**
  * 注册文档变更监听器
@@ -26,14 +25,10 @@ export function registerChangeListener(
     logger.info("Registering document change listener");
 
     return vscode.workspace.onDidChangeTextDocument((event) => {
-        // 只处理 shell 语言文件
-        if (event.document.languageId !== PackageInfo.languageId) {
-            return;
-        }
 
         // 跳过特殊文件
-        if (shouldSkipFile(event.document.fileName)) {
-            logger.info(
+        if (shouldSkipFile(event.document)) {
+            logger.debug(
                 `Skipping change diagnosis for: ${event.document.fileName} (special file)`,
             );
             return;

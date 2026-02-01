@@ -6,9 +6,9 @@
 
 import * as vscode from "vscode";
 import { diagnoseDocument } from "../../application/usecases/diagnose-document";
-import { PackageInfo } from "../../config";
 import { fromDomainDiagnostics } from "../../shared/converters/diagnostic";
 import { toDomainDocument } from "../../shared/converters/document";
+import { shouldSkipFile } from "../../shared/file-checker";
 import { PERFORMANCE_METRICS } from "../../shared/performance-metrics";
 import { DebounceManager } from "../../utils/debounce";
 import { logger } from "../../utils/log";
@@ -27,14 +27,10 @@ export function registerSaveListener(
     logger.info("Registering document save listener");
 
     return vscode.workspace.onDidSaveTextDocument(async (document) => {
-        // 只处理 shell 语言文件
-        if (document.languageId !== PackageInfo.languageId) {
-            return;
-        }
 
         // 跳过特殊文件
-        if (shouldSkipFile(document.fileName)) {
-            logger.info(
+        if (shouldSkipFile(document)) {
+            logger.debug(
                 `Skipping save diagnosis for: ${document.fileName} (special file)`,
             );
             return;
@@ -66,28 +62,4 @@ export function registerSaveListener(
             );
         }
     });
-}
-
-/**
- * 检查是否应该跳过该文件
- * VSCode 编辑器中打开 Git 冲突文件时（如 example.sh.git），文件名会以 .git 结尾。
- * 打开的文件名是.sh 的文件，但是内部文件名其实是.git结尾的,对于这种要进行过滤
- * @param fileName 文件名
- * @returns 如果应该跳过返回 true，否则返回 false
- */
-export function shouldSkipFile(fileName: string): boolean {
-    const baseName = fileName;
-
-    // 跳过 Git 冲突文件、临时文件等
-    const skipPatterns = [
-        /\.git$/, // Git 冲突文件
-        /\.swp$/, // Vim 临时文件
-        /\.swo$/, // Vim 交换文件
-        /~$/, // 备份文件
-        /\.tmp$/, // 临时文件
-        /\.bak$/, // 备份文件
-        /^extension-output-/, // VSCode 扩展开发输出文件
-    ];
-
-    return skipPatterns.some((pattern) => pattern.test(baseName));
 }

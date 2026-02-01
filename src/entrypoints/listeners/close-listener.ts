@@ -5,8 +5,9 @@
  */
 
 import * as vscode from "vscode";
-import { logger } from "../../utils/log";
+import { shouldSkipFile } from "../../shared/file-checker";
 import { DebounceManager } from "../../utils/debounce";
+import { logger } from "../../utils/log";
 
 /**
  * 注册文档关闭监听器
@@ -21,10 +22,21 @@ export function registerCloseListener(
     logger.info("Registering document close listener");
 
     return vscode.workspace.onDidCloseTextDocument((document) => {
+
+        // 跳过特殊文件
+        if (shouldSkipFile(document)) {
+            logger.debug(
+                `Skipping close diagnosis for: ${document.fileName} (special file)`,
+            );
+            return;
+        }
+
         const uri = document.uri.toString();
+
+        // 取消防抖定时器，避免延迟诊断
         debounceManager.cancel(uri);
 
-        // 清除该文件的诊断信息，避免问题面板显示已关闭文件的问题
+        // 清除该文件的诊断信息
         diagnosticCollection.delete(document.uri);
 
         logger.debug(

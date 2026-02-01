@@ -5,8 +5,8 @@
  */
 
 import * as vscode from "vscode";
+import { shouldSkipUri } from "../../shared/file-checker";
 import { logger } from "../../utils/log";
-
 /**
  * 注册文件删除监听器
  *
@@ -19,7 +19,14 @@ export function registerDeleteListener(
 
     return vscode.workspace.onDidDeleteFiles((event) => {
         for (const uri of event.files) {
-            // 删除文件时清除对应的诊断信息
+
+            // 跳过特殊文件
+            if (shouldSkipUri(uri)) {
+                logger.debug(`Skipping delete listener for: ${uri.toString()} (special file)`);
+                continue;
+            }
+
+            // 清除该文件的诊断信息
             diagnosticCollection.delete(uri);
             logger.debug(`Diagnostics cleared for deleted file: ${uri.toString()}`);
         }

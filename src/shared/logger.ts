@@ -183,7 +183,6 @@ export class LoggerAdapter implements Logger, vscode.Disposable {
 
         // 插件名称始终添加在最前面
         formatted = `[${PackageInfo.extensionName}] ${formatted}`;
-
         return formatted;
     }
 

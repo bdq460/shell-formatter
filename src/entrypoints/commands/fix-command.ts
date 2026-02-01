@@ -20,10 +20,11 @@
 import * as vscode from "vscode";
 import { diagnoseDocument } from "../../application/usecases/diagnose-document";
 import { formatDocument } from "../../application/usecases/format-document";
-import { t } from "../../i18n";
 import { PackageInfo } from "../../config";
+import { t } from "../../i18n";
 import { fromDomainDiagnostics } from "../../shared/converters/diagnostic";
 import { toDomainDocument } from "../../shared/converters/document";
+import { shouldSkipUri } from "../../shared/file-checker";
 import { logger } from "../../utils/log";
 
 /**
@@ -314,7 +315,15 @@ export function registerFixAllCommand(
         PackageInfo.commandFixAllProblems,
         async (uri?: vscode.Uri) => {
             // 记录命令触发
-            logger.info(`Start fix all problems! URI: ${uri}`);
+            logger.info(`Start fix all problems! URI: ${uri?.toString() || "N/A"}`);
+
+            // 跳过特殊文件
+            if (uri && shouldSkipUri(uri)) {
+                logger.debug(
+                    `Skipping fix all problems for: ${uri.toString()} (special file)`,
+                );
+                return;
+            }
 
             // 步骤 1: 查找目标文档
             const document = findDocument(uri);

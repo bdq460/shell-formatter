@@ -226,10 +226,10 @@ export class SettingInfo {
      * 这些配置变化后需要重新诊断所有文件
      */
     static readonly DIAGNOSTIC_RELEVANT_CONFIG_KEYS = [
-        "shell-format.plugins.shfmt",
-        "shell-format.plugins.shellcheck",
-        "shell-format.tabSize",
-        "shell-format.onError",
+        `${PackageInfo.extensionName}.plugins.shfmt`,
+        `${PackageInfo.extensionName}.plugins.shellcheck`,
+        `${PackageInfo.extensionName}.tabSize`,
+        `${PackageInfo.extensionName}.onError`,
     ] as const;
 
     /**
@@ -238,7 +238,7 @@ export class SettingInfo {
      */
     static readonly EXTENSION_RELEVANT_CONFIG_KEYS = [
         ...this.DIAGNOSTIC_RELEVANT_CONFIG_KEYS,
-        "shell-format.log",
+        `${PackageInfo.extensionName}.log`,
     ] as const;
 
     /**

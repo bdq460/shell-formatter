@@ -6,6 +6,7 @@
 
 import * as vscode from "vscode";
 import { PackageInfo } from "../../config";
+import { shouldSkipFile } from "../../shared/file-checker";
 import { PERFORMANCE_METRICS } from "../../shared/performance-metrics";
 import { logger } from "../../utils/log";
 import { startTimer } from "../../utils/performance/monitor";
@@ -39,6 +40,15 @@ export class ShellFormatCodeActionProvider
             PERFORMANCE_METRICS.PROVIDER_CODE_ACTIONS_DURATION,
         );
         logger.info(`Code Actions requested for ${document.fileName}`);
+
+        // 跳过特殊文件
+        if (shouldSkipFile(document)) {
+            logger.debug(
+                `Skipping code actions for: ${document.fileName} (special file)`,
+            );
+            timer.stop();
+            return [];
+        }
 
         const actions: vscode.CodeAction[] = [];
 

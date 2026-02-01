@@ -164,34 +164,149 @@ import { logger } from '#/utils/log';
 
 ### 文档过滤
 
-跳过特殊文件（如 Git 冲突文件、临时文件），避免对非目标文件进行诊断和格式化。
+文档过滤是确保扩展只对合适的文件进行诊断和格式化的关键机制。如果不过滤，会导致以下问题：
 
-**跳过模式**：
+1. **性能问题**：对非 Shell 文件进行不必要的诊断，浪费资源
+2. **错误诊断**：对临时文件、虚拟文件生成错误的诊断结果
+3. **诊断残留**：虚拟文档（如 AI 助手的 diff 视图）关闭后，诊断错误无法消失
 
-| 模式       | 说明         | 示例             |
-| ---------- | ------------ | ---------------- |
-| `/\.git$/` | Git 冲突文件 | `example.sh.git` |
-| `/\.swp$/` | Vim 临时文件 | `file.sh.swp`    |
-| `/\.swo$/` | Vim 交换文件 | `file.sh.swo`    |
-| `/~$/`     | 备份文件     | `file.sh~`       |
-| `/\.tmp$/` | 临时文件     | `file.sh.tmp`    |
-| `/\.bak$/` | 备份文件     | `file.sh.bak`    |
+#### 过滤层级
 
-**示例代码**：
+文档过滤分为三个层级，按顺序执行：
+
+**第一层：语言 ID 过滤**
+
+只处理 VSCode 识别为 Shell 脚本的文件：
 
 ```typescript
-function shouldSkipFile(fileName: string): boolean {
-  const baseName = path.basename(fileName);
-  const skipPatterns = [
-    /\.git$/,
-    /\.swp$/,
-    /\.swo$/,
-    /~$/,
-    /\.tmp$/,
-    /\.bak$/,
-    /^extension-output-/,
-  ];
-  return skipPatterns.some((pattern) => pattern.test(baseName));
+// 只处理 shell 语言文件
+if (document.languageId !== PackageInfo.languageId) {
+    logger.debug(`Skipping file with non-shell language: ${document.fileName}`);
+    return true;
+}
+```
+
+**第二层：文件扩展名过滤**
+
+检查文件是否有合法的后缀名（`.sh`、`.bash`、`.zsh`）：
+
+```typescript
+// 合法后缀名从 PackageInfo.fileExtensions 获取
+const validFileSuffixes = PackageInfo.fileExtensions; // ['.sh', '.bash', '.zsh']
+const hasValidSuffix = validFileSuffixes.some(ext => fileName.endsWith(ext));
+if (!hasValidSuffix) {
+    logger.debug(`Skipping file with invalid suffix: ${uri.toString()}`);
+    return true;
+}
+```
+
+**第三层：URI Scheme 过滤**
+
+只处理实际的磁盘文件，跳过虚拟文档：
+
+```typescript
+// 跳过非 file/git scheme 的文件
+if (uri.scheme !== 'file' && uri.scheme !== 'git') {
+    logger.debug(`Skipping file with non-file/git scheme: ${uri.toString()}`);
+    return true;
+}
+```
+
+#### 为什么需要 URI Scheme 过滤
+
+当使用 AI 助手扩展（如 Genie）修改代码时，会创建虚拟文档（URI scheme 如 `genie-diff`）。如果对这些虚拟文档进行诊断：
+
+- 诊断结果被绑定到虚拟文档的 URI（如 `genie-diff://...`）
+- 虚拟文档关闭后，诊断集合中仍然保留这些诊断
+- 由于不是实际文件，无法通过正常的文件关闭事件清理
+- 导致问题面板的错误提示一直存在，无法消失
+
+#### 常见 URI Scheme 列表
+
+| Scheme | 来源 | 说明 | 处理方式 |
+|--------|------|------|---------|
+| `file` | 内置 | 磁盘上的实际文件，如 `file:///path/to/file.sh` | ✅ 处理 |
+| `git` | 内置 Git | Git 版本控制中的文件，如 `git:/path/to/file.sh` | ✅ 处理 |
+| `untitled` | 内置 | 未保存的新文件，如 `untitled:Untitled-1` | ❌ 跳过 |
+| `output` | 扩展 | 输出通道，如 `output:extension-name` | ❌ 跳过 |
+| `git-index` | 内置 Git | Git 索引中的内容，如 `git-index:/path/to/file.sh` | ❌ 跳过 |
+| `debug` | 内置 | 调试源文件，如 `debug:/path/to/file.sh` | ❌ 跳过 |
+| `vscode-notebook-cell` | 内置 | Notebook 单元格 | ❌ 跳过 |
+| `vscode-vfs` | 内置 | 虚拟文件系统，如 `vscode-vfs://...` | ❌ 跳过 |
+| `genie-diff` | 第三方 | AI 助手的 diff 视图，如 `genie-diff://...` | ❌ 跳过 |
+
+#### 核心代码实现
+
+```typescript
+// src/shared/file-checker.ts
+
+/**
+ * 检查是否应该跳过该文件
+ * 
+ * 过滤逻辑：
+ * 1. 检查 URI 是否为空
+ * 2. 处理 .git 后缀（Git 冲突文件）
+ * 3. 检查文件扩展名是否合法
+ * 4. 检查 URI scheme 是否为 file 或 git
+ * 
+ * @param uri 文档 URI
+ * @returns 如果应该跳过返回 true，否则返回 false
+ */
+export function shouldSkipUri(uri: vscode.Uri): boolean {
+    // 1. 如果 uri 为空，直接跳过
+    if (!uri) {
+        logger.debug(`Skipping file with empty uri`);
+        return true;
+    }
+
+    let fileName = uri.fsPath.split('/').pop() || '';
+
+    // 2. 如果文件以 .git 结尾，则删除 .git 再进行检查
+    // 这是为了处理 Git 冲突文件（如 file.sh.git）
+    const gitSuffix = /\.git$/;
+    if (gitSuffix.test(fileName)) {
+        logger.debug(`Found .git suffix in file name: ${fileName}, removing .git suffix for check`);
+        fileName = fileName.replace(gitSuffix, '');
+    }
+
+    // 3. 检查文件扩展名
+    const validFileSuffixes = PackageInfo.fileExtensions;
+    const hasValidSuffix = validFileSuffixes.some(ext => fileName.endsWith(ext));
+    if (!hasValidSuffix) {
+        logger.debug(`Skipping file with invalid suffix: ${uri.toString()}`);
+        return true;
+    }
+
+    // 4. 跳过非 file/git scheme 的文件
+    if (uri.scheme !== 'file' && uri.scheme !== 'git') {
+        logger.debug(`Skipping file with non-file/git scheme: ${uri.toString()}`);
+        return true;
+    }
+
+    logger.debug(`File passed all checks, will not skip: ${uri.toString()}`);
+    return false;
+}
+
+/**
+ * 检查文档是否应该跳过
+ * 在 shouldSkipUri 的基础上增加语言 ID 检查
+ * 
+ * @param document VSCode 文档对象
+ * @returns 如果应该跳过返回 true，否则返回 false
+ */
+export function shouldSkipFile(document: vscode.TextDocument): boolean {
+    if (!document) {
+        logger.debug(`Skipping file with empty document`);
+        return true;
+    }
+
+    // 只处理 shell 语言文件
+    if (document.languageId !== PackageInfo.languageId) {
+        logger.debug(`Skipping file with non-shell language: ${document.fileName}`);
+        return true;
+    }
+
+    return shouldSkipUri(document.uri);
 }
 ```
 
