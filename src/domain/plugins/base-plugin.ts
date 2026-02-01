@@ -27,7 +27,7 @@
  */
 
 import { logger } from "../../utils/log";
-import { BasePlugin as BasePluginBase } from "../../utils/plugin";
+import { BasePlugin as BasePluginBase } from "../../utils/plugin/base-plugin";
 import {
     Diagnostic,
     DiagnosticSeverity,

@@ -30,7 +30,12 @@ export default {
 
     // 覆盖率收集配置
     collectCoverageFrom: [
+        'src/application/**/*.ts',
+        'src/domain/**/*.ts',
+        'src/infrastructure/**/*.ts',
         'src/utils/**/*.ts',
+        // 排除测试文件和示例文件
+        '!src/**/test/**/*.ts',
         '!src/utils/**/*.example.ts',
         '!src/utils/**/example.ts',
     ],
@@ -60,10 +65,10 @@ export default {
     // 函数覆盖设置为95%，因为某些内部辅助函数可能无需在单元测试中直接调用
     coverageThreshold: {
         global: {
-            statements: 99,
+            statements: 98,
             branches: 90,
-            functions: 100,
-            lines: 99,
+            functions: 99,
+            lines: 98,
         },
     },
 

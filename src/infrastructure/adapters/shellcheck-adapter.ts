@@ -6,12 +6,13 @@
  */
 
 import {
-    ICheckTool,
     CheckToolOptions,
-    ToolCheckResult,
+    ICheckTool,
+    PluginCheckResult,
 } from "../../domain/port";
 import { Diagnostic, DiagnosticSeverity } from "../../domain/types";
 import { ShellcheckTool } from "../shell-tools/shellcheck/shellcheck-tool";
+import { ToolCheckResult } from "../shell-tools/types";
 
 /**
  * Shellcheck 工具适配器
@@ -27,14 +28,14 @@ export class ShellcheckToolAdapter implements ICheckTool {
     /**
      * 检查文档内容
      */
-    async check(content: string, options?: CheckToolOptions): Promise<ToolCheckResult> {
+    async check(content: string, options?: CheckToolOptions): Promise<PluginCheckResult> {
         const result = await this.tool.check({
             file: "-",
             content,
             token: options?.token,
         });
 
-        return this.convertToToolCheckResult(result);
+        return this.convertToPluginCheckResult(result);
     }
 
     /**
@@ -52,9 +53,9 @@ export class ShellcheckToolAdapter implements ICheckTool {
     /**
      * 转换基础设施结果到领域结果
      */
-    private convertToToolCheckResult(
-        toolResult: import("../shell-tools/types").ToolCheckResult,
-    ): ToolCheckResult {
+    private convertToPluginCheckResult(
+        toolResult: ToolCheckResult,
+    ): PluginCheckResult {
         const diagnostics: Diagnostic[] = [];
 
         // 转换执行错误

@@ -29,6 +29,18 @@ class AsyncCleanupService {
     }
 }
 
+class ErrorCleanupService {
+    cleanup(): void {
+        throw new Error('cleanup failed');
+    }
+}
+
+class RejectCleanupService {
+    async cleanup(): Promise<void> {
+        return Promise.reject(new Error('cleanup reject'));
+    }
+}
+
 describe('DIContainer', () => {
     beforeAll(() => {
         setLogger(mockLogger);
@@ -114,6 +126,28 @@ describe('DIContainer', () => {
 
         expect(service.cleaned).toBe(true);
         expect(asyncService.cleaned).toBe(true);
+    });
+
+    it('should handle cleanup errors gracefully', async () => {
+        const container = new DIContainer();
+        container.registerSingleton('errorCleanup', () => new ErrorCleanupService());
+        container.registerSingleton('rejectCleanup', () => new RejectCleanupService());
+
+        container.resolve('errorCleanup');
+        container.resolve('rejectCleanup');
+
+        await expect(container.cleanup()).resolves.not.toThrow();
+        expect(mockLogger.error).toHaveBeenCalled();
+    });
+
+    it('should warn on duplicate transient registration', () => {
+        const container = new DIContainer();
+
+        container.registerTransient('dupTransient', () => ({ value: 1 }));
+        container.registerTransient('dupTransient', () => ({ value: 2 }));
+
+        expect(container.resolve<{ value: number }>('dupTransient').value).toBe(2);
+        expect(mockLogger.warn).toHaveBeenCalled();
     });
 
     it('should clear services and stack', () => {

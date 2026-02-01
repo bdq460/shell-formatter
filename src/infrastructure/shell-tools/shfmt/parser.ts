@@ -2,8 +2,8 @@
  * 解析 shfmt 输出
  */
 
-import { ExecutionResult } from "../../..//utils/executor/types";
-import { logger } from "../../../utils";
+import { ExecutionResult } from "../../../utils/executor/types";
+import { logger } from "../../../utils/log";
 import { FormatIssue, SyntaxError, ToolCheckResult, ToolFormatResult } from "../types";
 
 /**

@@ -24,13 +24,13 @@ export function parseShellcheckOutput(result: ExecutionResult): ToolCheckResult 
         ];
     }
 
-    // 成功：检查是否有输出
-    const allOutput = `${result.stdout}${result.stderr}`;
+    // 分别处理 stdout 和 stderr
+    const issues: LinterIssue[] = [];
+    issues.push(...parseIssues(result.stdout));
+    issues.push(...parseIssues(result.stderr));
 
-    // 有输出，返回 linter 问题
-    const linterIssues = parseIssues(allOutput);
-    if (linterIssues.length > 0) {
-        toolResult.linterIssues = linterIssues;
+    if (issues.length > 0) {
+        toolResult.linterIssues = issues;
     }
 
     return toolResult;
@@ -53,14 +53,13 @@ function parseIssues(output: string): LinterIssue[] {
 
         if (match) {
             const typeStr = match[3];
-            const validTypes: Array<"error" | "warning" | "info"> = [
-                "error",
-                "warning",
-                "info",
-            ];
-            const type = validTypes.includes(typeStr as any)
-                ? (typeStr as "error" | "warning" | "info")
-                : "warning";
+            // shellcheck 使用 "note" 表示 info 级别
+            const typeMapping: Record<string, "error" | "warning" | "info"> = {
+                "error": "error",
+                "warning": "warning",
+                "note": "info",
+            };
+            const type = typeMapping[typeStr] || "warning";
 
             issues.push({
                 line: parseInt(match[1], 10) - 1,

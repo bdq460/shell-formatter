@@ -69,18 +69,15 @@ export class PureShfmtPlugin extends BasePlugin {
         );
 
         try {
-            const formattedContent = await this.tool.format(document.content, {
+            const result = await this.tool.format(document.content, {
                 indent: this.pluginConfig.tabSize,
                 token: options.token,
             });
 
             logger.debug(`PureShfmtPlugin.format completed`);
 
-            return this.createFormatResult(
-                formattedContent,
-                document,
-                [], // 格式化本身不产生诊断
-            );
+            // 直接返回工具的结果，因为已经包含了 diagnostics 和 textEdits
+            return result;
         } catch (error) {
             logger.error(`PureShfmtPlugin.format failed: ${String(error)}`);
             return this.handleFormatError(document, error);

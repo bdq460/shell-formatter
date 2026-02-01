@@ -4,7 +4,7 @@
  * 职责：协调领域层完成文档诊断
  * 这是应用层的用例编排，不直接依赖 VSCode
  */
-
+// TODO : application层去除对config的依赖
 import { PackageInfo } from "../../config";
 import { PluginManager } from "../../domain/plugin-manager";
 import { Diagnostic, Document, PluginCheckResult } from "../../domain/types";

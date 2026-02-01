@@ -92,4 +92,42 @@ describe('DebounceManager', () => {
             done();
         }, 80);
     });
+
+    it('should clear timer even if callback throws', () => {
+        jest.useFakeTimers();
+        const manager = new DebounceManager();
+
+        manager.debounce('throw_key', () => {
+            throw new Error('boom');
+        }, 10);
+
+        expect(() => {
+            jest.advanceTimersByTime(10);
+        }).toThrow('boom');
+
+        expect(manager.getActiveCount()).toBe(0);
+        jest.useRealTimers();
+    });
+
+    it('should use default delay when not provided', () => {
+        jest.useFakeTimers();
+        const manager = new DebounceManager();
+        const callback = jest.fn();
+
+        manager.debounce('default_delay', callback);
+
+        jest.advanceTimersByTime(299);
+        expect(callback).not.toHaveBeenCalled();
+
+        jest.advanceTimersByTime(1);
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(manager.getActiveCount()).toBe(0);
+        jest.useRealTimers();
+    });
+
+    it('should clear all safely when empty', () => {
+        const manager = new DebounceManager();
+        expect(() => manager.clearAll()).not.toThrow();
+        expect(manager.getActiveCount()).toBe(0);
+    });
 });

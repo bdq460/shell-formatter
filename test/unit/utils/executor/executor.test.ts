@@ -95,6 +95,54 @@ describe('execute function', () => {
         expect(result.error?.message).toContain('not installed');
     });
 
+    it('should handle permission error', async () => {
+        const mockProcess = new EventEmitter() as any;
+        mockProcess.stdin = new EventEmitter();
+        mockProcess.stdout = new EventEmitter();
+        mockProcess.stderr = new EventEmitter();
+        mockProcess.killed = false;
+        mockProcess.kill = jest.fn();
+        mockProcess.stdout.destroy = jest.fn();
+        mockProcess.stderr.destroy = jest.fn();
+        mockProcess.stdin.destroy = jest.fn();
+
+        const error = new Error('spawn EACCES');
+        (error as any).code = 'EACCES';
+        setTimeout(() => {
+            mockProcess.emit('error', error);
+        }, 10);
+
+        mockSpawn.mockReturnValue(mockProcess);
+
+        const result = await execute('secure-cmd', { args: [] });
+
+        expect(result.error?.message).toContain('Permission denied');
+    });
+
+    it('should handle unknown execution error', async () => {
+        const mockProcess = new EventEmitter() as any;
+        mockProcess.stdin = new EventEmitter();
+        mockProcess.stdout = new EventEmitter();
+        mockProcess.stderr = new EventEmitter();
+        mockProcess.killed = false;
+        mockProcess.kill = jest.fn();
+        mockProcess.stdout.destroy = jest.fn();
+        mockProcess.stderr.destroy = jest.fn();
+        mockProcess.stdin.destroy = jest.fn();
+
+        const error = new Error('unknown failure');
+        (error as any).code = 'EUNKNOWN';
+        setTimeout(() => {
+            mockProcess.emit('error', error);
+        }, 10);
+
+        mockSpawn.mockReturnValue(mockProcess);
+
+        const result = await execute('weird-cmd', { args: [] });
+
+        expect(result.error?.message).toContain('Failed to run');
+    });
+
     it('should handle timeout', async () => {
         const mockProcess = new EventEmitter() as any;
         mockProcess.stdin = new EventEmitter();
@@ -229,6 +277,43 @@ describe('execute function', () => {
         expect(result.stdout).toBe('Hello World');
     });
 
+    it('should log stderr snippet when present', async () => {
+        const mockProcess = new EventEmitter() as any;
+        mockProcess.stdin = new EventEmitter();
+        mockProcess.stdout = new EventEmitter();
+        mockProcess.stderr = new EventEmitter();
+        mockProcess.killed = false;
+        mockProcess.kill = jest.fn();
+        mockProcess.stdout.destroy = jest.fn();
+        mockProcess.stderr.destroy = jest.fn();
+        mockProcess.stdin.destroy = jest.fn();
+
+        mockSpawn.mockReturnValue(mockProcess);
+
+        setTimeout(() => {
+            mockProcess.stderr.emit('data', 'err'.repeat(100));
+            mockProcess.emit('close', 0);
+        }, 10);
+
+        const result = await execute('cmd', { args: [] });
+
+        expect(result.stderr.length).toBeGreaterThan(0);
+    });
+
+    it('should handle cancellation token without disposable', async () => {
+        const mockProcess = createMockProcess(0, '', '');
+        const cancelToken = {
+            isCancellationRequested: false,
+            onCancellationRequested: jest.fn(() => undefined),
+        };
+
+        mockSpawn.mockReturnValue(mockProcess);
+
+        await execute('cmd', { args: [], token: cancelToken });
+
+        expect(cancelToken.onCancellationRequested).toHaveBeenCalled();
+    });
+
     it('should handle exit code properly', async () => {
         const mockProcess = createMockProcess(127, 'output', '');
         mockSpawn.mockReturnValue(mockProcess);
@@ -251,5 +336,147 @@ describe('execute function', () => {
         await execute('cmd', { args: [], token: cancelToken });
 
         expect(mockDispose).toHaveBeenCalled();
+    });
+
+    it('should ignore close event after timeout', async () => {
+        jest.useFakeTimers();
+        const mockProcess = new EventEmitter() as any;
+        mockProcess.stdin = new EventEmitter();
+        mockProcess.stdout = new EventEmitter();
+        mockProcess.stderr = new EventEmitter();
+        mockProcess.killed = false;
+        mockProcess.kill = jest.fn();
+        mockProcess.stdout.destroy = jest.fn();
+        mockProcess.stderr.destroy = jest.fn();
+        mockProcess.stdin.destroy = jest.fn();
+
+        mockSpawn.mockReturnValue(mockProcess);
+
+        const promise = execute('cmd', { args: [], timeout: 10 });
+
+        jest.advanceTimersByTime(10);
+        const result = await promise;
+
+        expect(result.error?.type).toBe(ErrorType.Timeout);
+        expect(() => mockProcess.emit('close', 0)).not.toThrow();
+        jest.useRealTimers();
+    });
+
+    it('should ignore error event after cancellation', async () => {
+        jest.useFakeTimers();
+        const mockProcess = new EventEmitter() as any;
+        mockProcess.stdin = new EventEmitter();
+        mockProcess.stdout = new EventEmitter();
+        mockProcess.stderr = new EventEmitter();
+        mockProcess.killed = false;
+        mockProcess.kill = jest.fn();
+        mockProcess.stdout.destroy = jest.fn();
+        mockProcess.stderr.destroy = jest.fn();
+        mockProcess.stdin.destroy = jest.fn();
+
+        mockSpawn.mockReturnValue(mockProcess);
+
+        const cancelToken = {
+            isCancellationRequested: false,
+            onCancellationRequested: jest.fn((callback) => {
+                setTimeout(() => callback(), 10);
+                return { dispose: jest.fn() };
+            }),
+        };
+
+        const promise = execute('cmd', { args: [], token: cancelToken });
+        jest.advanceTimersByTime(10);
+        const result = await promise;
+
+        expect(result.error?.type).toBe(ErrorType.Cancelled);
+        expect(() => mockProcess.emit('error', new Error('late error'))).not.toThrow();
+        jest.useRealTimers();
+    });
+
+    it('should handle cleanup errors during timeout', async () => {
+        jest.useFakeTimers();
+        const mockProcess = new EventEmitter() as any;
+        mockProcess.stdin = new EventEmitter();
+        mockProcess.stdout = new EventEmitter();
+        mockProcess.stderr = new EventEmitter();
+        mockProcess.killed = false;
+        mockProcess.kill = jest.fn(() => {
+            throw new Error('kill failed');
+        });
+        mockProcess.stdout.destroy = jest.fn(() => {
+            throw new Error('destroy failed');
+        });
+        mockProcess.stderr.destroy = jest.fn();
+        mockProcess.stdin.destroy = jest.fn();
+
+        mockSpawn.mockReturnValue(mockProcess);
+
+        const promise = execute('cmd', { args: [], timeout: 10 });
+        jest.advanceTimersByTime(10);
+        const result = await promise;
+
+        expect(result.error?.type).toBe(ErrorType.Timeout);
+        jest.useRealTimers();
+    });
+
+    it('should not set timeout when timeout is zero', async () => {
+        jest.useFakeTimers();
+        const mockProcess = new EventEmitter() as any;
+        mockProcess.stdin = new EventEmitter();
+        mockProcess.stdout = new EventEmitter();
+        mockProcess.stderr = new EventEmitter();
+        mockProcess.killed = false;
+        mockProcess.kill = jest.fn();
+        mockProcess.stdout.destroy = jest.fn();
+        mockProcess.stderr.destroy = jest.fn();
+        mockProcess.stdin.destroy = jest.fn();
+
+        mockSpawn.mockReturnValue(mockProcess);
+
+        const promise = execute('cmd', { args: [], timeout: 0 });
+
+        setTimeout(() => {
+            mockProcess.emit('close', 0);
+        }, 10);
+
+        jest.advanceTimersByTime(10);
+        const result = await promise;
+
+        expect(result.exitCode).toBe(0);
+        expect(result.error).toBeUndefined();
+        jest.useRealTimers();
+    });
+
+    it('should ignore cancellation after timeout', async () => {
+        jest.useFakeTimers();
+        const mockProcess = new EventEmitter() as any;
+        mockProcess.stdin = new EventEmitter();
+        mockProcess.stdout = new EventEmitter();
+        mockProcess.stderr = new EventEmitter();
+        mockProcess.killed = false;
+        mockProcess.kill = jest.fn();
+        mockProcess.stdout.destroy = jest.fn();
+        mockProcess.stderr.destroy = jest.fn();
+        mockProcess.stdin.destroy = jest.fn();
+
+        mockSpawn.mockReturnValue(mockProcess);
+
+        const cancelToken = {
+            isCancellationRequested: false,
+            onCancellationRequested: jest.fn((callback) => {
+                setTimeout(() => callback(), 20);
+                return { dispose: jest.fn() };
+            }),
+        };
+
+        const promise = execute('cmd', { args: [], timeout: 10, token: cancelToken });
+        jest.advanceTimersByTime(10);
+        const result = await promise;
+
+        expect(result.error?.type).toBe(ErrorType.Timeout);
+
+        jest.advanceTimersByTime(20);
+        expect(mockProcess.kill).toHaveBeenCalledTimes(1);
+        jest.useRealTimers();
     });
 });

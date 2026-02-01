@@ -10,8 +10,8 @@
  * - 根据配置激活已启用的插件
  * - 管理插件的生命周期
  */
-
-import { SettingInfo } from "../config/setting-info";
+// TODO : domain层去除对config的依赖
+import { SettingInfo } from "../config";
 import { PERFORMANCE_METRICS } from "../shared/performance-metrics";
 import { getContainer, ServiceNames } from "../utils/di/container";
 import { logger } from "../utils/log";

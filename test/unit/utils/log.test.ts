@@ -4,8 +4,8 @@ import {
     Logger,
     getLogLevelRank,
     logger,
-    setLogger,
     resetLogger,
+    setLogger,
     shouldLogByLevel,
 } from '../../../src/utils/log';
 
@@ -114,12 +114,51 @@ describe('log utils', () => {
     it('should export logger object', () => {
         // Set a mock logger for this test
         const mockLogger: Logger = {
-            debug: () => {},
-            info: () => {},
-            warn: () => {},
-            error: () => {},
+            debug: () => { },
+            info: () => { },
+            warn: () => { },
+            error: () => { },
         };
         setLogger(mockLogger);
         expect(logger).toBeDefined();
+    });
+
+    it('should reset logger to undefined', () => {
+        const mockLogger: Logger = {
+            debug: () => { },
+            info: () => { },
+            warn: () => { },
+            error: () => { },
+        };
+
+        setLogger(mockLogger);
+        resetLogger();
+
+        expect(logger).toBeUndefined();
+    });
+
+    it('should allow re-initialization after reset', () => {
+        const mockLogger1: Logger = {
+            debug: () => { },
+            info: () => { },
+            warn: () => { },
+            error: () => { },
+        };
+        const mockLogger2: Logger = {
+            debug: () => { },
+            info: () => { },
+            warn: () => { },
+            error: () => { },
+        };
+
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
+        setLogger(mockLogger1);
+        resetLogger();
+        setLogger(mockLogger2);
+
+        expect(consoleSpy).toHaveBeenCalledWith('logger is null set by param');
+
+        consoleSpy.mockRestore();
     });
 });

@@ -35,6 +35,30 @@
 
 ## 使用方法
 
+### 应用层使用（推荐）
+
+应用层服务提供了更稳定的 API，避免直接依赖 VS Code：
+
+```typescript
+import {
+  startTimer,
+  getPerformanceSummary,
+  checkPerformanceHealth,
+  showPerformanceReport,
+} from "../../application/services/performance-service";
+
+const timer = startTimer("format.document");
+// ...执行格式化逻辑
+timer.stop();
+
+const summary = await getPerformanceSummary();
+const health = await checkPerformanceHealth();
+
+await showPerformanceReport((content) => {
+  console.log(content);
+});
+```
+
 ### 基础性能监控
 
 ```typescript
@@ -141,7 +165,6 @@ clearAlertHistory();
 ```tree
 src/utils/performance/
 ├── alertManager.ts       # 告警管理器
-├── example.ts            # 使用示例
 ├── integration.ts       # 便捷 API 和集成接口
 └── monitor.ts           # 性能监控器和计时器
 ```

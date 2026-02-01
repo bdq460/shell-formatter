@@ -8,15 +8,20 @@
  * 依赖方向：基础设施层 → 领域层端口
  */
 
+import type { PluginCheckResult, PluginFormatResult } from "../types";
+
+// 重新导出类型，方便 adapters 使用
+export type { PluginCheckResult, PluginFormatResult } from "../types";
+
 // 格式化工具端口
 export interface IFormatTool {
     /**
      * 格式化文档内容
      * @param content 文档内容
      * @param options 格式化选项
-     * @returns 格式化后的内容
+     * @returns 格式化结果（包含格式化内容和诊断信息）
      */
-    format(content: string, options?: FormatToolOptions): Promise<string>;
+    format(content: string, options?: FormatToolOptions): Promise<PluginFormatResult>;
 
     /**
      * 检查文档内容
@@ -24,7 +29,7 @@ export interface IFormatTool {
      * @param options 检查选项
      * @returns 检查结果
      */
-    check(content: string, options?: CheckToolOptions): Promise<ToolCheckResult>;
+    check(content: string, options?: CheckToolOptions): Promise<PluginCheckResult>;
 
     /**
      * 检查工具是否可用
@@ -40,7 +45,7 @@ export interface ICheckTool {
      * @param options 检查选项
      * @returns 检查结果
      */
-    check(content: string, options?: CheckToolOptions): Promise<ToolCheckResult>;
+    check(content: string, options?: CheckToolOptions): Promise<PluginCheckResult>;
 
     /**
      * 检查工具是否可用
@@ -64,16 +69,6 @@ export interface FormatToolOptions {
 export interface CheckToolOptions {
     /** 取消令牌 */
     token?: import("../types").CancellationToken;
-}
-
-/**
- * 工具检查结果
- */
-export interface ToolCheckResult {
-    /** 是否有错误 */
-    hasErrors: boolean;
-    /** 诊断信息数组 */
-    diagnostics: import("../types").Diagnostic[];
 }
 
 /**
