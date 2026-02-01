@@ -2,7 +2,7 @@
     "name": "shell-formatter",
     "displayName": "Shell Formatter",
     "description": "Intelligent Shell script formatting and error checking fixing with shfmt and shellcheck",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "publisher": "bdq460",
     "icon": "./resources/icon.png",
     "repository": {
@@ -177,7 +177,7 @@
     },
     "scripts": {
         "package:extension": "bash scripts/safe-package.sh",
-        "install:extension": "npm run package:extension && code --install-extension $(ls shell-formatter-*.vsix) --extensions-dir ~/.vscode/extensions",
+        "install:extension": "npm run package:extension && bash scripts/install-extension.sh",
         "vscode:prepublish": "npm run compile",
         "clean": "rm -rf dist/*",
         "compile": "tsc -p ./",

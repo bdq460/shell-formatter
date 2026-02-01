@@ -44,16 +44,24 @@ export function registerChangeListener(
         );
 
         const uri = event.document.uri.toString();
+        const fileUri = event.document.uri;
         debounceManager.debounce(
             uri,
             async () => {
                 // 重新诊断以获取最新状态
                 try {
-                    const domainDocument = toDomainDocument(event.document);
+                    // 重新获取最新文档，避免使用过时的引用
+                    const textDocument = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri);
+                    if (!textDocument) {
+                        logger.debug(`Document ${uri} not found in workspace, skipping diagnosis`);
+                        return;
+                    }
+
+                    const domainDocument = toDomainDocument(textDocument);
                     const diagnostics = await diagnoseDocument(domainDocument);
                     const vscodeDiagnostics = fromDomainDiagnostics(diagnostics);
                     // 强制更新诊断集合
-                    diagnosticCollection.set(event.document.uri, vscodeDiagnostics);
+                    diagnosticCollection.set(fileUri, vscodeDiagnostics);
                     logger.debug(
                         `Updated diagnostics for changed file: ${vscodeDiagnostics.length} diagnostics`,
                     );
