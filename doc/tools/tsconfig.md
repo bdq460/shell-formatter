@@ -89,7 +89,7 @@ tsc --noEmit
 | declaration | boolean | false | 生成 .d.ts 文件 | declarationMap |
 | declarationMap | boolean | false | 生成声明 source map | - |
 | removeComments | boolean | false | 移除注释 | - |
-| noEmit | boolean | false | 不生成输出文件 | - |
+| noEmit | boolean | false | 是否生成输出文件 | - |
 | incremental | boolean | false | 增量编译 | tsBuildInfoFile |
 | tsBuildInfoFile | string | .tsbuildinfo | 增量编译缓存文件 | incremental |
 | **路径解析** | | | | |
@@ -118,7 +118,7 @@ tsc --noEmit
 
 ## 统一配置示例
 
-以下是一个完整的配置示例，适用于大多数现代项目，注释说明各选项的用途：
+以下是一个完整的tsconfig.json配置示例，适用于大多数现代项目，注释说明各选项的用途：
 
 ```json
 {
@@ -156,21 +156,21 @@ tsc --noEmit
     "declarationMap": true,          // 生成声明文件的 source map
     "removeComments": false,         // 是否移除注释
     "incremental": true,             // 增量编译，加速重新编译
-    "noEmit": false,                 // 不生成输出文件（仅类型检查时设为 true）
+    "noEmit": false,                 // 是否生成输出文件 true: 不生成, false: 生成（仅类型检查时设为 true）
 
     // ---------- 路径解析 ----------
     // 注意: TypeScript 5.x 推荐不使用 baseUrl，直接使用相对路径
-    "baseUrl": "./",                 // 模块解析基准路径（可选，不推荐）
+    "baseUrl": "./",         // 模块解析(paths)基准路径，注意: baseUrl将停止在 TypeScript 7.0 中运行，已被标注为@deprecated, 直接使用paths即可
     "paths": {
       "#/*": ["./src/*"],            // 路径别名: @ 映射到 src
       "@utils/*": ["./src/utils/*"],
       "@components/*": ["./src/components/*"]
-    }
+    },
 
     // ---------- 类型定义 ----------
     "lib": ["ES2020"],               // 包含的库类型，浏览器项目可加 "DOM"
     "types": ["node"],               // 包含的类型声明，测试环境可加 "jest"
-    "typeRoots": ["./node_modules/@types", "./src/@types"]  // 自定义类型搜索目录
+    "typeRoots": ["./node_modules/@types", "./src/@types"],  // 自定义类型搜索目录
 
     // ---------- 其他 ----------
     "skipLibCheck": true,            // 跳过库文件类型检查（推荐，加速编译）
@@ -978,8 +978,8 @@ import { logger } from '#/utils/logger'
 **解决**：
 
 ```javascript
-moduleNameMapper: {
-  '^#/(.*)$': '<rootDir>/src/$1',
+"moduleNameMapper": {
+  "^#/(.*)$": "<rootDir>/src/$1"
 }
 ```
 

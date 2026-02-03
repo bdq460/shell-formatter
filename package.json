@@ -57,7 +57,7 @@
                     "type": "object",
                     "default": {
                         "enabled": false,
-                        "level": "info",
+                        "level": "warn",
                         "format": "timestamp"
                     },
                     "properties": {
