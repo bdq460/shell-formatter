@@ -1,26 +1,39 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "ES2020",
-        "outDir": "dist",
-        "rootDir": "src",
-        "lib": [
-            "ES2020"
-        ],
-        "sourceMap": true,
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
+        // ---------- 模块相关 ----------
+        "target": "ES2020", // 编译目标: ES2020，推荐现代项目使用
+        "module": "ESNext", // 模块系统: ES Modules，配合现代打包工具
+        "moduleResolution": "bundler", // 模块解析: bundler（Vite/Webpack）
+        "esModuleInterop": true, // CommonJS 默认导入支持，推荐开启
+        "resolveJsonModule": true, // 允许导入 JSON 文件
+        // ---------- 类型检查 ----------
+        "strict": true, // 启用所有严格检查（推荐）
+        // ---------- 输出相关 ----------
+        "outDir": "dist", // 输出目录
+        "rootDir": "src", // 输入根目录，保持目录结构
+        "sourceMap": true, //生成 source map（调试用）
+        "removeComments": false, // 是否移除注释
+        "incremental": false, // 增量编译，加速重新编译, 会在目录下生成 .tsbuildinfo元数据文件, 用于增量编译
+        "noEmit": false, // 生成输出文件
+        // ---------- 路径解析 ----------
         "paths": {
             "#/*": [
                 "./src/*"
             ]
-        }
+        },
+        // ---------- 类型定义 ----------
+        "lib": [
+            "ES2020"
+        ], // 包含的库类型，浏览器项目可加 "DOM"
+        "types": [
+            "node"
+        ], // 包含的类型声明
+        // ---------- 其他 ----------
+        "skipLibCheck": true, // 跳过库文件类型检查（推荐，加速编译）
+        "forceConsistentCasingInFileNames": true, // 文件名大小写检查（跨平台兼容）
     },
     "include": [
-        "src/**/*.ts"
+        "./src/**/*.ts"
     ],
     "exclude": [
         "node_modules",

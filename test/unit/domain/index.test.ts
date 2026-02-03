@@ -1,4 +1,4 @@
-jest.mock("../../../src/utils/log", () => ({
+jest.mock("#/utils/log", () => ({
     logger: {
         debug: jest.fn(),
         info: jest.fn(),
@@ -7,7 +7,7 @@ jest.mock("../../../src/utils/log", () => ({
     },
 }));
 
-jest.mock("../../../src/config/setting-info", () => ({
+jest.mock("#/config/setting-info", () => ({
     SettingInfo: {
         isShfmtEnabled: jest.fn(() => false),
         isShellcheckEnabled: jest.fn(() => false),

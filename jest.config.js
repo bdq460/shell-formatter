@@ -22,8 +22,14 @@ export default {
     // 模块名映射（支持 package.json imports 的内部别名）
     // Jest 的 moduleNameMapper 只在运行时有效，TS 类型检查由 package.json imports 解析。
     moduleNameMapper: {
-        '^#utils/(.*)$': '<rootDir>/src/utils/$1',
+        '^#/(.*)$': '<rootDir>/src/$1',
     },
+
+    // 确保在测试前加载环境与探针
+    // setupFilesAfterEnv 文件在 Jest 转换器运行之前就被加载了。
+    // 使用.ts文件扩展名以确保文件可以被 ts-jest 处理。
+    // 如使用.js文件扩展名, 则 jest 会尝试用自己的转换器去处理它, 导致无法识别 ES Module 语法。
+    setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
     // 覆盖率收集
     collectCoverage: true,
@@ -80,7 +86,7 @@ export default {
 
     // 转换配置
     transform: {
-        '^.+\\.ts$': [
+        '^.+\.ts$': [
             'ts-jest',
             {
                 useESM: true,

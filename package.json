@@ -175,6 +175,10 @@
             }
         ]
     },
+    "type": "module",
+    "imports": {
+        "#*": "./src/*"
+    },
     "scripts": {
         "package:extension": "bash scripts/safe-package.sh",
         "install:extension": "npm run package:extension && bash scripts/install-extension.sh",

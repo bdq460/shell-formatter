@@ -1,27 +1,64 @@
 {
-    "extends": "../tsconfig.json",
     "compilerOptions": {
-        "types": [
-            "jest",
-            "node"
-        ],
-        "rootDir": "../",
-        "outDir": "../dist-test",
-        "noEmit": true,
-        "paths": {
+        // ---------- 模块相关 ----------
+        "target": "ES2020", // 编译目标: ES2020，推荐现代项目使用
+        "module": "ESNext", // 模块系统: ES Modules，配合现代打包工具
+        "moduleResolution": "bundler", // 模块解析: bundler（Vite/Webpack），不推荐用 baseUrl
+        "esModuleInterop": true, // CommonJS 默认导入支持，推荐开启
+        "resolveJsonModule": true, // 允许导入 JSON 文件
+        // ---------- 类型检查 ----------
+        "strict": true, // 启用所有严格检查（推荐）
+        // 等价于启用以下所有选项：
+        // strictNullChecks: true,      // 严格 null 检查
+        // noImplicitAny: true,         // 禁止隐式 any
+        // strictFunctionTypes: true,   // 严格函数类型
+        // strictBindCallApply: true,   // 严格 bind/call/apply
+        // strictPropertyInitialization: true, // 严格属性初始化
+        // noImplicitThis: true,        // 禁止隐式 this
+        // alwaysStrict: true,          // 始终使用严格模式
+        // noUnusedLocals: true,        // 检查未使用的局部变量
+        // noUnusedParameters: true,    // 检查未使用的参数
+        // noImplicitReturns: true,     // 检查隐式返回
+        // noFallthroughCasesInSwitch: true // 检查 switch 穿透
+        // ---------- 输出相关 ----------
+        "outDir": "./dist-test", // 输出目录
+        "rootDir": "../", // 输入根目录，保持目录结构
+        "sourceMap": true, // 生成 source map（调试用）
+        // "declaration": true, // 生成 .d.ts 类型声明文件（库项目需要）
+        // "declarationMap": true, // 生成声明文件的 source map
+        "removeComments": false, // 是否移除注释
+        "incremental": true, // 增量编译，加速重新编译
+        "noEmit": true, // 不生成输出文件（仅类型检查时设为 true）
+        // ---------- 路径解析 ----------
+        // 注意: TypeScript 5.x 推荐不使用 baseUrl，直接使用相对路径
+        // "baseUrl": "./", // 模块解析(paths)基准路径（可选)，注意: baseUrl将停止在 TypeScript 7.0 中运行，已被标注为@deprecated, 直接使用paths即可
+        "paths": { // 如果不使用 baseUrl，paths则以当前文件目录为基准目录
             "#/*": [
                 "../src/*"
             ]
-        }
+        },
+        // ---------- 类型定义 ----------
+        "lib": [
+            "ES2020"
+        ], // 包含的库类型，浏览器项目可加 "DOM"
+        "types": [
+            "jest",
+            "node"
+        ], // 包含的类型声明，测试环境可加 "jest"
+        // ---------- 其他 ----------
+        "skipLibCheck": true, // 跳过库文件类型检查（推荐，加速编译）
+        "forceConsistentCasingInFileNames": true, // 文件名大小写检查（跨平台兼容）
+        "jsx": "react", // JSX 编译方式（React 项目）
+        "allowJs": false, // 允许编译 JS 文件
+        "checkJs": false // 检查 JS 文件类型
     },
     "include": [
         "../src/**/*",
         "../test/**/*"
     ],
     "exclude": [
-        "node_modules",
-        "dist",
-        "dist-test",
-        "coverage"
+        "../node_modules",
+        "../dist",
+        "../dist-test"
     ]
 }
