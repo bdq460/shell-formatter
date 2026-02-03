@@ -2,8 +2,8 @@
     "compilerOptions": {
         // ---------- 模块相关 ----------
         "target": "ES2020", // 编译目标: ES2020，推荐现代项目使用
-        "module": "ESNext", // 模块系统: ES Modules，配合现代打包工具
-        "moduleResolution": "bundler", // 模块解析: bundler（Vite/Webpack）
+        "module": "commonjs", // 模块系统: ES Modules，配合现代打包工具
+        // "moduleResolution": "bundler", // 模块解析: bundler（Vite/Webpack）
         "esModuleInterop": true, // CommonJS 默认导入支持，推荐开启
         "resolveJsonModule": true, // 允许导入 JSON 文件
         // ---------- 类型检查 ----------
@@ -18,7 +18,7 @@
         // ---------- 路径解析 ----------
         "paths": {
             "#/*": [
-                "./src/*"
+                "./src/*",
             ]
         },
         // ---------- 类型定义 ----------

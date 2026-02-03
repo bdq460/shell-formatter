@@ -1,6 +1,6 @@
-import { Document } from "../../../src/domain/plugin-interface";
-import { PluginManager, getPluginManager, resetPluginManager, setPluginManager } from "../../../src/domain/plugin-manager";
-import { setLogger } from "../../../src/utils/log";
+import { Document } from "#/domain/plugin-interface";
+import { PluginManager, getPluginManager, resetPluginManager, setPluginManager } from "#/domain/plugin-manager";
+import { setLogger } from "#/utils/log";
 
 const mockLogger = {
     debug: jest.fn(),

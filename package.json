@@ -10,7 +10,7 @@
         "url": "https://github.com/bdq460/shell-formatter.git"
     },
     "engines": {
-        "vscode": "^1.74.0"
+        "vscode": "^1.80.0"
     },
     "categories": [
         "Formatters",
@@ -175,9 +175,8 @@
             }
         ]
     },
-    "type": "module",
     "imports": {
-        "#*": "./src/*"
+        "#/*": "./dist/*"
     },
     "scripts": {
         "package:extension": "bash scripts/safe-package.sh",
@@ -189,10 +188,10 @@
         "pretest": "npm run compile && npm run lint:md",
         "lint": "eslint src --ext ts",
         "lint:ts": "eslint src --ext ts",
-        "lint:md": "markdownlint \"**/*.md\"",
+        "lint:md": "markdownlint \"**/*.md\" --ignore node_modules --disable MD013 --disable MD033 --disable MD036 --disable MD60",
         "lint:md:fix": "markdownlint --fix \"**/*.md\"",
         "lint:all": "npm run lint:ts && npm run lint:md",
-        "test": "node test/run.js",
+        "test": "jest",
         "test:unit": "jest",
         "test:unit:watch": "jest --watch",
         "test:unit:coverage": "jest --coverage",

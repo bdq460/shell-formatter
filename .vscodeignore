@@ -1,5 +1,7 @@
 # 开发相关
 node_modules/**
+#!node_modules/i18next/**
+#!node_modules/i18next-fs-backend/**
 **/tsconfig.json
 **/.eslintrc.js
 **/.eslintrc.json

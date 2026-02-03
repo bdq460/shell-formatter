@@ -10,10 +10,10 @@
 
 import * as vscode from "vscode";
 import { initializeDIContainer } from "./application";
-import { initializeI18n } from "./i18n";
 import { PackageInfo } from "./config";
 import { initializePlugins } from "./domain/plugin-initializer";
 import * as entrypoints from "./entrypoints";
+import { initializeI18n } from "./i18n";
 import { initializeLogger } from "./shared/logger";
 import { DebounceManager } from "./utils/debounce";
 import { getContainer } from "./utils/di/container";

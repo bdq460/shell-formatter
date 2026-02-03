@@ -1,4 +1,4 @@
-import { activatePlugins, initializePlugins } from "../../../src/domain/plugin-initializer";
+import { activatePlugins, initializePlugins } from "#/domain/plugin-initializer";
 
 const mockResolve = jest.fn();
 const mockGetContainer = jest.fn(() => ({ resolve: mockResolve }));

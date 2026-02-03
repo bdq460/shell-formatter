@@ -21,6 +21,7 @@ export default {
 
     // 模块名映射（支持 package.json imports 的内部别名）
     // Jest 的 moduleNameMapper 只在运行时有效，TS 类型检查由 package.json imports 解析。
+    // 在此设置了映射, 则不再依赖 package.json 中的 imports 配置
     moduleNameMapper: {
         '^#/(.*)$': '<rootDir>/src/$1',
     },
