@@ -4,7 +4,8 @@
 > 基于 shfmt 和 shellcheck 的智能 Shell 脚本格式化和检查工具
 
 - **[Marketplace Page](https://marketplace.visualstudio.com/items?itemName=bdq460.shell-formatter)**
-- **[GitHub Repository](https://github.com/bdq460/shell-format)**
+- **[GitHub Repository](https://github.com/bdq460/shell-formatter)**
+- **[Release Notes](https://github.com/bdq460/shell-formatter/releases)**
 
 ## Quick Start 快速开始
 
@@ -12,12 +13,14 @@
 
 Shell Formatter automatically formats your Shell scripts and detects errors using industry-standard tools:
 
-- **Smart Formatting 智能格式化** - Automatically format Shell scripts with shfmt
-- **Error Detection 错误检测** - Detect syntax and semantic errors with shellcheck
-- **Automatic Diagnosis 自动诊断** - Automatic checking when opening, saving, or editing (300ms debounce/防抖)
-- **Quick Fixes 快速修复** - One-click fix for formatting issues
-- **Plugin System 插件系统** - Dynamic plugin activation/deactivation with configuration
-- **Detailed Logs 详细日志** - Timestamped operation logs with customizable format
+- **Smart Formatting 智能格式化** - Automatically format Shell scripts with shfmt ([Usage](#format-document-格式化文档))
+- **Error Detection 错误检测** - Detect syntax and semantic errors with shellcheck ([View Errors](#view-errors-and-warnings-查看错误和警告))
+- **Automatic Diagnosis 自动诊断** - Automatic checking when opening, saving, or editing
+- **Quick Fixes 快速修复** - One-click fix for formatting issues ([Quick Fix](#quick-fix-issues-快速修复问题))
+- **Multi-language Support 多语言支持** - Support for 17 languages with automatic detection ([Details](#multi-language-support-多语言支持))
+- **Tool Status Monitoring 工具状态监控** - Check which tools are currently active ([View Details](#view-tool-status-查看工具状态))
+- **Performance Monitoring 性能监控** - Real-time performance metrics and analysis reports ([Details](#performance-monitoring-性能监控))
+- **Detailed Logs 详细日志** - Timestamped operation logs with customizable format ([View Logs](#view-logs-查看日志))
 
 ## Configuration Options 配置选项
 
@@ -25,51 +28,51 @@ Shell Formatter automatically formats your Shell scripts and detects errors usin
 
 ```json
 {
-  "shell-format.tabSize": 2,
-  "shell-format.plugins.shfmt": {
+  "shell-formatter.tabSize": 2,
+  "shell-formatter.plugins.shfmt": {
     "enabled": true,
     "path": "shfmt"
   },
-  "shell-format.plugins.shellcheck": {
+  "shell-formatter.plugins.shellcheck": {
     "enabled": true,
     "path": "shellcheck"
   },
-  "shell-format.log": {
+  "shell-formatter.log": {
     "enabled": false,
     "level": "info",
     "format": "[%timestamp] [%level] [%name] [%method:%line] %message"
   },
-  "shell-format.onError": "showProblem"
+  "shell-formatter.onError": "showProblem"
 }
 ```
 
 ### Configuration Details 配置说明
 
-#### `shell-format.plugins.shfmt`
+#### `shell-formatter.plugins.shfmt`
 
-Shfmt plugin configuration / Shfmt 插件配置
+Shfmt tool configuration / Shfmt 工具配置
 
 - **Type 类型**: object
 - **Default 默认值**: `{ "enabled": true, "path": "shfmt" }`
 
 **Properties 属性**:
 
-- `enabled` (boolean): Enable or disable shfmt plugin / 是否启用 shfmt 插件 (default: `true`)
+- `enabled` (boolean): Enable or disable shfmt / 是否启用 shfmt (default: `true`)
 - `path` (string): Path to shfmt executable / shfmt 可执行文件路径 (default: `"shfmt"`)
 
-#### `shell-format.plugins.shellcheck`
+#### `shell-formatter.plugins.shellcheck`
 
-Shellcheck plugin configuration / Shellcheck 插件配置
+Shellcheck tool configuration / Shellcheck 工具配置
 
 - **Type 类型**: object
 - **Default 默认值**: `{ "enabled": true, "path": "shellcheck" }`
 
 **Properties 属性**:
 
-- `enabled` (boolean): Enable or disable shellcheck plugin / 是否启用 shellcheck 插件 (default: `true`)
+- `enabled` (boolean): Enable or disable shellcheck / 是否启用 shellcheck (default: `true`)
 - `path` (string): Path to shellcheck executable / shellcheck 可执行文件路径 (default: `"shellcheck"`)
 
-#### `shell-format.tabSize`
+#### `shell-formatter.tabSize`
 
 Controls indentation behavior / 控制缩进行为
 
@@ -80,7 +83,7 @@ Controls indentation behavior / 控制缩进行为
   - Number: Number of spaces / 空格数 (e.g., `2`, `4`)
 - **Default 默认值**: `vscode`
 
-#### `shell-format.log`
+#### `shell-formatter.log`
 
 Configure logging behavior / 配置日志行为
 
@@ -102,7 +105,7 @@ Configure logging behavior / 配置日志行为
 - `format` (string): Log format pattern / 日志格式
   - Available placeholders 可用占位符: `%timestamp`, `%level`, `%name`, `%method`, `%line`, `%message`
 
-#### `shell-format.onError`
+#### `shell-formatter.onError`
 
 Error handling method / 错误处理方式
 
@@ -112,15 +115,15 @@ Error handling method / 错误处理方式
   - `showProblem`: Show problems / 显示问题
 - **Default 默认值**: `showProblem`
 
-## Plugin Commands 插件命令
+## Available Commands 可用命令
 
 | Command                              | Description                                                     |
 | ------------------------------------ | --------------------------------------------------------------- |
-| shell-format.formatDocument          | Format entire document / 格式化整个文档                         |
-| shell-format.fixAllProblems          | Fix all formatting issues with one click / 一键修复所有格式问题 |
-| shell-format.showPerformanceReport   | Show performance metrics / 显示性能指标                         |
-| shell-format.resetPerformanceMetrics | Reset performance metrics / 重置性能指标                        |
-| shell-format.showPluginStatus        | Show plugin status / 显示插件状态                               |
+| shell-formatter.formatDocument          | Format entire document / 格式化整个文档                         |
+| shell-formatter.fixAllProblems          | Fix all formatting issues with one click / 一键修复所有格式问题 |
+| shell-formatter.showPerformanceReport   | Show performance report / 显示性能报告                          |
+| shell-formatter.resetPerformanceMetrics | Reset performance data / 重置性能数据                           |
+| shell-formatter.showPluginStatus        | Show tool status / 显示工具状态                                 |
 
 ## Usage 使用方法
 
@@ -159,36 +162,21 @@ Error handling method / 错误处理方式
 
 - Open VSCode's "Problems" panel / 打开 VSCode 的"问题"面板 (`Ctrl+Shift+M` / `Cmd+Shift+M`)
 - View all shell script errors and warnings / 查看所有 Shell 脚本错误和警告
-- **Error sources 错误来源**:
-  - `shellcheck`: Syntax and semantic errors (red) / 语法和语义错误（红色）
-  - `shell-format`: Formatting issues (yellow) / 格式问题（黄色）
 
 ### View Logs 查看日志
 
 - Open Output panel / 打开输出面板 (`Ctrl+Shift+U` / `Cmd+Shift+U`)
-- Select "shell-format" channel / 选择"shell-format"通道查看详细日志
+- Select "shell-formatter" channel / 选择"shell-formatter"通道查看详细日志
 - Enable logs in settings / 在设置中启用日志:
 
   ```json
   {
-    "shell-format.log": {
+    "shell-formatter.log": {
       "enabled": true,
       "level": "debug"
     }
   }
   ```
-
-### View Plugin Status 查看插件状态
-
-- Open Command Palette / 打开命令面板 (`Ctrl+Shift+P` / `Cmd+Shift+P`)
-- Enter "Shell Formatter: Show Plugin Status" / 输入"Shell Formatter: Show Plugin Status"
-- View all registered plugins, their versions, and activation status / 查看所有已注册的插件、版本和激活状态
-
-### View Performance Metrics 查看性能指标
-
-- Open Command Palette / 打开命令面板 (`Ctrl+Shift+P` / `Cmd+Shift+P`)
-- Enter "Shell Formatter: Show Performance Report" / 输入"Shell Formatter: Show Performance Report"
-- View detailed performance metrics including plugin activation time, execution time, etc. / 查看详细的性能指标，包括插件激活时间、执行时间等
 
 ## Formatting Example 格式化示例
 
@@ -215,6 +203,74 @@ fi
 - `.sh` - Shell scripts / Shell 脚本
 - `.bash` - Bash scripts / Bash 脚本
 - `.zsh` - Zsh scripts / Zsh 脚本
+
+## Advanced Features 高级功能
+
+### Multi-language Support 多语言支持
+
+Shell Formatter supports automatic language detection based on your VSCode settings:
+
+**Supported Languages 支持语言 (17)**:
+
+| Language | Code | English Description |
+|----------|------|---------------------|
+| English | `en` | English |
+| 简体中文 | `zh` | Simplified Chinese |
+| 繁體中文 | `zh-tw` | Traditional Chinese |
+| 日本語 | `ja` | Japanese |
+| 한국어 | `ko` | Korean |
+| Deutsch | `de` | German |
+| Français | `fr` | French |
+| Español | `es` | Spanish |
+| العربية | `ar` | Arabic |
+| Tiếng Việt | `vi` | Vietnamese |
+| हिन्दी | `hi` | Hindi |
+| Русский | `ru` | Russian |
+| Português | `pt` | Portuguese |
+| Italiano | `it` | Italian |
+| Türkçe | `tr` | Turkish |
+| Polski | `pl` | Polish |
+| ไทย | `th` | Thai |
+
+The extension automatically detects your VSCode language and loads the appropriate language pack. If the language pack fails to load, it falls back to English.
+
+扩展自动检测 VSCode 语言设置并加载对应的语言包。如果语言包加载失败，将回退到英语。
+
+### Performance Monitoring 性能监控
+
+Shell Formatter provides performance reports to help you understand the extension's running status:
+
+Shell Formatter 提供性能报告功能，帮助您了解扩展的运行状态：
+
+**View Performance Report 查看性能报告**:
+
+1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) / 打开命令面板 (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+2. Type "Shell Formatter: Show Performance Report" / 输入 "Shell Formatter: Show Performance Report"
+3. View formatting and checking operation statistics / 查看格式化和检查操作的统计信息
+
+**Reset Metrics 重置指标**:
+
+Use "Shell Formatter: Reset Performance Metrics" command to clear performance data.
+
+使用 "Shell Formatter: Reset Performance Metrics" 命令清除性能数据。
+
+### View Tool Status 查看工具状态
+
+You can check which tools are currently active at any time:
+
+您可以随时检查当前哪些工具处于活动状态：
+
+**How to Use 使用方法**:
+
+1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) / 打开命令面板 (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+2. Type "Shell Formatter: Show Plugin Status" / 输入 "Shell Formatter: Show Plugin Status"
+3. View the status of formatting and checking tools / 查看格式化和检查工具的状态
+
+**What You Can See 可查看信息**:
+
+- Whether shfmt formatting tool is active / shfmt 格式化工具是否激活
+- Whether shellcheck checking tool is active / shellcheck 检查工具是否激活
+- Tool version and availability information / 工具版本和可用性信息
 
 ## FAQ 常见问题
 
@@ -258,13 +314,13 @@ local unused_var="test"
 
 ---
 
-### Will this plugin affect VSCode performance?
+### Will this extension affect VSCode performance?
 
-### 此插件会影响 VSCode 性能吗？
+### 此扩展会影响 VSCode 性能吗？
 
-A: No. The plugin uses debouncing (300ms) to avoid frequent diagnostic triggers. All external commands are executed asynchronously and won't block UI. Additionally, plugins can be enabled/disabled via configuration for fine-grained control.
+A: No. The extension uses debouncing (300ms) to avoid frequent diagnostic triggers. All external commands are executed asynchronously and won't block UI. Additionally, tools can be enabled/disabled via configuration for fine-grained control.
 
-不会。插件使用防抖（300ms）来避免频繁触发诊断。所有外部命令都是异步执行的，不会阻塞 UI。此外，可以通过配置启用/禁用插件以实现细粒度控制。
+不会。扩展使用防抖（300ms）来避免频繁触发诊断。所有外部命令都是异步执行的，不会阻塞 UI。此外，可以通过配置启用/禁用工具以实现细粒度控制。
 
 ---
 
@@ -278,27 +334,27 @@ A: Diagnosis is performed on disk files, so changes in editor need to be saved b
 
 ---
 
-### How to check which plugins are active?
+### How to check which tools are active?
 
-### 如何检查哪些插件处于活动状态？
+### 如何检查哪些工具处于活动状态？
 
-A: Use the "Shell Formatter: Show Plugin Status" command to view all registered plugins, their versions, and activation status.
+A: Use the "Shell Formatter: Show Plugin Status" command to view tool status and availability.
 
-使用"Shell Formatter: Show Plugin Status"命令查看所有已注册的插件、版本和激活状态。
+使用"Shell Formatter: Show Plugin Status"命令查看工具状态和可用性。
 
 ---
 
-### How to disable a specific plugin?
+### How to disable a specific tool?
 
-### 如何禁用特定插件？
+### 如何禁用特定工具？
 
-A: Configure the plugin's `enabled` property to `false` in settings.json:
+A: Configure the tool's `enabled` property to `false` in settings.json:
 
-在 settings.json 中将插件的 `enabled` 属性设置为 `false`：
+在 settings.json 中将工具的 `enabled` 属性设置为 `false`：
 
 ```json
 {
-  "shell-format.plugins.shellcheck": {
+  "shell-formatter.plugins.shellcheck": {
     "enabled": false,
     "path": "shellcheck"
   }
@@ -313,7 +369,15 @@ This will disable shellcheck but keep shfmt enabled.
 
 ### VSCode Version
 
-- VSCode >= 1.74.0
+- VSCode >= 1.80.0
+
+### Node.js Version
+
+- Node.js >= 14.0.0 (CommonJS module system)
+
+**Note**: This extension uses CommonJS module system. ES Modules migration was attempted but failed due to VSCode extension environment compatibility issues.
+
+**注意**: 本扩展使用 CommonJS 模块系统。曾尝试迁移到 ES Modules，但因 VSCode 扩展环境兼容性问题而失败。
 
 ### External Tools 外部工具
 
@@ -361,8 +425,8 @@ sudo apt-get install shellcheck
 go install github.com/koalaman/shellcheck/cmd/shellcheck@latest
 ```
 
-> Note: shellcheck is optional. If not installed or disabled, the plugin will only use shfmt for formatting and basic checking.
-> 注意：shellcheck 是可选的。如果未安装或被禁用，插件将只使用 shfmt 进行格式化和基本检查。
+> Note: shellcheck is optional. If not installed or disabled, only shfmt will be used for formatting and basic checking.
+> 注意：shellcheck 是可选的。如果未安装或被禁用，将只使用 shfmt 进行格式化和基本检查。
 
 ## Contact Developer 联系开发者
 
