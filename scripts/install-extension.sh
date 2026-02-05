@@ -342,9 +342,9 @@ install_by_unzip() {
 
 select_ide_interactive() {
     options=()
-    while IFS='|' read -r id name _ _ _; do
+    while IFS='|' read -r id name _ _ app_cmd; do
         if [ -n "$id" ]; then
-            options+=("$id|$name")
+            options+=("$id|$name|$app_cmd")
         fi
     done << EOF
 $AVAILABLE_IDES
@@ -361,17 +361,25 @@ EOF
         selected=0
     fi
 
-    echo -e "${BLUE}使用 ↑/↓/数字 选择，回车确认，Esc 退出${NC}" > /dev/tty
-
     # 展示IDE列表并处理输入
     while true; do
-        printf "\033[?25l" > /dev/tty                       # 隐藏光标
-        for i in "${!options[@]}"; do                       # 遍历所有选项
-            label=$(echo "${options[$i]}" | cut -d'|' -f2-) # 提取IDE名称
-            if [ "$i" -eq "$selected" ]; then               # 当前选中的项
-                printf "  ${CYAN}➤ %s${NC}\n" "[$((i + 1))] $label" > /dev/tty
+        printf "\033[?25l" > /dev/tty # 隐藏光标
+        for i in "${!options[@]}"; do # 遍历所有选项
+            ide_id=$(echo "${options[$i]}" | cut -d'|' -f1)
+            ide_name=$(echo "${options[$i]}" | cut -d'|' -f2)
+            ide_app_cmd=$(echo "${options[$i]}" | cut -d'|' -f3)
+            app_path=$(get_app_install_path "$(expand_path "$ide_app_cmd")")
+
+            # 构建默认标记
+            default_mark=""
+            if [ "$i" -eq "$((default_choice - 1))" ]; then
+                default_mark=" (code命令指向)"
+            fi
+
+            if [ "$i" -eq "$selected" ]; then # 当前选中的项
+                printf "  ${GREEN}➤${NC} ${CYAN}[%d]${NC} ${WHITE}%s${NC}${GREEN}%s${NC} ${GREEN}→${NC} ${YELLOW}%s${NC}\n" "$((i + 1))" "$ide_name" "$default_mark" "$app_path" > /dev/tty
             else # 其他项
-                printf "    %s\n" "[$((i + 1))] $label" > /dev/tty
+                printf "    ${GRAY}[%d]${NC} ${GRAY}%s${NC}${GRAY}%s${NC} ${GRAY}→${NC} ${GRAY}%s${NC}\n" "$((i + 1))" "$ide_name" "$default_mark" "$app_path" > /dev/tty
             fi
         done
 
@@ -467,24 +475,25 @@ step_find_vsix() {
 }
 
 step_detect_ides() {
-    echo -e "${MAGENTA}▶ 步骤 3/6${NC} 检测 IDE 环境"
+    echo -e "${MAGENTA}▶ 步骤 3/6${NC} 检测可安装插件 IDE 环境"
     echo -e "${GRAY}─────────────────────────────────────────${NC}\n"
-    echo -e "${BLUE}• > IDE 安装检测${NC}"
 
+    # 步骤 1: 检测 IDE
+    echo -e "${CYAN}  [1/2]${NC} ${WHITE}检测已安装的 IDE...${NC}"
     AVAILABLE_IDES=$(detect_ides)
     IDE_COUNT=$(echo "$AVAILABLE_IDES" | grep -c "|" || echo "0")
 
     if [ "$IDE_COUNT" -eq 0 ]; then
-        echo -e "${RED}  ❌ 结果: 未检测到 VSCode 或 Cursor${NC}"
+        echo -e "${RED}        ❌ 未检测到 VSCode 或 Cursor${NC}"
         echo ""
         echo "请确保已安装 VSCode 或 Cursor"
         exit 1
     fi
-
-    echo -e "${GREEN}  ✅ 结果: 发现 $IDE_COUNT 个 IDE${NC}"
+    echo -e "${GREEN}        ✓ 检测到 ${WHITE}$IDE_COUNT${NC}${GREEN} 个 IDE${NC}"
     echo ""
 
-    echo -e "${BLUE}• > code 命令指向IDE分析${NC}"
+    # 步骤 2: 分析 code 命令
+    echo -e "${CYAN}  [2/2]${NC} ${WHITE}分析 code 命令指向...${NC}"
 
     # 探测 code 命令指向
     CODE_PATH=$(which code 2> /dev/null || echo "")
@@ -501,27 +510,26 @@ step_detect_ides() {
     fi
     if [ -n "$CODE_PATH" ]; then
         if [ "$CODE_REAL_PATH" != "$CODE_PATH" ]; then
-            echo -e "${GREEN}  ✅ code命令路径: $CODE_PATH -> $CODE_REAL_PATH${NC}"
+            echo -e "${GREEN}        ✓ code 命令: ${YELLOW}$CODE_PATH${NC}"
+            echo -e "${GRAY}          → $CODE_REAL_PATH${NC}"
         else
-            echo -e "${GREEN}  ✅ code命令路径: $CODE_PATH${NC}"
+            echo -e "${GREEN}        ✓ code 命令: ${YELLOW}$CODE_PATH${NC}"
         fi
     else
-        echo -e "${YELLOW}  ⚠️  code命令路径: 未找到${NC}"
+        echo -e "${YELLOW}        ⚠ code 命令: 未找到${NC}"
     fi
 
     # 默认 IDE（code 命令指向）
     DEFAULT_IDE=$(get_default_ide)
     if [ -n "$DEFAULT_IDE" ]; then
         if [ -n "$CODE_MATCH_REASON" ]; then
-            echo -e "${GREEN}  ✅ 指向IDE: $DEFAULT_IDE (${CODE_MATCH_REASON})${NC}"
+            echo -e "${GREEN}        ✓ 指向 IDE: ${WHITE}$DEFAULT_IDE${NC} ${GRAY}($CODE_MATCH_REASON)${NC}"
         else
-            echo -e "${GREEN}  ✅ 指向IDE: $DEFAULT_IDE (code --version)${NC}"
+            echo -e "${GREEN}        ✓ 指向 IDE: ${WHITE}$DEFAULT_IDE${NC} ${GRAY}(code --version)${NC}"
         fi
     else
-        echo -e "${YELLOW}  ⚠️  指向IDE: 未能识别${NC}"
+        echo -e "${YELLOW}        ⚠ 指向 IDE: 未能识别${NC}"
     fi
-
-    echo ""
 
     # 计算默认选项编号（用于列表标注）
     default_choice=""
@@ -542,20 +550,21 @@ EOF
         default_choice="1"
     fi
 
+    echo ""
+    echo -e "${MAGENTA}▶ 检测结果${NC}"
+    echo -e "${GRAY}─────────────────────────────────────────${NC}"
+    echo -e "${GREEN}  ✅ 共发现 ${WHITE}$IDE_COUNT${NC}${GREEN} 个可安装插件的 IDE${NC}"
+    echo ""
+
     # 显示 IDE 列表和安装路径
-    echo -e "${BLUE}• 共发现${IDE_COUNT}个IDE:${NC}"
     i=1
     while IFS='|' read -r _ name _ _ app_cmd; do
         if [ -n "$name" ]; then
             app_path=$(get_app_install_path "$(expand_path "$app_cmd")")
-            default_mark=""
             if [ "$i" = "$default_choice" ]; then
-                default_mark=" (默认IDE: Code命令指向该IDE)"
-            fi
-            if [ -n "$app_path" ]; then
-                printf "   [%s] %s%s - %s\n" "$i" "$name" "$default_mark" "$app_path"
+                echo -e "${CYAN}     [$i]${NC} ${WHITE}${name}${NC} ${YELLOW}(code命令指向)${NC}${GREEN} -> ${app_path}${NC}"
             else
-                printf "   [%s] %s%s\n" "$i" "$name" "$default_mark"
+                echo -e "${CYAN}     [$i]${NC} ${WHITE}${name}${NC}${GREEN}  -> ${app_path}${NC}"
             fi
             i=$((i + 1))
         fi
