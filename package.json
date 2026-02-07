@@ -176,7 +176,7 @@
         ]
     },
     "imports": {
-        "#/*": "./dist/*"
+        "#/*": "./dist/*.js"
     },
     "scripts": {
         "package:extension": "bash scripts/safe-package.sh",
