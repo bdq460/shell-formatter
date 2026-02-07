@@ -11,7 +11,8 @@
     "partialFixSuccess": "{count} düzeltme uygulandı, ancak {remaining} sorun kaldı. Sorunlar panelini kontrol edin.",
     "formattingFailed": "Biçimlendirme uyarılarla başarısız oldu. Sorunlar panelini kontrol edin.",
     "confirmResetMetrics": "Tüm performans metriklerini sıfırlamak istediğinizden emin misiniz?",
-    "resetMetricsSuccess": "Performans metrikleri sıfırlandı."
+    "resetMetricsSuccess": "Performans metrikleri sıfırlandı.",
+    "unsupportedFileType": "Mevcut dosya işlenemiyor, yalnızca Shell betikleri destekleniyor (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - Performans Raporu",

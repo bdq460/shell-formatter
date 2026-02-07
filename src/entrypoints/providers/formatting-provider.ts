@@ -7,6 +7,7 @@
 import * as vscode from "vscode";
 import { formatDocument } from "../../application/usecases/format-document";
 import { PackageInfo } from "../../config";
+import { t } from "../../i18n";
 import { toDomainDocument } from "../../shared/converters/document";
 import { shouldSkipFile } from "../../shared/file-checker";
 import { logger } from "../../utils/log";
@@ -29,8 +30,11 @@ export function registerFormattingProvider(): vscode.Disposable {
 
                 // 跳过特殊文件
                 if (shouldSkipFile(document)) {
-                    logger.debug(
+                    logger.info(
                         `Skipping range formatting for: ${document.fileName} (special file)`,
+                    );
+                    vscode.window.showInformationMessage(
+                        t("messages.unsupportedFileType"),
                     );
                     return [];
                 }

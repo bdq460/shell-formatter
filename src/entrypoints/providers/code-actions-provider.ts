@@ -6,6 +6,7 @@
 
 import * as vscode from "vscode";
 import { PackageInfo } from "../../config";
+import { t } from "../../i18n";
 import { shouldSkipFile } from "../../shared/file-checker";
 import { PERFORMANCE_METRICS } from "../../shared/performance-metrics";
 import { logger } from "../../utils/log";
@@ -45,6 +46,9 @@ export class ShellFormatCodeActionProvider
         if (shouldSkipFile(document)) {
             logger.debug(
                 `Skipping code actions for: ${document.fileName} (special file)`,
+            );
+            vscode.window.showInformationMessage(
+                t("messages.unsupportedFileType"),
             );
             timer.stop();
             return [];

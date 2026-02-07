@@ -63,6 +63,67 @@ describe('log utils', () => {
         consoleSpy.mockRestore();
     });
 
+    it('should pass optionalParams to logger methods', () => {
+        const mockDebug = jest.fn();
+        const mockInfo = jest.fn();
+        const mockWarn = jest.fn();
+        const mockError = jest.fn();
+
+        const mockLogger: Logger = {
+            debug: mockDebug,
+            info: mockInfo,
+            warn: mockWarn,
+            error: mockError,
+        };
+
+        setLogger(mockLogger);
+
+        // Test debug with optional params
+        logger.debug('debug message', { key: 'value' }, 123);
+        expect(mockDebug).toHaveBeenCalledWith('debug message', { key: 'value' }, 123);
+
+        // Test info with optional params
+        logger.info('info message', 'extra info');
+        expect(mockInfo).toHaveBeenCalledWith('info message', 'extra info');
+
+        // Test warn with optional params
+        logger.warn('warn message', new Error('warning error'));
+        expect(mockWarn).toHaveBeenCalledWith('warn message', new Error('warning error'));
+
+        // Test error with optional params
+        logger.error('error message', { code: 500 }, 'details');
+        expect(mockError).toHaveBeenCalledWith('error message', { code: 500 }, 'details');
+    });
+
+    it('should handle logger methods without optionalParams', () => {
+        const mockDebug = jest.fn();
+        const mockInfo = jest.fn();
+        const mockWarn = jest.fn();
+        const mockError = jest.fn();
+
+        const mockLogger: Logger = {
+            debug: mockDebug,
+            info: mockInfo,
+            warn: mockWarn,
+            error: mockError,
+        };
+
+        setLogger(mockLogger);
+
+        // Test without optional params
+        logger.debug('debug message');
+        expect(mockDebug).toHaveBeenCalledWith('debug message');
+
+        logger.info('info message');
+        expect(mockInfo).toHaveBeenCalledWith('info message');
+
+        logger.warn('warn message');
+        expect(mockWarn).toHaveBeenCalledWith('warn message');
+
+        logger.error('error message');
+        expect(mockError).toHaveBeenCalledWith('error message');
+    });
+
     it('should not overwrite existing logger', () => {
         const mockLogger1: Logger = {
             debug: jest.fn(),

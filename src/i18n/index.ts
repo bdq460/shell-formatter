@@ -29,6 +29,7 @@
  */
 
 import * as vscode from "vscode";
+import { logger } from "../utils/log";
 
 // 导入所有语言包
 import ar from "./locales/ar.json";
@@ -46,8 +47,8 @@ import ru from "./locales/ru.json";
 import th from "./locales/th.json";
 import tr from "./locales/tr.json";
 import vi from "./locales/vi.json";
-import zh from "./locales/zh.json";
 import zhTw from "./locales/zh-tw.json";
+import zh from "./locales/zh.json";
 
 /**
  * 语言包类型定义
@@ -187,7 +188,7 @@ function detectLocale(): SupportedLocale {
 function getLocaleMessages(locale: SupportedLocale): LocaleMessages {
     const messages = localeMessages[locale];
     if (!messages) {
-        console.warn(`[i18n] Locale "${locale}" not found, falling back to "${fallbackLocale}"`);
+        logger.warn(`[i18n] Locale "${locale}" not found, falling back to "${fallbackLocale}"`);
         return localeMessages[fallbackLocale];
     }
     return messages;
@@ -200,7 +201,7 @@ function getLocaleMessages(locale: SupportedLocale): LocaleMessages {
  */
 export function initializeI18n(): void {
     currentLocale = detectLocale();
-    console.log(`[i18n] Initialized with locale: ${currentLocale}`);
+    logger.info(`[i18n] Initialized with locale: ${currentLocale}`);
 }
 
 /**
@@ -251,7 +252,7 @@ export function t(key: string, params?: Record<string, string | number>): string
                 if (fallbackValue && typeof fallbackValue === "object" && fk in fallbackValue) {
                     fallbackValue = (fallbackValue as Record<string, unknown>)[fk];
                 } else {
-                    console.warn(`[i18n] Translation key not found: ${key}`);
+                    logger.warn(`[i18n] Translation key not found: ${key}`);
                     return key;
                 }
             }
@@ -262,7 +263,7 @@ export function t(key: string, params?: Record<string, string | number>): string
 
     // 确保值是字符串
     if (typeof value !== "string") {
-        console.warn(`[i18n] Translation value is not a string: ${key}`);
+        logger.warn(`[i18n] Translation value is not a string: ${key}`);
         return key;
     }
 
@@ -285,11 +286,11 @@ export function t(key: string, params?: Record<string, string | number>): string
  */
 export function setLocale(locale: SupportedLocale): boolean {
     if (!localeMessages[locale]) {
-        console.warn(`[i18n] Cannot set locale "${locale}": not supported`);
+        logger.warn(`[i18n] Cannot set locale "${locale}": not supported`);
         return false;
     }
     currentLocale = locale;
-    console.log(`[i18n] Locale switched to: ${locale}`);
+    logger.info(`[i18n] Locale switched to: ${locale}`);
     return true;
 }
 

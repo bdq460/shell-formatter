@@ -11,7 +11,8 @@
     "partialFixSuccess": "Zastosowano {count} poprawkę/poprawki, ale pozostało {remaining} problemów. Sprawdź panel Problemów.",
     "formattingFailed": "Formatowanie nie powiodło się z ostrzeżeniami. Sprawdź panel Problemów.",
     "confirmResetMetrics": "Czy na pewno chcesz zresetować wszystkie metryki wydajności?",
-    "resetMetricsSuccess": "Metryki wydajności zostały zresetowane."
+    "resetMetricsSuccess": "Metryki wydajności zostały zresetowane.",
+    "unsupportedFileType": "Nie można przetworzyć bieżącego pliku, obsługiwane są tylko skrypty Shell (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - Raport Wydajności",

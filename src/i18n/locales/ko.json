@@ -11,7 +11,8 @@
     "partialFixSuccess": "{count}개의 수정이 적용되었지만 {remaining}개의 문제가 남아 있습니다. 문제 패널을 확인하세요.",
     "formattingFailed": "경고와 함께 서식 지정에 실패했습니다. 문제 패널을 확인하세요.",
     "confirmResetMetrics": "모든 성능 메트릭을 재설정하시겠습니까?",
-    "resetMetricsSuccess": "성능 메트릭이 재설정되었습니다."
+    "resetMetricsSuccess": "성능 메트릭이 재설정되었습니다.",
+    "unsupportedFileType": "현재 파일을 처리할 수 없습니다. Shell 스크립트만 지원됩니다 (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - 성능 보고서",

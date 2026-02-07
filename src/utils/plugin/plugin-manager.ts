@@ -21,8 +21,8 @@
  */
 
 import { logger } from "../log";
-import { IPlugin } from "./plugin-interface";
 import { MessageBus } from "./message-bus";
+import { IPlugin } from "./plugin-interface";
 import { Message, MessageBusConfig, PluginLifecycleEvents } from "./types";
 
 /**
@@ -234,7 +234,7 @@ export class PluginManager<TPlugin extends IPlugin = IPlugin> {
     async activate(name: string): Promise<boolean> {
         const plugin = this.plugins.get(name);
         if (!plugin) {
-            console.error(`Plugin "${name}" is not registered`);
+            logger.error(`Plugin "${name}" is not registered`);
             return false;
         }
 
@@ -274,14 +274,14 @@ export class PluginManager<TPlugin extends IPlugin = IPlugin> {
                 if (dep.required) {
                     missingDependencies.push(msg);
                 } else {
-                    console.warn(`Plugin "${name}": ${msg}`);
+                    logger.warn(`Plugin "${name}": ${msg}`);
                 }
             }
         }
 
         if (missingDependencies.length > 0) {
             const errorMsg = missingDependencies.join("; ");
-            console.error(`Plugin "${name}" activation failed: ${errorMsg}`);
+            logger.error(`Plugin "${name}" activation failed: ${errorMsg}`);
 
             // 发送激活失败消息
             await this.messageBus.publishMessage({
@@ -301,7 +301,7 @@ export class PluginManager<TPlugin extends IPlugin = IPlugin> {
         const isAvailable = await plugin.isAvailable();
         if (!isAvailable) {
             const errorMsg = `Plugin "${name}" is not available`;
-            console.warn(errorMsg);
+            logger.warn(errorMsg);
 
             // 发送激活失败消息
             await this.messageBus.publishMessage({
@@ -385,7 +385,7 @@ export class PluginManager<TPlugin extends IPlugin = IPlugin> {
         }
 
         if (!this.activePlugins.has(name)) {
-            console.warn(`Plugin "${name}" is already inactive`);
+            logger.warn(`Plugin "${name}" is already inactive`);
             return false;
         }
 

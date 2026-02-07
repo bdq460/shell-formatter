@@ -11,7 +11,8 @@
     "partialFixSuccess": "{count} सुधार लागू किए गए, लेकिन {remaining} समस्याएं बनी हुई हैं। समस्याएं पैनल की जांच करें।",
     "formattingFailed": "चेतावनियों के साथ स्वरूपण विफल। समस्याएं पैनल की जांच करें।",
     "confirmResetMetrics": "क्या आप वाकई सभी प्रदर्शन मेट्रिक्स रीसेट करना चाहते हैं?",
-    "resetMetricsSuccess": "प्रदर्शन मेट्रिक्स रीसेट कर दिए गए हैं।"
+    "resetMetricsSuccess": "प्रदर्शन मेट्रिक्स रीसेट कर दिए गए हैं।",
+    "unsupportedFileType": "वर्तमान फ़ाइल को प्रोसेस नहीं किया जा सकता, केवल Shell स्क्रिप्ट समर्थित हैं (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - प्रदर्शन रिपोर्ट",

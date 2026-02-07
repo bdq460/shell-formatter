@@ -11,7 +11,8 @@
     "partialFixSuccess": "Đã áp dụng {count} bản sửa lỗi, nhưng vẫn còn {remaining} vấn đề. Vui lòng kiểm tra bảng Vấn đề.",
     "formattingFailed": "Định dạng thất bại với cảnh báo. Vui lòng kiểm tra bảng Vấn đề.",
     "confirmResetMetrics": "Bạn có chắc chắn muốn đặt lại tất cả các chỉ số hiệu suất không?",
-    "resetMetricsSuccess": "Các chỉ số hiệu suất đã được đặt lại."
+    "resetMetricsSuccess": "Các chỉ số hiệu suất đã được đặt lại.",
+    "unsupportedFileType": "Không thể xử lý tệp hiện tại, chỉ hỗ trợ tập lệnh Shell (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - Báo cáo Hiệu suất",

@@ -11,7 +11,8 @@
     "partialFixSuccess": "{count} correzione(i) applicata(e), ma {remaining} problema(i) rimane(ono). Controlla il pannello Problemi.",
     "formattingFailed": "Formattazione fallita con avvisi. Controlla il pannello Problemi.",
     "confirmResetMetrics": "Sei sicuro di voler reimpostare tutte le metriche di prestazione?",
-    "resetMetricsSuccess": "Le metriche di prestazione sono state reimpostate."
+    "resetMetricsSuccess": "Le metriche di prestazione sono state reimpostate.",
+    "unsupportedFileType": "Impossibile elaborare il file corrente, solo script Shell supportati (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - Rapporto Prestazioni",

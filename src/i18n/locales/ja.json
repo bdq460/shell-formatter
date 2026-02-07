@@ -11,7 +11,8 @@
     "partialFixSuccess": "{count} 件の修正が適用されましたが、{remaining} 件の問題が残っています。問題パネルを確認してください。",
     "formattingFailed": "警告付きでフォーマットに失敗しました。問題パネルを確認してください。",
     "confirmResetMetrics": "すべてのパフォーマンス指標をリセットしてもよろしいですか？",
-    "resetMetricsSuccess": "パフォーマンス指標がリセットされました。"
+    "resetMetricsSuccess": "パフォーマンス指標がリセットされました。",
+    "unsupportedFileType": "現在のファイルを処理できません、Shell スクリプトのみ対応しています (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - パフォーマンスレポート",

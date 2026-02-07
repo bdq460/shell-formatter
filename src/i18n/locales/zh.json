@@ -11,7 +11,8 @@
     "partialFixSuccess": "已应用 {count} 处修复，但仍有 {remaining} 个问题。请检查问题面板。",
     "formattingFailed": "格式化失败，存在警告。请检查问题面板。",
     "confirmResetMetrics": "确定要重置所有性能指标吗？",
-    "resetMetricsSuccess": "性能指标已重置。"
+    "resetMetricsSuccess": "性能指标已重置。",
+    "unsupportedFileType": "无法处理当前文件，仅可处理 Shell 脚本（.sh/.bash/.zsh）"
   },
   "performance": {
     "title": "Shell Formatter - 性能报告",

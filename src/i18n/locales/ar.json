@@ -11,7 +11,8 @@
     "partialFixSuccess": "تم تطبيق {count} إصلاحات، لكن لا تزال هناك {remaining} مشاكل. تحقق من لوحة المشاكل.",
     "formattingFailed": "فشل التنسيق مع وجود تحذيرات. تحقق من لوحة المشاكل.",
     "confirmResetMetrics": "هل أنت متأكد من أنك تريد إعادة تعيين جميع مقاييس الأداء؟",
-    "resetMetricsSuccess": "تم إعادة تعيين مقاييس الأداء."
+    "resetMetricsSuccess": "تم إعادة تعيين مقاييس الأداء.",
+    "unsupportedFileType": "تعذر معالجة الملف الحالي، يتم دعم البرامج النصية Shell فقط (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - تقرير الأداء",

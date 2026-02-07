@@ -287,7 +287,7 @@ export class MessageBus {
             try {
                 return sub.options.filter(message);
             } catch (error) {
-                console.error(
+                logger.error(
                     `[MessageBus] Filter error for subscription ${sub.id}:`,
                     error,
                 );
@@ -341,13 +341,13 @@ export class MessageBus {
                     try {
                         subscription.options.errorHandler(errorObj, message);
                     } catch (handlerError) {
-                        console.error(
+                        logger.error(
                             `[MessageBus] Error handler failed for subscription ${subscription.id}:`,
                             handlerError,
                         );
                     }
                 } else {
-                    console.error(
+                    logger.error(
                         `[MessageBus] Handler error for subscription ${subscription.id}:`,
                         errorObj,
                     );

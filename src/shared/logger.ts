@@ -25,20 +25,20 @@ export function initializeLogger(): void {
 export class LoggerAdapter implements Logger, vscode.Disposable {
     private outputChannel: vscode.OutputChannel | undefined;
 
-    info(message: string): void {
-        this.logMessage(message, LogLevel.INFO);
+    debug(message: string, ...optionalParams: any[]): void {
+        this.logMessage(message, LogLevel.DEBUG, ...optionalParams);
     }
 
-    warn(message: string): void {
-        this.logMessage(message, LogLevel.WARN);
+    info(message: string, ...optionalParams: any[]): void {
+        this.logMessage(message, LogLevel.INFO, ...optionalParams);
     }
 
-    error(message: string): void {
-        this.logMessage(message, LogLevel.ERROR);
+    warn(message: string, ...optionalParams: any[]): void {
+        this.logMessage(message, LogLevel.WARN, ...optionalParams);
     }
 
-    debug(message: string): void {
-        this.logMessage(message, LogLevel.DEBUG);
+    error(message: string, ...optionalParams: any[]): void {
+        this.logMessage(message, LogLevel.ERROR, ...optionalParams);
     }
 
     /**
@@ -186,7 +186,7 @@ export class LoggerAdapter implements Logger, vscode.Disposable {
         return formatted;
     }
 
-    logMessage(message: string, level: LogLevel) {
+    logMessage(message: string, level: LogLevel, ...optionalParams: any[]) {
         // 检查是否应该输出该级别的日志
         if (!this.shouldLogMessage(level)) {
             return;
@@ -198,16 +198,16 @@ export class LoggerAdapter implements Logger, vscode.Disposable {
         // 输出到控制台 (可以从"帮助 -> 切换开发人员"工具打开控制台界面)
         switch (level) {
             case LogLevel.DEBUG:
-                console.debug(formattedMessage);
+                console.debug(formattedMessage, ...optionalParams);
                 break;
             case LogLevel.WARN:
-                console.warn(formattedMessage);
+                console.warn(formattedMessage, ...optionalParams);
                 break;
             case LogLevel.ERROR:
-                console.error(formattedMessage);
+                console.error(formattedMessage, ...optionalParams);
                 break;
             default:
-                console.info(formattedMessage);
+                console.info(formattedMessage, ...optionalParams);
                 break;
         }
 
@@ -218,7 +218,15 @@ export class LoggerAdapter implements Logger, vscode.Disposable {
                     PackageInfo.extensionName,
                 );
             }
-            this.outputChannel?.appendLine(formattedMessage);
+            // 将 optionalParams 序列化为字符串追加到消息
+            let outputMessage = formattedMessage;
+            if (optionalParams.length > 0) {
+                const paramsStr = optionalParams
+                    .map((p) => (typeof p === "object" ? JSON.stringify(p) : String(p)))
+                    .join(" ");
+                outputMessage += " " + paramsStr;
+            }
+            this.outputChannel?.appendLine(outputMessage);
         }
     }
 

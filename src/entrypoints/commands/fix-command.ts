@@ -24,7 +24,7 @@ import { PackageInfo } from "../../config";
 import { t } from "../../i18n";
 import { fromDomainDiagnostics } from "../../shared/converters/diagnostic";
 import { toDomainDocument } from "../../shared/converters/document";
-import { shouldSkipUri } from "../../shared/file-checker";
+import { shouldSkipFile } from "../../shared/file-checker";
 import { logger } from "../../utils/log";
 
 /**
@@ -317,24 +317,27 @@ export function registerFixAllCommand(
             // 记录命令触发
             logger.info(`Start fix all problems! URI: ${uri?.toString() || "N/A"}`);
 
-            // 跳过特殊文件
-            if (uri && shouldSkipUri(uri)) {
-                logger.debug(
-                    `Skipping fix all problems for: ${uri.toString()} (special file)`,
+            // 步骤 1: 查找目标文档
+            const document = findDocument(uri);
+            if (!document) {
+                logger.warn(`No document found for fix all problems command. uri: ${uri?.toString() || "N/A"}`);
+                return;
+            }
+
+            logger.info(`Start fix all problems for: ${document.fileName} `);
+
+            // 步骤 2: 检查文件是否需要跳过
+            if (shouldSkipFile(document)) {
+                logger.info(
+                    `Skipping fix all problems for: ${document.fileName} `,
+                );
+                vscode.window.showInformationMessage(
+                    t("messages.unsupportedFileType"),
                 );
                 return;
             }
 
-            // 步骤 1: 查找目标文档
-            const document = findDocument(uri);
-            if (!document) {
-                logger.info("Fix all problems command triggered! No document found");
-                return;
-            }
-
-            logger.info(`Start fix all problems for: ${document.fileName}`);
-
-            // 步骤 2: 生成修复操作
+            // 步骤 3: 生成修复操作
             // formatDocument 会调用 shfmt 格式化工具
             // 使用 content 模式，确保修复基于当前编辑器中的内容，与诊断保持一致
             logger.info("Generating fixes by invoking format document");
@@ -354,7 +357,7 @@ export function registerFixAllCommand(
                 ),
             );
 
-            // 步骤 3: 根据修复数量处理不同情况
+            // 步骤 4: 根据修复数量处理不同情况
             if (edits.length > 0) {
                 // 有修复操作：应用修复并更新诊断
                 await handleFixesApplied(document, edits, diagnosticCollection);

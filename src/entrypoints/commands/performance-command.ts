@@ -7,32 +7,10 @@ import * as vscode from "vscode";
 import {
     showPerformanceReport as serviceShowPerformanceReport
 } from "../../application";
-import { t } from "../../i18n";
 import { PackageInfo } from "../../config";
+import { t } from "../../i18n";
 import { logger } from "../../utils/log";
 import { resetMetrics } from "../../utils/performance/integration";
-
-/**
- * 注册格式化文档命令
- */
-export function registerFormatDocumentCommand(): vscode.Disposable {
-    logger.info("Registering format document command");
-    return vscode.commands.registerCommand(
-        PackageInfo.commandFormatDocument,
-        async () => {
-            logger.info("Format document command triggered");
-            const activeEditor = vscode.window.activeTextEditor;
-            if (!activeEditor) {
-                vscode.window.showWarningMessage(t("messages.noActiveDocument"));
-                return;
-            }
-            await vscode.commands.executeCommand(
-                "editor.action.formatDocument",
-                activeEditor.document.uri,
-            );
-        },
-    );
-}
 
 /**
  * 显示性能报告

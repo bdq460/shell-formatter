@@ -6,8 +6,8 @@
 import * as vscode from "vscode";
 import { logger } from "../../utils/log";
 import { registerFixAllCommand } from "./fix-command";
+import { registerFormatDocumentCommand } from "./format-command";
 import {
-    registerFormatDocumentCommand,
     registerPerformanceReportCommand,
     registerResetPerformanceCommand,
 } from "./performance-command";

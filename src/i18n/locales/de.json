@@ -11,7 +11,8 @@
     "partialFixSuccess": "{count} Korrekturen angewendet, aber {remaining} Probleme verbleiben. Überprüfen Sie die Problemanzeige.",
     "formattingFailed": "Formatierung mit Warnungen fehlgeschlagen. Überprüfen Sie die Problemanzeige.",
     "confirmResetMetrics": "Möchten Sie alle Leistungsmetriken zurücksetzen?",
-    "resetMetricsSuccess": "Leistungsmetriken wurden zurückgesetzt."
+    "resetMetricsSuccess": "Leistungsmetriken wurden zurückgesetzt.",
+    "unsupportedFileType": "Aktuelle Datei kann nicht verarbeitet werden, nur Shell-Skripte unterstützt (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - Leistungsbericht",

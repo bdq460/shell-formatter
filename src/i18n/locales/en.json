@@ -11,7 +11,8 @@
     "partialFixSuccess": "{count} fix(es) applied, but {remaining} problem(s) remain. Check the Problems panel.",
     "formattingFailed": "Formatting failed with warnings. Check the Problems panel.",
     "confirmResetMetrics": "Are you sure you want to reset all performance metrics?",
-    "resetMetricsSuccess": "Performance metrics have been reset."
+    "resetMetricsSuccess": "Performance metrics have been reset.",
+    "unsupportedFileType": "Cannot process current file, only Shell scripts supported (.sh/.bash/.zsh)"
   },
   "performance": {
     "title": "Shell Formatter - Performance Report",

@@ -109,16 +109,16 @@ export function shouldLogByLevel(
  */
 export interface Logger {
     /** 调试信息 - 仅在开发调试时输出 */
-    debug(message: string): void;
+    debug(message: string, ...optionalParams: any[]): void;
 
     /** 一般信息 - 常规消息提示 */
-    info(message: string): void;
+    info(message: string, ...optionalParams: any[]): void;
 
     /** 警告信息 - 潜在问题提示 */
-    warn(message: string): void;
+    warn(message: string, ...optionalParams: any[]): void;
 
     /** 错误信息 - 严重问题报告 */
-    error(message: string): void;
+    error(message: string, ...optionalParams: any[]): void;
 }
 
 /**
