@@ -8,6 +8,7 @@ import * as vscode from "vscode";
 import { initializeDIContainer } from "../../application";
 import { SettingInfo } from "../../config";
 import { initializePlugins } from "../../domain/plugin-initializer";
+import { initializeI18n } from "../../i18n";
 import { PERFORMANCE_METRICS } from "../../shared/performance-metrics";
 import { DebounceManager } from "../../utils/debounce";
 import { getContainer } from "../../utils/di/container";
@@ -32,8 +33,12 @@ export function registerConfigChangeListener(
     return vscode.workspace.onDidChangeConfiguration(async (event) => {
         logger.info(`Configuration change event happened! event:${event}`);
 
+        // 检查语言配置是否变化
+        const languageConfigKey = `${SettingInfo.configSectionName}.language`;
+        const languageChanged = event.affectsConfiguration(languageConfigKey);
+
         // 检查扩展相关配置是否变化
-        if (SettingInfo.isConfigurationChanged(event)) {
+        if (languageChanged || SettingInfo.isConfigurationChanged(event)) {
             const timer = startTimer(
                 PERFORMANCE_METRICS.CONFIGURATION_CHANGE_HANDLER_DURATION,
             );
@@ -44,14 +49,22 @@ export function registerConfigChangeListener(
                 // 这是核心：所有配置缓存在 SettingInfo 中统一管理
                 SettingInfo.refreshCache();
 
-                // 步骤 2: 重新初始化插件系统（配置变化可能影响插件参数）
+                // 步骤 2: 如果语言配置变化，重新初始化 i18n 系统
+                if (languageChanged) {
+                    const newLanguage = SettingInfo.getLanguage();
+                    logger.info(`Language configuration changed to: ${newLanguage}`);
+                    initializeI18n(newLanguage);
+                    logger.info("i18n system reinitialized with new language.");
+                }
+
+                // 步骤 3: 重新初始化插件系统（配置变化可能影响插件参数）
                 logger.info("Reinitializing plugins due to configuration change");
                 const container = getContainer();
                 container.reset(); // 清除所有单例实例
                 initializeDIContainer(container); // 重新注册所有服务
                 await initializePlugins(); // 重新初始化插件（等待完成）
 
-                // 步骤 3: 清除所有活跃的防抖定时器
+                // 步骤 4: 清除所有活跃的防抖定时器
                 debounceManager.clearAll();
 
                 timer.stop();

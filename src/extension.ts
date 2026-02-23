@@ -10,7 +10,7 @@
 
 import * as vscode from "vscode";
 import { initializeDIContainer } from "./application";
-import { PackageInfo } from "./config";
+import { PackageInfo, SettingInfo } from "./config";
 import { initializePlugins } from "./domain/plugin-initializer";
 import * as entrypoints from "./entrypoints";
 import { initializeI18n } from "./i18n";
@@ -38,7 +38,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // 初始化 i18n
     logger.info("Initializing i18n");
-    initializeI18n();
+    const languageSetting = SettingInfo.getLanguage();
+    initializeI18n(languageSetting);
 
     // 初始化 DI 容器
     logger.info("Initializing DI container");

@@ -23,6 +23,7 @@ interface ConfigCache {
     tabSize: number | string;
     log: LogConfig;
     onError: string;
+    language: string;
     plugins: {
         shfmt: { enabled: boolean; path: string };
         shellcheck: { enabled: boolean; path: string };
@@ -54,6 +55,14 @@ export class SettingInfo {
     private static configCache: ConfigCache | null = null;
 
     /**
+     * 获取配置节名称
+     * @returns 配置节名称（即扩展名称）
+     */
+    static get configSectionName(): string {
+        return this.configSection;
+    }
+
+    /**
      * 初始化或刷新配置缓存
      *
      * 使用场景：
@@ -70,6 +79,7 @@ export class SettingInfo {
             tabSize: this.getTabSizeImpl(),
             log: this.getLogImpl(),
             onError: this.getOnErrorImpl(),
+            language: this.getLanguageImpl(),
             plugins: this.getPluginsImpl(),
         };
     }
@@ -107,6 +117,11 @@ export class SettingInfo {
     private static getOnErrorImpl(): string {
         const config = this.getConfig();
         return config.get<string>("onError", PackageInfo.defaultOnError);
+    }
+
+    private static getLanguageImpl(): string {
+        const config = this.getConfig();
+        return config.get<string>("language", PackageInfo.defaultLanguage);
     }
 
     private static getPluginsImpl(): {
@@ -217,6 +232,25 @@ export class SettingInfo {
     static getOnErrorSetting(): string {
         this.ensureCacheInitialized();
         return this.configCache!.onError;
+    }
+
+    // ==================== 语言配置 ====================
+
+    /**
+     * 获取语言配置
+     *
+     * 控制插件显示语言：
+     * - 'local': 根据 VSCode 语言设置自动检测（默认）
+     * - 'en': 英语
+     * - 'zh': 简体中文
+     * - 'zh-tw': 繁体中文
+     * - 其他 16 种支持的语言
+     *
+     * @returns 语言配置，默认为 'local'
+     */
+    static getLanguage(): string {
+        this.ensureCacheInitialized();
+        return this.configCache!.language;
     }
 
     // ==================== 配置变更检测 ====================

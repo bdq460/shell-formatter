@@ -197,11 +197,24 @@ function getLocaleMessages(locale: SupportedLocale): LocaleMessages {
 /**
  * 初始化 i18n 模块
  *
- * 自动检测 VSCode 语言并加载对应的语言包
+ * @param configLanguage 配置的语言设置，'local' 表示自动检测 VSCode 语言
  */
-export function initializeI18n(): void {
-    currentLocale = detectLocale();
-    logger.info(`[i18n] Initialized with locale: ${currentLocale}`);
+export function initializeI18n(configLanguage: string = "local"): void {
+    if (configLanguage === "local") {
+        // 自动检测 VSCode 语言
+        currentLocale = detectLocale();
+    } else {
+        // 使用配置的语言
+        if (localeMapping[configLanguage]) {
+            currentLocale = localeMapping[configLanguage];
+        } else if (isLocaleSupported(configLanguage as SupportedLocale)) {
+            currentLocale = configLanguage as SupportedLocale;
+        } else {
+            logger.warn(`[i18n] Unsupported language "${configLanguage}", falling back to "en"`);
+            currentLocale = "en";
+        }
+    }
+    logger.info(`[i18n] Initialized with locale: ${currentLocale} (config: ${configLanguage})`);
 }
 
 /**

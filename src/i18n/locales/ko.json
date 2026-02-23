@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "성능 메트릭이 재설정되었습니다.",
     "unsupportedFileType": "현재 파일을 처리할 수 없습니다. Shell 스크립트만 지원됩니다 (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "잘못된 형식",
+    "prefix": "형식 문제:",
+    "shouldBe": "\"{content}\"이어야 합니다",
+    "delete": "\"{content}\" 삭제",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "원본:",
+    "changedTo": "변경된:",
+    "removeTrailingPunctuation": "후행 문장 부호 제거",
+    "adjustQuotes": "따옴표 조정",
+    "reduceExtraSpaces": "여분의 공백 줄이기",
+    "addSpace": "공백 추가",
+    "adjustOperatorSpaces": "연산자 공백 조정",
+    "adjustBracketSpaces": "괄호 공백 조정",
+    "removeTrailingSpaces": "후행 공백 제거",
+    "invalidMode": "잘못된 모드"
+  },
   "performance": {
     "title": "Shell Formatter - 성능 보고서",
     "reportGenerated": "보고서 생성 시간: {date}",

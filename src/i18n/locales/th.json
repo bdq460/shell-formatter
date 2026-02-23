@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "ตัวชี้วัดประสิทธิภาพได้รับการรีเซ็ตแล้ว",
     "unsupportedFileType": "ไม่สามารถประมวลผลไฟล์ปัจจุบันได้ รองรับเฉพาะสคริปต์ Shell (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "รูปแบบไม่ถูกต้อง",
+    "prefix": "ปัญหารูปแบบ:",
+    "shouldBe": "ควรเป็น \"{content}\"",
+    "delete": "ลบ \"{content}\"",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "ต้นฉบับ:",
+    "changedTo": "เปลี่ยนเป็น:",
+    "removeTrailingPunctuation": "ลบเครื่องหมายท้าย",
+    "adjustQuotes": "ปรับเครื่องหมายคำพูด",
+    "reduceExtraSpaces": "ลดช่องว่างเกิน",
+    "addSpace": "เพิ่มช่องว่าง",
+    "adjustOperatorSpaces": "ปรับช่องว่างโอเปอเรเตอร์",
+    "adjustBracketSpaces": "ปรับช่องว่างวงเล็บ",
+    "removeTrailingSpaces": "ลบช่องว่างท้าย",
+    "invalidMode": "โหมดไม่ถูกต้อง"
+  },
   "performance": {
     "title": "Shell Formatter - รายงานประสิทธิภาพ",
     "reportGenerated": "สร้างรายงานเมื่อ: {date}",

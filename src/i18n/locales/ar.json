@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "تم إعادة تعيين مقاييس الأداء.",
     "unsupportedFileType": "تعذر معالجة الملف الحالي، يتم دعم البرامج النصية Shell فقط (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "تنسيق غير صالح",
+    "prefix": "مشكلة التنسيق:",
+    "shouldBe": "يجب أن يكون \"{content}\"",
+    "delete": "حذف \"{content}\"",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "الأصلي:",
+    "changedTo": "تم التغيير إلى:",
+    "removeTrailingPunctuation": "إزالة علامات الترقيم النهائية",
+    "adjustQuotes": "ضبط علامات الاقتباس",
+    "reduceExtraSpaces": "تقليل المسافات الإضافية",
+    "addSpace": "إضافة مسافة",
+    "adjustOperatorSpaces": "ضبط مسافات المشغل",
+    "adjustBracketSpaces": "ضبط مسافات الأقواس",
+    "removeTrailingSpaces": "إزالة المسافات النهائية",
+    "invalidMode": "وضع غير صالح"
+  },
   "performance": {
     "title": "Shell Formatter - تقرير الأداء",
     "reportGenerated": "تم إنشاء التقرير: {date}",

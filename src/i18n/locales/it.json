@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "Le metriche di prestazione sono state reimpostate.",
     "unsupportedFileType": "Impossibile elaborare il file corrente, solo script Shell supportati (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "Formato non valido",
+    "prefix": "Problema di formato:",
+    "shouldBe": "Dovrebbe essere \"{content}\"",
+    "delete": "Eliminare \"{content}\"",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "Originale:",
+    "changedTo": "Cambiato in:",
+    "removeTrailingPunctuation": "Rimuovi punteggiatura finale",
+    "adjustQuotes": "Regola virgolette",
+    "reduceExtraSpaces": "Riduci spazi extra",
+    "addSpace": "Aggiungi spazio",
+    "adjustOperatorSpaces": "Regola spazi operatore",
+    "adjustBracketSpaces": "Regola spazi parentesi",
+    "removeTrailingSpaces": "Rimuovi spazi finali",
+    "invalidMode": "Modalità non valida"
+  },
   "performance": {
     "title": "Shell Formatter - Rapporto Prestazioni",
     "reportGenerated": "Rapporto generato: {date}",

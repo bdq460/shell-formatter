@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "パフォーマンス指標がリセットされました。",
     "unsupportedFileType": "現在のファイルを処理できません、Shell スクリプトのみ対応しています (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "無効な形式",
+    "prefix": "形式の問題:",
+    "shouldBe": "\"{content}\" である必要があります",
+    "delete": "\"{content}\" を削除",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "元の値:",
+    "changedTo": "変更後:",
+    "removeTrailingPunctuation": "末尾の句読点を削除",
+    "adjustQuotes": "引用符を調整",
+    "reduceExtraSpaces": "余分なスペースを削減",
+    "addSpace": "スペースを追加",
+    "adjustOperatorSpaces": "演算子のスペースを調整",
+    "adjustBracketSpaces": "括弧のスペースを調整",
+    "removeTrailingSpaces": "末尾のスペースを削除",
+    "invalidMode": "無効なモード"
+  },
   "performance": {
     "title": "Shell Formatter - パフォーマンスレポート",
     "reportGenerated": "レポート生成日時：{date}",

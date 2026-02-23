@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "प्रदर्शन मेट्रिक्स रीसेट कर दिए गए हैं।",
     "unsupportedFileType": "वर्तमान फ़ाइल को प्रोसेस नहीं किया जा सकता, केवल Shell स्क्रिप्ट समर्थित हैं (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "अमान्य प्रारूप",
+    "prefix": "प्रारूप समस्या:",
+    "shouldBe": "\"{content}\" होना चाहिए",
+    "delete": "\"{content}\" हटाएं",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "मूल:",
+    "changedTo": "बदलकर:",
+    "removeTrailingPunctuation": "अंतिम विराम चिह्न हटाएं",
+    "adjustQuotes": "उद्धरण चिह्न समायोजित करें",
+    "reduceExtraSpaces": "अतिरिक्त रिक्तियाँ कम करें",
+    "addSpace": "रिक्ति जोड़ें",
+    "adjustOperatorSpaces": "ऑपरेटर रिक्तियाँ समायोजित करें",
+    "adjustBracketSpaces": "कोष्ठक रिक्तियाँ समायोजित करें",
+    "removeTrailingSpaces": "अंतिम रिक्तियाँ हटाएं",
+    "invalidMode": "अमान्य मोड"
+  },
   "performance": {
     "title": "Shell Formatter - प्रदर्शन रिपोर्ट",
     "reportGenerated": "रिपोर्ट उत्पन्न: {date}",

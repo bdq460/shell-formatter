@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "Performans metrikleri sıfırlandı.",
     "unsupportedFileType": "Mevcut dosya işlenemiyor, yalnızca Shell betikleri destekleniyor (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "Geçersiz format",
+    "prefix": "Biçim sorunu:",
+    "shouldBe": "\"{content}\" olmalı",
+    "delete": "\"{content}\" sil",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "Orijinal:",
+    "changedTo": "Değiştirildi:",
+    "removeTrailingPunctuation": "Son noktalama işaretlerini kaldır",
+    "adjustQuotes": "Tırnakları ayarla",
+    "reduceExtraSpaces": "Fazla boşlukları azalt",
+    "addSpace": "Boşluk ekle",
+    "adjustOperatorSpaces": "Operatör boşluklarını ayarla",
+    "adjustBracketSpaces": "Parantez boşluklarını ayarla",
+    "removeTrailingSpaces": "Son boşlukları kaldır",
+    "invalidMode": "Geçersiz mod"
+  },
   "performance": {
     "title": "Shell Formatter - Performans Raporu",
     "reportGenerated": "Rapor oluşturuldu: {date}",

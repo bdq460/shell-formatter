@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "Metryki wydajności zostały zresetowane.",
     "unsupportedFileType": "Nie można przetworzyć bieżącego pliku, obsługiwane są tylko skrypty Shell (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "Nieprawidłowy format",
+    "prefix": "Problem formatu:",
+    "shouldBe": "Powinno być \"{content}\"",
+    "delete": "Usuń \"{content}\"",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "Oryginał:",
+    "changedTo": "Zmieniono na:",
+    "removeTrailingPunctuation": "Usuń końcową interpunkcję",
+    "adjustQuotes": "Dostosuj cudzysłowy",
+    "reduceExtraSpaces": "Zmniejsz dodatkowe spacje",
+    "addSpace": "Dodaj spację",
+    "adjustOperatorSpaces": "Dostosuj spacje operatorów",
+    "adjustBracketSpaces": "Dostosuj spacje nawiasów",
+    "removeTrailingSpaces": "Usuń spacje końcowe",
+    "invalidMode": "Nieprawidłowy tryb"
+  },
   "performance": {
     "title": "Shell Formatter - Raport Wydajności",
     "reportGenerated": "Raport wygenerowany: {date}",

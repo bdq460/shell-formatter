@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "性能指标已重置。",
     "unsupportedFileType": "无法处理当前文件，仅可处理 Shell 脚本（.sh/.bash/.zsh）"
   },
+  "formatIssue": {
+    "invalid": "格式不正确",
+    "prefix": "格式问题:",
+    "shouldBe": "应为 \"{content}\"",
+    "delete": "删除 \"{content}\"",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "原始:",
+    "changedTo": "修改为:",
+    "removeTrailingPunctuation": "删除末尾标点符号",
+    "adjustQuotes": "调整引号",
+    "reduceExtraSpaces": "减少多余空格",
+    "addSpace": "增加空格",
+    "adjustOperatorSpaces": "调整操作符空格",
+    "adjustBracketSpaces": "调整括号空格",
+    "removeTrailingSpaces": "删除行尾空格",
+    "invalidMode": "无效模式"
+  },
   "performance": {
     "title": "Shell Formatter - 性能报告",
     "reportGenerated": "报告生成时间：{date}",

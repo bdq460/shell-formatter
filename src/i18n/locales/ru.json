@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "Метрики производительности сброшены.",
     "unsupportedFileType": "Невозможно обработать текущий файл, поддерживаются только скрипты Shell (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "Недопустимый формат",
+    "prefix": "Проблема форматирования:",
+    "shouldBe": "Должно быть \"{content}\"",
+    "delete": "Удалить \"{content}\"",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "Исходное:",
+    "changedTo": "Изменено на:",
+    "removeTrailingPunctuation": "Удалить конечную пунктуацию",
+    "adjustQuotes": "Настроить кавычки",
+    "reduceExtraSpaces": "Уменьшить лишние пробелы",
+    "addSpace": "Добавить пробел",
+    "adjustOperatorSpaces": "Настроить пробелы операторов",
+    "adjustBracketSpaces": "Настроить пробелы скобок",
+    "removeTrailingSpaces": "Удалить конечные пробелы",
+    "invalidMode": "Недопустимый режим"
+  },
   "performance": {
     "title": "Shell Formatter - Отчет о производительности",
     "reportGenerated": "Отчет создан: {date}",

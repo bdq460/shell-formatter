@@ -312,4 +312,22 @@ export class PackageInfo {
             "vscode"
         );
     }
+
+    /**
+     * 获取默认的语言配置
+     * @returns 默认的语言配置，'local' 表示根据 VSCode 语言设置自动检测
+     * - 'local': 根据 VSCode 语言设置自动检测（默认）
+     * - 'en': 英语
+     * - 'zh': 简体中文
+     * - 'zh-tw': 繁体中文
+     * - 其他 16 种支持的语言
+     */
+    static get defaultLanguage(): string {
+        const configProperties = packageJson.contributes?.configuration
+            ?.properties as any;
+        return (
+            configProperties?.[`${PackageInfo.extensionName}.language`]?.default ||
+            "local"
+        );
+    }
 }

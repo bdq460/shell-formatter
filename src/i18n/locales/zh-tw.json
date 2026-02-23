@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "效能指標已重置。",
     "unsupportedFileType": "無法處理目前檔案，僅可處理 Shell 指令碼（.sh/.bash/.zsh）"
   },
+  "formatIssue": {
+    "invalid": "格式不正確",
+    "prefix": "格式問題:",
+    "shouldBe": "應為 \"{content}\"",
+    "delete": "刪除 \"{content}\"",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "原始:",
+    "changedTo": "修改為:",
+    "removeTrailingPunctuation": "刪除末尾標點符號",
+    "adjustQuotes": "調整引號",
+    "reduceExtraSpaces": "減少多餘空格",
+    "addSpace": "增加空格",
+    "adjustOperatorSpaces": "調整操作符空格",
+    "adjustBracketSpaces": "調整括號空格",
+    "removeTrailingSpaces": "刪除行尾空格",
+    "invalidMode": "無效模式"
+  },
   "performance": {
     "title": "Shell Formatter - 效能報告",
     "reportGenerated": "報告產生時間：{date}",

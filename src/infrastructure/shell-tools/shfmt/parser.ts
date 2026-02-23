@@ -4,6 +4,7 @@
 
 import { ExecutionResult } from "../../../utils/executor/types";
 import { logger } from "../../../utils/log";
+import { t } from "../../../i18n";
 import { FormatIssue, SyntaxError, ToolCheckResult, ToolFormatResult } from "../types";
 
 /**
@@ -87,8 +88,8 @@ export function parseShfmtOutput(
         return toolResult as ToolFormatResult;
     }
 
-    logger.error(`Invalid mode: ${mode}`);
-    throw new Error(`Invalid mode: ${mode}`);
+    logger.error(`${t("formatIssue.invalidMode")}: ${mode}`);
+    throw new Error(`${t("formatIssue.invalidMode")}: ${mode}`);
 }
 
 /**
@@ -199,7 +200,7 @@ function analyzeFormatIssue(
 
     // 如果都为空
     if (!oldTrimmed && !newTrimmed) {
-        return { column: 0, rangeLength: 10, message: "格式不正确" };
+        return { column: 0, rangeLength: 10, message: t("formatIssue.invalid") };
     }
 
     // 如果只有新内容（新增行）
@@ -207,7 +208,7 @@ function analyzeFormatIssue(
         return {
             column: 0,
             rangeLength: Math.min(newTrimmed.length, 30),
-            message: `格式问题: 应为 "${newTrimmed}"`,
+            message: `${t("formatIssue.prefix")} ${t("formatIssue.shouldBe", { content: newTrimmed })}`,
         };
     }
 
@@ -216,7 +217,7 @@ function analyzeFormatIssue(
         return {
             column: 0,
             rangeLength: Math.min(oldTrimmed.length, 30),
-            message: `格式问题: 删除 "${oldTrimmed}"`,
+            message: `${t("formatIssue.prefix")} ${t("formatIssue.delete", { content: oldTrimmed })}`,
         };
     }
 
@@ -230,10 +231,10 @@ function analyzeFormatIssue(
     let message: string;
     if (changes.length === 0) {
         // 没有检测到具体变更，显示完整对比
-        message = `格式问题: "${oldTrimmed}" → "${newTrimmed}"`;
+        message = `${t("formatIssue.prefix")} ${t("formatIssue.changeFromTo", { old: oldTrimmed, new: newTrimmed })}`;
     } else {
         // 根据变更类型生成具体提示
-        message = `格式问题: ${changes.join(", ")}\n  原始: "${oldTrimmed}"\n  修改为: "${newTrimmed}"`;
+        message = `${t("formatIssue.prefix")} ${changes.join(", ")}\n  ${t("formatIssue.original")} "${oldTrimmed}"\n  ${t("formatIssue.changedTo")} "${newTrimmed}"`;
     }
 
     return { column, rangeLength, message };
@@ -257,7 +258,7 @@ function analyzeFormatChangesWithColumn(
     const oldEndsWithDot = /[\.\,;]$/.test(oldContent);
     const newEndsWithDot = /[\.\,;]$/.test(newContent);
     if (oldEndsWithDot && !newEndsWithDot) {
-        changes.push("删除末尾标点符号");
+        changes.push(t("formatIssue.removeTrailingPunctuation"));
         column = oldContent.length - 1;
         rangeLength = 1; // 标点符号长度为 1
     }
@@ -270,8 +271,8 @@ function analyzeFormatChangesWithColumn(
             newContent[0] === '"' ||
             newContent[0] === "'")
     ) {
-        if (!changes.includes("调整引号")) {
-            changes.push("调整引号");
+        if (!changes.includes(t("formatIssue.adjustQuotes"))) {
+            changes.push(t("formatIssue.adjustQuotes"));
         }
         column = 0;
         rangeLength = 1;
@@ -302,8 +303,8 @@ function analyzeFormatChangesWithColumn(
                 column = 0;
                 rangeLength = oldSpaceCount - newSpaceCount;
             }
-            if (!changes.includes("删除末尾标点符号")) {
-                changes.push("减少多余空格");
+            if (!changes.includes(t("formatIssue.removeTrailingPunctuation"))) {
+                changes.push(t("formatIssue.reduceExtraSpaces"));
             }
         } else {
             // 增加空格：找到需要添加空格的位置
@@ -315,8 +316,8 @@ function analyzeFormatChangesWithColumn(
                 column = 0;
                 rangeLength = 1;
             }
-            if (!changes.includes("减少多余空格")) {
-                changes.push("增加空格");
+            if (!changes.includes(t("formatIssue.reduceExtraSpaces"))) {
+                changes.push(t("formatIssue.addSpace"));
             }
         }
     }
@@ -329,7 +330,7 @@ function analyzeFormatChangesWithColumn(
         const oldMatch = oldContent.match(oldPattern)?.[0];
         const newMatch = newContent.match(newPattern)?.[0];
         if (oldMatch && newMatch && oldMatch !== newMatch) {
-            changes.push("调整操作符空格");
+            changes.push(t("formatIssue.adjustOperatorSpaces"));
             // 计算操作符的位置
             const opIndex = oldContent.indexOf(op);
             if (opIndex !== -1) {
@@ -344,8 +345,8 @@ function analyzeFormatChangesWithColumn(
     const oldHasBracketSpace = /\[\s/.test(oldContent);
     const newHasBracketSpace = /\[\s/.test(newContent);
     if (oldHasBracketSpace !== newHasBracketSpace) {
-        if (!changes.includes("调整操作符空格")) {
-            changes.push("调整括号空格");
+        if (!changes.includes(t("formatIssue.adjustOperatorSpaces"))) {
+            changes.push(t("formatIssue.adjustBracketSpaces"));
         }
         const bracketIndex = oldContent.indexOf("[");
         if (bracketIndex !== -1) {
@@ -358,8 +359,8 @@ function analyzeFormatChangesWithColumn(
     const oldEndsWithSpace = /\s$/.test(oldContent);
     const newEndsWithSpace = /\s$/.test(newContent);
     if (oldEndsWithSpace && !newEndsWithSpace) {
-        if (!changes.includes("删除末尾标点符号")) {
-            changes.push("删除行尾空格");
+        if (!changes.includes(t("formatIssue.removeTrailingPunctuation"))) {
+            changes.push(t("formatIssue.removeTrailingSpaces"));
         }
         const trimmedLength = oldContent.trimEnd().length;
         column = trimmedLength;
@@ -375,8 +376,8 @@ function analyzeFormatChangesWithColumn(
         oldHasDoubleQuote !== newHasDoubleQuote ||
         oldHasSingleQuote !== newHasSingleQuote
     ) {
-        if (!changes.includes("调整引号") && column === 0) {
-            changes.push("调整引号");
+        if (!changes.includes(t("formatIssue.adjustQuotes")) && column === 0) {
+            changes.push(t("formatIssue.adjustQuotes"));
             // 找到第一个不同的引号位置
             for (let i = 0; i < oldContent.length; i++) {
                 if (oldContent[i] === '"' || oldContent[i] === "'") {
@@ -391,9 +392,9 @@ function analyzeFormatChangesWithColumn(
     // 如果没有设置列位置，默认使用 0
     if (
         column === 0 &&
-        !changes.includes("删除末尾标点符号") &&
-        !changes.includes("调整括号空格") &&
-        !changes.includes("调整引号")
+        !changes.includes(t("formatIssue.removeTrailingPunctuation")) &&
+        !changes.includes(t("formatIssue.adjustBracketSpaces")) &&
+        !changes.includes(t("formatIssue.adjustQuotes"))
     ) {
         column = 0;
     }

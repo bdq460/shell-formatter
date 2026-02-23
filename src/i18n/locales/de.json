@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "Leistungsmetriken wurden zurückgesetzt.",
     "unsupportedFileType": "Aktuelle Datei kann nicht verarbeitet werden, nur Shell-Skripte unterstützt (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "Ungültiges Format",
+    "prefix": "Formatproblem:",
+    "shouldBe": "Sollte \"{content}\" sein",
+    "delete": "\"{content}\" löschen",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "Original:",
+    "changedTo": "Geändert zu:",
+    "removeTrailingPunctuation": "Nachgestellte Interpunktion entfernen",
+    "adjustQuotes": "Anführungszeichen anpassen",
+    "reduceExtraSpaces": "Zusätzliche Leerzeichen reduzieren",
+    "addSpace": "Leerzeichen hinzufügen",
+    "adjustOperatorSpaces": "Operator-Leerzeichen anpassen",
+    "adjustBracketSpaces": "Klammer-Leerzeichen anpassen",
+    "removeTrailingSpaces": "Nachgestellte Leerzeichen entfernen",
+    "invalidMode": "Ungültiger Modus"
+  },
   "performance": {
     "title": "Shell Formatter - Leistungsbericht",
     "reportGenerated": "Bericht erstellt: {date}",

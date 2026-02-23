@@ -14,6 +14,23 @@
     "resetMetricsSuccess": "Các chỉ số hiệu suất đã được đặt lại.",
     "unsupportedFileType": "Không thể xử lý tệp hiện tại, chỉ hỗ trợ tập lệnh Shell (.sh/.bash/.zsh)"
   },
+  "formatIssue": {
+    "invalid": "Định dạng không hợp lệ",
+    "prefix": "Vấn đề định dạng:",
+    "shouldBe": "Nên là \"{content}\"",
+    "delete": "Xóa \"{content}\"",
+    "changeFromTo": "\"{old}\" → \"{new}\"",
+    "original": "Gốc:",
+    "changedTo": "Đã thay đổi thành:",
+    "removeTrailingPunctuation": "Xóa dấu câu ở cuối",
+    "adjustQuotes": "Điều chỉnh dấu ngoặc",
+    "reduceExtraSpaces": "Giảm khoảng trắng thừa",
+    "addSpace": "Thêm khoảng trắng",
+    "adjustOperatorSpaces": "Điều chỉnh khoảng trắng toán tử",
+    "adjustBracketSpaces": "Điều chỉnh khoảng trắng dấu ngoặc",
+    "removeTrailingSpaces": "Xóa khoảng trắng ở cuối",
+    "invalidMode": "Chế độ không hợp lệ"
+  },
   "performance": {
     "title": "Shell Formatter - Báo cáo Hiệu suất",
     "reportGenerated": "Báo cáo được tạo: {date}",
