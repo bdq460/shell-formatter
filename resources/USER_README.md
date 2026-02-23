@@ -113,6 +113,7 @@ Controls extension UI language / 控制扩展界面语言
 **Usage Examples 使用示例**:
 
 Automatically detect VSCode language / 自动检测 VSCode 语言:
+
 ```json
 {
   "shell-formatter.language": "local"
@@ -120,6 +121,7 @@ Automatically detect VSCode language / 自动检测 VSCode 语言:
 ```
 
 Specify a specific language / 指定特定语言:
+
 ```json
 {
   "shell-formatter.language": "zh"
