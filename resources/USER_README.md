@@ -28,6 +28,7 @@ Shell Formatter automatically formats your Shell scripts and detects errors usin
 
 ```json
 {
+  "shell-formatter.language": "local",
   "shell-formatter.tabSize": 2,
   "shell-formatter.plugins.shfmt": {
     "enabled": true,
@@ -82,6 +83,50 @@ Controls indentation behavior / 控制缩进行为
   - `ignore`: Do not validate indentation / 不验证缩进
   - Number: Number of spaces / 空格数 (e.g., `2`, `4`)
 - **Default 默认值**: `vscode`
+
+#### `shell-formatter.language`
+
+Controls extension UI language / 控制扩展界面语言
+
+- **Type 类型**: string
+- **Options 选项**:
+  - `local`: Automatically detect VSCode language / 自动检测 VSCode 语言
+  - `en`: English / 英语
+  - `zh`: 简体中文
+  - `zh-tw`: 繁體中文
+  - `ja`: 日本語
+  - `ko`: 한국어
+  - `de`: Deutsch
+  - `fr`: Français
+  - `es`: Español
+  - `it`: Italiano
+  - `pt`: Português
+  - `ru`: Русский
+  - `ar`: العربية
+  - `hi`: हिन्दी
+  - `vi`: Tiếng Việt
+  - `pl`: Polski
+  - `tr`: Türkçe
+  - `th`: ไทย
+- **Default 默认值**: `local`
+
+**Usage Examples 使用示例**:
+
+Automatically detect VSCode language / 自动检测 VSCode 语言:
+```json
+{
+  "shell-formatter.language": "local"
+}
+```
+
+Specify a specific language / 指定特定语言:
+```json
+{
+  "shell-formatter.language": "zh"
+}
+```
+
+**Note 注意**: Language changes take effect immediately without reloading the window. / 语言更改立即生效，无需重新加载窗口。
 
 #### `shell-formatter.log`
 
@@ -233,6 +278,36 @@ Shell Formatter supports automatic language detection based on your VSCode setti
 | ไทย | `th` | Thai |
 
 The extension automatically detects your VSCode language and loads the appropriate language pack. If the language pack fails to load, it falls back to English.
+
+**Configuration Methods 配置方式**:
+
+**Method 1: Automatic Detection 方法 1: 自动检测 (Default)**
+
+By default, the extension automatically detects your VSCode language and loads the appropriate language pack. If the language pack fails to load, it falls back to English.
+
+默认情况下，扩展自动检测 VSCode 语言设置并加载对应的语言包。如果语言包加载失败，将回退到英语。
+
+```json
+{
+  "shell-formatter.language": "local"
+}
+```
+
+**Method 2: Manual Selection 方法 2: 手动选择**
+
+You can manually specify the language in `settings.json`:
+
+您可以在 `settings.json` 中手动指定语言：
+
+```json
+{
+  "shell-formatter.language": "zh"
+}
+```
+
+**Note**: Language changes take effect immediately without reloading the window.
+
+**注意**: 语言更改立即生效，无需重新加载窗口。
 
 扩展自动检测 VSCode 语言设置并加载对应的语言包。如果语言包加载失败，将回退到英语。
 
