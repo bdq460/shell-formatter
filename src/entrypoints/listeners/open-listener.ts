@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import { diagnoseDocument } from "../../application/usecases/diagnose-document";
 import { fromDomainDiagnostics } from "../../shared/converters/diagnostic";
 import { toDomainDocument } from "../../shared/converters/document";
-import { shouldSkipFile } from "../../shared/file-checker";
+import { normalizeToFileUri, shouldSkipFile } from "../../shared/file-checker";
 import { logger } from "../../utils/log";
 
 /**
@@ -36,7 +36,7 @@ export function registerOpenListener(
             const domainDocument = toDomainDocument(document);
             const diagnostics = await diagnoseDocument(domainDocument);
             const vscodeDiagnostics = fromDomainDiagnostics(diagnostics);
-            diagnosticCollection.set(document.uri, vscodeDiagnostics);
+            diagnosticCollection.set(normalizeToFileUri(document.uri), vscodeDiagnostics);
             logger.debug(
                 `Initial diagnostics for opened file: ${vscodeDiagnostics.length} diagnostics`,
             );

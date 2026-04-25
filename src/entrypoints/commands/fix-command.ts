@@ -24,7 +24,7 @@ import { PackageInfo } from "../../config";
 import { t } from "../../i18n";
 import { fromDomainDiagnostics } from "../../shared/converters/diagnostic";
 import { toDomainDocument } from "../../shared/converters/document";
-import { shouldSkipFile } from "../../shared/file-checker";
+import { normalizeToFileUri, shouldSkipFile } from "../../shared/file-checker";
 import { logger } from "../../utils/log";
 
 /**
@@ -149,7 +149,7 @@ async function updateDiagnostics(
 
     // 更新诊断集合
     // VSCode 会自动更新问题面板，显示最新的诊断信息
-    diagnosticCollection.set(document.uri, vscodeDiagnostics);
+    diagnosticCollection.set(normalizeToFileUri(document.uri), vscodeDiagnostics);
 
     // 记录日志并返回诊断数量
     logger.info(`Re-diagnosed after fix: ${vscodeDiagnostics.length} diagnostics remain`);
@@ -273,7 +273,7 @@ async function handleNoFixes(
     const vscodeDiagnostics = fromDomainDiagnostics(diagnostics);
 
     // 更新诊断集合
-    diagnosticCollection.set(document.uri, vscodeDiagnostics);
+    diagnosticCollection.set(normalizeToFileUri(document.uri), vscodeDiagnostics);
 
     if (vscodeDiagnostics.length > 0) {
         // 有诊断问题，但无法通过格式化修复

@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import { diagnoseDocument } from "../../application/usecases/diagnose-document";
 import { fromDomainDiagnostics } from "../../shared/converters/diagnostic";
 import { toDomainDocument } from "../../shared/converters/document";
-import { shouldSkipFile } from "../../shared/file-checker";
+import { normalizeToFileUri, shouldSkipFile } from "../../shared/file-checker";
 import { DebounceManager } from "../../utils/debounce";
 import { logger } from "../../utils/log";
 
@@ -56,7 +56,7 @@ export function registerChangeListener(
                     const diagnostics = await diagnoseDocument(domainDocument);
                     const vscodeDiagnostics = fromDomainDiagnostics(diagnostics);
                     // 强制更新诊断集合
-                    diagnosticCollection.set(fileUri, vscodeDiagnostics);
+                    diagnosticCollection.set(normalizeToFileUri(fileUri), vscodeDiagnostics);
                     logger.debug(
                         `Updated diagnostics for changed file: ${vscodeDiagnostics.length} diagnostics`,
                     );

@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import { diagnoseDocument } from "../../application/usecases/diagnose-document";
 import { fromDomainDiagnostics } from "../../shared/converters/diagnostic";
 import { toDomainDocument } from "../../shared/converters/document";
-import { shouldSkipFile } from "../../shared/file-checker";
+import { normalizeToFileUri, shouldSkipFile } from "../../shared/file-checker";
 import { PERFORMANCE_METRICS } from "../../shared/performance-metrics";
 import { DebounceManager } from "../../utils/debounce";
 import { logger } from "../../utils/log";
@@ -52,7 +52,7 @@ export function registerSaveListener(
             const vscodeDiagnostics = fromDomainDiagnostics(diagnostics);
             timer.stop();
             // 强制更新诊断集合，清除任何旧的诊断信息
-            diagnosticCollection.set(document.uri, vscodeDiagnostics);
+            diagnosticCollection.set(normalizeToFileUri(document.uri), vscodeDiagnostics);
             logger.debug(
                 `Updated diagnostics for saved file: ${vscodeDiagnostics.length} diagnostics`,
             );

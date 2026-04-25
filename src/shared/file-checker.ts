@@ -3,6 +3,40 @@ import { PackageInfo } from "../config/package-info";
 import { logger } from "../utils/log";
 
 /**
+ * 将 URI 规范化为真实文件的 file: scheme URI
+ *
+ * VSCode Git 扩展会为同一文件创建虚拟文档（scheme=git，文件名带 .git 后缀）：
+ * - 真实文件：file:///path/to/service.sh
+ * - Git 虚拟文档：git:/path/to/service.sh.git
+ *
+ * 此函数将 git: scheme 的虚拟文档 URI 映射回真实的 file: URI，
+ * 确保诊断信息设置在正确的文件上。
+ *
+ * @param uri 原始 URI（可能为 git: scheme）
+ * @returns 规范化后的 file: scheme URI；如果无法转换则返回原始 URI
+ */
+export function normalizeToFileUri(uri: vscode.Uri): vscode.Uri {
+    if (uri.scheme === "file") {
+        return uri;
+    }
+
+    // 处理 git: scheme 且文件名以 .git 结尾的情况
+    const fileName = uri.fsPath.split("/").pop() || "";
+    const gitSuffix = /\.git$/;
+    if (uri.scheme === "git" && gitSuffix.test(fileName)) {
+        // 去掉 .git 后缀得到真实文件路径，转换为 file: URI
+        const realPath = uri.fsPath.replace(gitSuffix, "");
+        const fileUri = vscode.Uri.file(realPath);
+        logger.debug(
+            `Normalized git URI to file URI: ${uri.toString()} -> ${fileUri.toString()}`,
+        );
+        return fileUri;
+    }
+
+    return uri;
+}
+
+/**
  * 检查是否应该跳过该文件
  *
  * 对于不符合要求的文件，返回 true 表示跳过
