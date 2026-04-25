@@ -2,7 +2,7 @@
     "name": "shell-formatter",
     "displayName": "Shell Formatter",
     "description": "Intelligent Shell script formatting and error checking fixing with shfmt and shellcheck",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "publisher": "bdq460",
     "icon": "./resources/icon.png",
     "repository": {
